@@ -3,6 +3,6 @@
 
 #pragma once
 
-#include <iostream>
+#include "define.h"
 
 // TODO: Reference additional headers your program requires here.
