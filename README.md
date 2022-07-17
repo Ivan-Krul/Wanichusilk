@@ -7,6 +7,7 @@ It would be have multiwindow mode, and a larger control of PC, but it's not a vi
 
 ## Technical
 
+Main [CMakeLists.txt is here](https://github.com/Ivan-Krul/Wanichusilk/blob/master/CMakeLists.txt)
 This game has the main loop in [main file](https://github.com/Ivan-Krul/Wanichusilk/blob/master/Wanichusilk.cpp).
 
 ## At last
