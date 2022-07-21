@@ -3,6 +3,6 @@
 
 #pragma once
 
-#include "define.h"
+#include "charity/charity.h"
 
 // TODO: Reference additional headers your program requires here.

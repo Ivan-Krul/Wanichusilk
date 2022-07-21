@@ -3,18 +3,18 @@
 #include <string>
 
 __interface Iname {
-	std::string name();
+	std::string get_name();
 };
 
-class name : Iname {
+class name : public Iname {
 protected:
 	std::string _name = "[name]";
 public:
-	std::string name();
+	std::string get_name();
 
-	virtual ~name() = 0;
+	virtual ~name() {};
 };
 
-inline std::string name::name() {
+std::string name::get_name() {
 	return _name;
 }
