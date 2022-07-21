@@ -1,8 +1,9 @@
 #pragma once
 #include "../charity/charity.h"
+#include "../hardware/hardware.h"
 
 class monolog {
-	const name* _author;
+	const name* _author = nullptr;
 	std::string _words = "[word]";
 public:
 	monolog() {}
@@ -12,8 +13,10 @@ public:
 	void create(const name& author_, std::string word_);
 
 	void write(std::string words_) { _words = words_; }
-	void read_from_disk(std::string dir_, size_t start_,size_t size_);
+	void read_from_disk(basic_hardware hardware_);
 	const name author() { return *_author; }
 
-	std::string operator() () { return _words; }
+	std::string operator() () { return ((_author != nullptr) ? (_author.get_name()):('?')) + ": " + _words; }
 };
+
+
