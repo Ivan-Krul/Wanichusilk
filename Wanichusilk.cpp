@@ -20,5 +20,9 @@ int main()
 	std::cout << charit.prod() << ' ' << charitt.prod() << '\n';
 	std::cout << charitt.damage(charit) << '\n';
 	std::cout << charit.prod() << ' ' << charitt.prod() << '\n';
+	basic_hardware hard;
+	hard.buffer() = "Hello, world!";
+	hard.write_from_buffer("some.txt",0);
+
 	return 0;
 }
