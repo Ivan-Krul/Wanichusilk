@@ -3,6 +3,7 @@
 #include "../hardware/hardware.h"
 
 class monolog {
+protected:
 	name* _author = nullptr;
 	std::string _words = "[word]";
 public:

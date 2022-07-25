@@ -9,6 +9,7 @@ __interface Ihardware {
 };
 
 class basic_hardware : public Ihardware {
+protected:
 	std::string _buf;
 public:
 	void read_to_buffer(const std::string dir_, const size_t beg_, const size_t size_);
