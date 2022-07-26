@@ -11,7 +11,7 @@ int main()
 
 	monolog mon[6];
 	mon[0].create(charit[0], "what are you doing?");
-	mon[1].create(charit[1], "he he he...");
+	mon[1].create(charit[1], "tee hee...");
 	mon[2].create(charit[0], "go away and don't disturbe me!");
 	mon[3].create(charit[0], "should me fight with you?");
 	mon[4].create(charit[1], "... yes");
@@ -19,6 +19,8 @@ int main()
 	for (size_t i = 0;i < std::size(mon); i++) {
 		std::cout << mon[i].get_monolog() << '\n';
 	}
+	std::cout<<"you damaged " << charit[0].damage(charit[1])<<" to "<<charit[1].get_name()<<'\n';
+	std::cout << monolog(charit[1], "ow").get_monolog();
 
 
 
