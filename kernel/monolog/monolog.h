@@ -1,6 +1,5 @@
 #pragma once
 #include "../charity/charity.h"
-#include "../hardware/hardware.h"
 
 __interface Imonolog {
 	void create(name& author_);

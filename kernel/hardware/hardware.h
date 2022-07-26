@@ -1,5 +1,5 @@
 #pragma once
-#include "../define.h"
+#include "../../define.h"
 #include <fstream>
 
 __interface Ihardware {

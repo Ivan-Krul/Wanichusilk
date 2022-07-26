@@ -1,6 +1,5 @@
 #pragma once
-#include "../define.h"
-#include "../abstractes/name.h"
+#include "../../abstractes/name.h"
 
 class charity;
 

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "charity/charity.h"
-#include "monolog/monolog.h"
+#include "kernel/charity/charity.h"
+#include "kernel/monolog/monolog.h"
 
 // TODO: Reference additional headers your program requires here.
