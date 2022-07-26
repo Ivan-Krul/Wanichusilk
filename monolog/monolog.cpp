@@ -7,7 +7,7 @@ void monolog::create(name& author_, std::string word_) {
 	_words = word_;
 }
 
-std::string monolog::operator() () {
+std::string monolog::get_monolog() {
 	std::string str;
 	if (_author != nullptr) str = _author->get_name();
 	else str = "?";
