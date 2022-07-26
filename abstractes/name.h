@@ -10,6 +10,8 @@ class name : public Iname {
 protected:
 	std::string _name = "[name]";
 public:
+	name() {}
+	name(std::string name_) { _name = name_; }
 	std::string get_name();
 
 	virtual ~name() {};

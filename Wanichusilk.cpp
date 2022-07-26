@@ -20,9 +20,10 @@ int main()
 		std::cout << mon[i].get_monolog() << '\n';
 	}
 	std::cout<<"you damaged " << charit[0].damage(charit[1])<<" to "<<charit[1].get_name()<<'\n';
-	std::cout << monolog(charit[1], "ow").get_monolog();
+	std::cout << monolog(charit[1], "ow").get_monolog()<<'\n';
 
-
+	sandwich san; 
+	std::cout << "there laying a " << san.get_name() << "\nit " << san.get_description()<<'\n';
 
 	return 0;
 }
