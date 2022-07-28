@@ -1,34 +1,33 @@
 #pragma once
 #include "../../abstractes/name.h"
 
-class charity;
+class kernel_charity;
 
-__interface Icharity {
+__interface Ikernel_charity {
 	void create(std::string name, unsigned int def, int dam);
 
 	float prod();
-	float damage(charity& charit);
+	float damage(kernel_charity& charit);
 
 	std::string info();
 };
 
-class charity : public name, public Icharity {
+class kernel_charity : public name, public Ikernel_charity {
 protected:
 	float _prod = 1.0f;
 	unsigned int _def = 0;
 	int _dam = 0;
 
 public:
-	charity() : name() {}
-	charity(std::string name, unsigned int def, int dam) : name() { create(name, def, dam); }
+	kernel_charity() : name() {}
+	kernel_charity(std::string name, unsigned int def, int dam) : name() { create(name, def, dam); }
 	void create(std::string name, unsigned int def,int dam);
 
 	float prod() { return _prod; }
-	float damage(charity& charit);
+	float damage(kernel_charity& charit);
 
 	std::string info();
 
-
-	~charity() = default;
+	~kernel_charity() = default;
 };
 #include "charity.cpp"

@@ -33,7 +33,12 @@ public:
 	edible_item(name name_, std::string description_, int benefit_) : useful_item(name_, description_, benefit_) {}
 };
 
-class equip_item : public useful_item {
+class armor_item : public useful_item {
 public:
-	equip_item(name name_, std::string description_, int benefit_) : useful_item(name_, description_, benefit_) {}
+	armor_item(name name_, std::string description_, int benefit_) : useful_item(name_, description_, benefit_) {}
+};
+
+class weapon_item : public useful_item {
+public:
+	weapon_item(name name_, std::string description_, int benefit_) : useful_item(name_, description_, benefit_) {}
 };

@@ -1,20 +1,26 @@
 #pragma once
 #include "../../abstractes/item.h"
 
-class sandwich : public edible_item {
+class edible_sandwich : public edible_item {
 	const static int _cheal = 5;
 public:
-	sandwich() : edible_item(name("sandwich"), "sandwich (heal " + std::to_string(_cheal) + ") - simple combination of a bread, salad, hamand souces, borrowed from Heavy", _cheal) {}
+	edible_sandwich() : edible_item(name("sandwich"), "sandwich (hil " + std::to_string(_cheal) + ") - simple combination of a bread, salad, hamand souces, borrowed from Heavy", _cheal) {}
 };
 
-class banana : public edible_item {
+class edible_banana : public edible_item {
 	const static int _cheal = 3;
 public:
-	banana() : edible_item(name("banana"), "banana (heal " + std::to_string(_cheal) + ") - fruit for fitness, filled potassium", _cheal) {}
+	edible_banana() : edible_item(name("banana"), "banana (hil " + std::to_string(_cheal) + ") - fruit for fitness, filled potassium", _cheal) {}
 };
 
-class helmet : public equip_item {
+class armor_helmet : public armor_item {
 	const static int _cequip = 4;
 public:
-	helmet() : equip_item(name("helmet"), "helmet (def " + std::to_string(_cequip) + ") - very huge and very massive", _cequip) {}
+	armor_helmet() : armor_item(name("helmet"), "helmet (def " + std::to_string(_cequip) + ") - very huge and very massive", _cequip) {}
+};
+
+class weapon_stick : public weapon_item {
+	const static int _cattack = 2;
+public:
+	weapon_stick() : weapon_item(name("stick"), "stick (atk " + std::to_string(_cattack) + ") - fresh, from branch", _cattack) {}
 };

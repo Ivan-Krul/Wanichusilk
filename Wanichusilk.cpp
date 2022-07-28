@@ -5,7 +5,7 @@
 
 int main()
 {
-	charity charit[2];
+	kernel_charity charit[2];
 	charit[0].create("Jeff", 4, 2);
 	charit[1].create("Brebius", 4, 3);
 
