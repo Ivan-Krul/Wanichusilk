@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "kernel/charity/charity.h"
-#include "kernel/monolog/monolog.h"
-#include "kernel/types of items/list items.h"
+#include "kernel/hardware/hardware.h"
 
 // TODO: Reference additional headers your program requires here.

@@ -1,26 +1,35 @@
 #include "hardware.h"
 
-void basic_hardware::read_to_buffer(const std::string dir_, const size_t beg_, const size_t size_) {
-	std::ifstream ifs;
-	_buf.resize(size_);
-	ifs.open(dir_);
-
-	ifs.seekg(beg_, std::ios_base::beg);
-	ifs.get((char*)_buf.c_str(), size_);
-
-	ifs.close();
-}
-
-void basic_hardware::write_from_buffer(const std::string dir_, const size_t beg_) {
+std::ofstream basic_hardware::_openFileO(const std::string dir_)
+{
 	std::ofstream ofs;
 	ofs.open(dir_);
 
-	ofs.seekp(beg_, std::ios_base::beg);
-	ofs.write(_buf.c_str(), _buf.size());
-
-	ofs.close();
+	assert(!ofs.fail());
 }
 
-std::string& basic_hardware::buffer() {
-	return _buf;
+std::ifstream basic_hardware::_openFileI(const std::string dir_)
+{
+	std::ifstream ifs;
+	ifs.open(dir_);
+
+	assert(ifs.is_open());
+	assert(!ifs.fail());
+}
+
+void basic_hardware::read_to_buffer(const std::string dir_)
+{
+	auto ifs = _openFileI(dir_);
+	ifs.open(dir_);
+	_buf.resize(ifs.tellg());
+	ifs.get((char*)_buf.c_str(), _buf.size());
+	ifs.close();
+}
+
+void basic_hardware::write_from_buffer(const std::string dir_)
+{
+	auto ofs = _openFileO(dir_);
+	ofs.open(dir_);
+	ofs.write(_buf.c_str(), _buf.size());
+	ofs.close();
 }
