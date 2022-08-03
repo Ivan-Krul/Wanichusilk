@@ -1,40 +1,44 @@
 #pragma once
 #include "../../abstractes/name.h"
 
+class productivity
+{
+protected:
+	float _prod = 1.0f;
+	uint16_t _def = 0;
+	int16_t _atk = 0;
+public:
+	float productivity();
+	float damage(productivity& charit);
+};
+
 class kernel_charity : public name {
 protected:
 	float _prod = 1.0f;
-	unsigned int _def = 0;
-	int _dam = 0;
-	int _edibleHeal = 0;
+	uint16_t _def = 0;
+	int16_t _atk = 0;
+	int16_t _edibleHeal = 0;
 
 	void _digestion();
 public:
-	kernel_charity() : name() {}
-	kernel_charity(std::string name, unsigned int def, int dam) : name()
-	{
-		create(name, def, dam);
-	}
-	void create(std::string name, unsigned int def,int dam);
+	kernel_charity() {}
+	kernel_charity(std::string name, uint16_t def, int16_t atk);
+	void create(std::string name, uint16_t def, int16_t atk);
 
-	float prod()
-	{
-		return _prod;
-	}
 	float damage(kernel_charity& charit);
-	void heal(float prod_) 
-	{ 
-		_prod += prod_;
-	}
-	void eat(int benefit_) 
-	{ 
-		_edibleHeal = benefit_;
-	}
+
+	uint16_t defense_point();
+	int16_t attack_point();
+	int16_t edible_heal();
+
+	void heal(float prod_);
+	void hurt(float prod_);
+	void eat(int16_t benefit_);
 
 	void tick();
 
 	std::string info();
 
-	~kernel_charity() = default;
+	~kernel_charity() {};
 };
 #include "charity.cpp"

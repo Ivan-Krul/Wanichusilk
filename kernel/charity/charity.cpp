@@ -1,16 +1,26 @@
 #include "charity.h"
 
-void kernel_charity::create(std::string name, unsigned int def, int dam)
+kernel_charity::kernel_charity(std::string name, uint16_t def, int16_t atk)
+{
+	create(name, def, atk);
+}
+
+void kernel_charity::create(std::string name, uint16_t def, int16_t atk)
 {
 	_name = name;
 	_def = def;
-	_dam = dam;
+	_atk = atk;
 }
 
 void kernel_charity::_digestion()
 {
 	heal((float)_edibleHeal / (_def + 1));
 	_edibleHeal /= 2;
+}
+
+void kernel_charity::eat(int16_t benefit_)
+{
+	_edibleHeal = benefit_;
 }
 
 void kernel_charity::tick()
@@ -20,14 +30,44 @@ void kernel_charity::tick()
 
 std::string kernel_charity::info()
 {
-	return _name + " - def: " + std::to_string(_def) + " atk: " + std::to_string(_dam);
+	return _name + " - def: " + std::to_string(_def) + " atk: " + std::to_string(_atk);
+}
+
+float productivity::productivity()
+{
+	return _prod;
 }
 
 float kernel_charity::damage(kernel_charity& charit)
 {
-	float colidedam = float(_dam) * _prod;
-	colidedam /= float(charit._def+1);
+	float colidedam = float(_atk) * _prod;
+	colidedam /= float(charit.defense_point() + 1);
 
-	charit._prod -= colidedam;
+	charit.hurt(colidedam);
 	return colidedam;
+}
+
+uint16_t kernel_charity::defense_point()
+{
+	return _def;
+}
+
+int16_t kernel_charity::attack_point()
+{
+	return _atk;
+}
+
+int16_t kernel_charity::edible_heal()
+{
+	return _edibleHeal;
+}
+
+void kernel_charity::heal(float prod_)
+{
+	_prod += prod_;
+}
+
+void kernel_charity::hurt(float prod_)
+{
+	_prod -= prod_;
 }
