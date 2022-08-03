@@ -2,24 +2,36 @@
 #include "../define.h"
 #include "name.h"
 
-__interface Iitem {
+__interface Iitem
+{
 	std::string get_description();
 };
 
-class item : public Iitem, public name {
+enum class type
+{
+	nothing,
+	edible,
+	heal,
+	armor,
+	weapon
+};
+
+class item : public Iitem, public name
+{
 protected:
 	std::string _description = "[description]";
-	bool _use = true;
+	char _type = 'n';
+	int _use = 0;
 public:
 	std::string get_description();
-
-	virtual int use() { _use = !_use; return 0; };
-	bool is_use() { return _use; }
 	
 	virtual ~item() {}
 };
 
-std::string item::get_description() {
+std::string item::get_description()
+{
+	std::stringstream desc = _name;
+	
 	return _description;
 }
 
