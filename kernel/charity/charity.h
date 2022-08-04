@@ -1,17 +1,6 @@
 #pragma once
 #include "../../abstractes/name.h"
 
-class productivity
-{
-protected:
-	float _prod = 1.0f;
-	uint16_t _def = 0;
-	int16_t _atk = 0;
-public:
-	float productivity();
-	float damage(productivity& charit);
-};
-
 class kernel_charity : public name {
 protected:
 	float _prod = 1.0f;
