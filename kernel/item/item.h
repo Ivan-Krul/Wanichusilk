@@ -4,11 +4,6 @@
 #include "../../abstractes/loader.h"
 #include <sstream>
 
-__interface Iitem
-{
-	std::string get_description();
-};
-
 enum class type
 {
 	nothing,
@@ -18,7 +13,7 @@ enum class type
 	weapon
 };
 
-class item : public Iitem, public name, public Iloader
+class item : public name, public Iloader
 {
 protected:
 	std::string _description = "[description]";

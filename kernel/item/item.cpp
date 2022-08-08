@@ -54,12 +54,12 @@ void item::load(std::string dir_, size_t line_)
 	hardware.read_to_buffer_ln(dir_, line_);
 	std::string raw = hardware.buffer();
 
-	parse(raw);
+ 	parse(raw);
 }
 
 void item::parse(rawstring raw)
 {
-	raw << _name;
-	raw << _use;
-	raw << _description;
+	raw >> _name;
+	raw >> _use;
+	raw >> _description;
 }

@@ -15,11 +15,9 @@ public:
 template<typename T>
 inline void rawstring::operator<<(T& thing_)
 {
-	if(T == char && thing_ == '\n')
-	{
-		_raw += '\n';
-	}
-	_raw += std::to_string(thing_) + '|';
+	std::stringstream str;
+	str << thing_;
+	_raw += str.str() + '|';
 }
 
 template<typename T>
@@ -30,8 +28,10 @@ inline void rawstring::operator>>(T& thing_)
 	while(_raw[ind] != '|')
 	{
 		buffer << _raw[ind];
+		
 		ind++;
 	}
+	_raw = _raw.substr(ind + 1);
 	buffer >> thing_;
 	char threw;
 	buffer >> threw;

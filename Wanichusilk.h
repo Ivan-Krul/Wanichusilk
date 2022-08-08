@@ -4,5 +4,6 @@
 #pragma once
 
 #include "kernel/hardware/hardware.h"
+#include "kernel/item/item.h"
 
 // TODO: Reference additional headers your program requires here.

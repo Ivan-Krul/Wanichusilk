@@ -47,7 +47,7 @@ void basic_hardware::write_from_buffer(const std::string dir_)
 void basic_hardware::read_to_buffer_ln(const std::string dir_, size_t line_)
 {
 	auto ifs = _openFileI(dir_);
-	for(size_t i = 0; i < line_ && ifs.eof(); i++)
+	for(size_t i = 0; i < line_ && !ifs.eof(); i++)
 	{
 		std::getline(ifs, _buf);
 	}
@@ -68,7 +68,7 @@ T basic_hardware::read_binary(const std::string dir_, const size_t beg_)
 	auto ifs = std::ifstream();
 	ifs.open(dir_, std::ios_base::binary);
 
-	ifs.seekp(beg_, std::ios_base::beg);
+	ifs.seekg(beg_, std::ios_base::beg);
 	ifs >> what;
 
 	ifs.close();
