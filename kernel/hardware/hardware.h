@@ -6,10 +6,10 @@
 __interface Ihardwre
 {
 	void read_to_buffer(const std::string dir_);
-	void read_to_buffer_line(const std::string dir_, const size_t line_);
-
 	void write_from_buffer(const std::string dir_);
-	void write_from_buffer_line(const std::string dir_, const size_t beg_);
+
+	void read_to_buffer_ln(const std::string dir_, size_t line_);
+	void write_from_buffer_ln(const std::string dir_, const size_t beg_);
 
 	std::string& buffer();
 };
@@ -21,12 +21,14 @@ protected:
 
 	std::ofstream _openFileO(const std::string dir_);
 	std::ifstream _openFileI(const std::string dir_);
+
+	uint32_t _getSizeFile(const std::string dir_);
 public:
 	void read_to_buffer(const std::string dir_);
 	void write_from_buffer(const std::string dir_);
 
-	void read_to_buffer_line(const std::string dir_, const size_t line_);
-	void write_from_buffer_line(const std::string dir_, const size_t beg_);
+	void read_to_buffer_ln(const std::string dir_, size_t line_);
+	void write_from_buffer_ln(const std::string dir_, const size_t beg_);
 
 	std::string& buffer();
 	

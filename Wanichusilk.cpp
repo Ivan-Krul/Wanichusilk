@@ -26,17 +26,17 @@ int main()
 	//std::cout << "there laying a " << san.get_name() << "\nit " << san.get_description()<<'\n';
 
 	basic_hardware hardware;
-	hardware.buffer() = "sandwich//\5//simple combination of a bread, salad, hamand souces, borrowed from Heavy\n";
-	hardware.buffer() += "banana//\3//fruit for fitness, filled potassium\n";
+	hardware.buffer() = "sandwich|5|simple combination of a bread, salad, hamand souces, borrowed from Heavy|\n";
+	hardware.buffer() += "banana|3|fruit for fitness, filled potassium|\n";
+	hardware.buffer() += "helmet|4|very huge and very massive|\n";
+	hardware.buffer() += "bonzai vest|15|armorness vest, made with bonzai leaves|\n";
+	hardware.buffer() += "stick|2|fresh, from branch|\n";
+	hardware.buffer() += "toy knife|11|from kitchen toy kit|\n\0";
+	hardware.write_from_buffer("../../../resources/item.rctxt");
 
+	hardware.buffer() = "";
 
-	hardware.write_from_buffer("items edible.rctxt", 0);
-	hardware.buffer() = "helmet//\4//very huge and very massive\n";
-	hardware.write_from_buffer("items armor.rctxt", 0);
-	hardware.buffer() = "stick//\2//fresh, from branch\n";
-	hardware.write_from_buffer("items weapon.rctxt", 0);
-
-	hardware.read_to_buffer("items weapon.rctxt",0,2);
+	hardware.read_to_buffer("../../../resources/item.rctxt");
 	std::cout<<hardware.buffer();
 	return 0;
 }
