@@ -62,6 +62,32 @@ void basic_hardware::write_from_buffer_ln(const std::string dir_, const size_t b
 }
 
 template<typename T>
+T basic_hardware::read_binary(const std::string dir_, const size_t beg_)
+{
+	T what;
+	auto ifs = std::ifstream();
+	ifs.open(dir_, std::ios_base::binary);
+
+	ifs.seekp(beg_, std::ios_base::beg);
+	ifs >> what;
+
+	ifs.close();
+	return what;
+}
+
+template<typename T>
+void basic_hardware::write_binary(const std::string dir_, const size_t beg_, T thing_)
+{
+	auto ofs = std::ofstream();
+	ofs.open(dir_, std::ios_base::binary);
+
+	ofs.seekp(beg_, std::ios_base::beg);
+	ofs << thing_;
+
+	ofs.close();
+}
+
+template<typename T>
 T basic_hardware::convert_from_buffer()
 {
 	size_t size = sizeof(T);

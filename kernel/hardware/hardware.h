@@ -3,18 +3,7 @@
 #include <fstream>
 #include <string>
 
-__interface Ihardwre
-{
-	void read_to_buffer(const std::string dir_);
-	void write_from_buffer(const std::string dir_);
-
-	void read_to_buffer_ln(const std::string dir_, size_t line_);
-	void write_from_buffer_ln(const std::string dir_, const size_t beg_);
-
-	std::string& buffer();
-};
-
-class basic_hardware : public Ihardwre
+class basic_hardware
 {
 protected:
 	std::string _buf;
@@ -32,6 +21,8 @@ public:
 
 	std::string& buffer();
 	
+	template <typename T> T read_binary(const std::string dir_, const size_t beg_);
+	template <typename T> void write_binary(const std::string dir_, const size_t beg_, T thing_);
 	template <typename T> T convert_from_buffer();
 };
 

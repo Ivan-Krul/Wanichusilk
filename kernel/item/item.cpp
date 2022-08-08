@@ -47,3 +47,19 @@ int item::usage()
 {
 	return _use;
 }
+
+void item::load(std::string dir_, size_t line_)
+{
+	basic_hardware hardware;
+	hardware.read_to_buffer_ln(dir_, line_);
+	std::string raw = hardware.buffer();
+
+	parse(raw);
+}
+
+void item::parse(rawstring raw)
+{
+	raw << _name;
+	raw << _use;
+	raw << _description;
+}
