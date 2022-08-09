@@ -4,21 +4,22 @@
 #include "../../abstractes/loader.h"
 #include <sstream>
 
-enum class type
+enum class type : char
 {
-	nothing,
-	edible,
-	heal,
-	armor,
-	weapon
+	nothing = 'n',
+	edible = 'e',
+	heal = 'h',
+	armor = 'a',
+	weapon = 'w'
 };
 
-class item : public name, public Iloader
+class item : public name, public loader
 {
 protected:
 	std::string _description = "[description]";
 	type _type = type::nothing;
 	int _use = 0;
+
 public:
 	item(){}
 	item(name name_, std::string description_, type type_, int use_) { create(name_, description_, type_, use_); }
@@ -28,7 +29,7 @@ public:
 	type type_c();
 	int usage();
 	void load(std::string dir_, size_t line_);
-	void parse(rawstring raw);
+	void parse(std::string raw_);
 
 	virtual ~item() {}
 };

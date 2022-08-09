@@ -26,7 +26,7 @@ int main()
 	//std::cout << "there laying a " << san.get_name() << "\nit " << san.get_description()<<'\n';
 
 	basic_hardware hardware;
-	hardware.buffer() = "sandwich|5|e|simple combination of a bread, salad, hamand souces, borrowed from Heavy|\n";
+	hardware.buffer() = "sandwich|5|e|simple combination of a bread, salad, ham and souces, borrowed from Heavy|\n";
 	hardware.buffer() += "banana|3|e|fruit for fitness, filled potassium|\n";
 	hardware.buffer() += "helmet|4|a|very huge and very massive|\n";
 	hardware.buffer() += "bonzai vest|15|a|armorness vest, made with bonzai leaves|\n";
@@ -42,7 +42,7 @@ int main()
 	item some;
 	some.load("../../../resources/item.rctxt", 1);
 
-	std::cout << some.get_name() <<' '<< some.usage()<<' '<<some.description();
+	std::cout <<some.description();
 
 	return 0;
 }

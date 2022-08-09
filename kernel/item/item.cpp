@@ -57,9 +57,10 @@ void item::load(std::string dir_, size_t line_)
  	parse(raw);
 }
 
-void item::parse(rawstring raw)
+void item::parse(std::string raw_)
 {
-	raw >> _name;
-	raw >> _use;
-	raw >> _description;
+	checkParse(raw_, _name);
+	checkParse(raw_, _use);
+	checkParse(raw_, (char&)_type);
+	checkParse(raw_, _description);
 }
