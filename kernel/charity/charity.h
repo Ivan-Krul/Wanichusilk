@@ -1,7 +1,8 @@
 #pragma once
 #include "../../abstractes/name.h"
+#include "../../abstractes/loader.h"
 
-class kernel_charity : public name {
+class kernel_charity : public name, public loader {
 protected:
 	float _prod = 1.0f;
 	uint16_t _def = 0;
@@ -23,6 +24,9 @@ public:
 	void heal(float prod_);
 	void hurt(float prod_);
 	void eat(int16_t benefit_);
+
+	void load(std::string dir_, size_t line_);
+	void parse(std::string raw_);
 
 	void tick();
 

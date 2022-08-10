@@ -23,6 +23,17 @@ void kernel_charity::eat(int16_t benefit_)
 	_edibleHeal = benefit_;
 }
 
+void kernel_charity::load(std::string dir_, size_t line_)
+{
+	kernel_hardware hardware;
+	hardware.read_to_buffer_ln(dir_, line_);
+	parse(hardware.buffer());
+}
+
+void kernel_charity::parse(std::string raw_)
+{
+}
+
 void kernel_charity::tick()
 {
 	_digestion();
@@ -31,11 +42,6 @@ void kernel_charity::tick()
 std::string kernel_charity::info()
 {
 	return _name + " - def: " + std::to_string(_def) + " atk: " + std::to_string(_atk);
-}
-
-float productivity::productivity()
-{
-	return _prod;
 }
 
 float kernel_charity::damage(kernel_charity& charit)

@@ -6,5 +6,6 @@
 #include "kernel/hardware/hardware.h"
 #include "kernel/item/item.h"
 #include "buildCounter/buildCounter.h"
+#include "kernel/charity/charity.h"
 
 // TODO: Reference additional headers your program requires here.

@@ -42,6 +42,7 @@ int main()
 	//hardware.read_to_buffer("../../../resources/item.rctxt");
 	//std::cout<<hardware.buffer();
 
+	kernel_charity charit;
 	kernel_item some;
 	some.load("../../../resources/item.rctxt", 2);
 
