@@ -5,6 +5,7 @@
 
 int main()
 {
+	buildCounter build;
 	//kernel_charity charit[2];
 	//charit[0].create("Jeff", 4, 2);
 	//charit[1].create("Brebius", 4, 3);
@@ -25,24 +26,24 @@ int main()
 	//sandwich san; 
 	//std::cout << "there laying a " << san.get_name() << "\nit " << san.get_description()<<'\n';
 
-	basic_hardware hardware;
-	hardware.buffer() = "sandwich|5|e|simple combination of a bread, salad, ham and souces, borrowed from Heavy|\n";
-	hardware.buffer() += "banana|3|e|fruit for fitness, filled potassium|\n";
-	hardware.buffer() += "helmet|4|a|very huge and very massive|\n";
-	hardware.buffer() += "bonzai vest|15|a|armorness vest, made with bonzai leaves|\n";
-	hardware.buffer() += "stick|2|w|fresh, from branch|\n";
-	hardware.buffer() += "toy knife|11|w|from kitchen toy kit|\n\0";
-	hardware.write_from_buffer("../../../resources/item.rctxt");
+	//basic_hardware hardware;
+	//hardware.buffer() = "sandwich|5|e|simple combination of a bread, salad, ham and souces, borrowed from Heavy|\n";
+	//hardware.buffer() += "banana|3|e|fruit for fitness, filled potassium|\n";
+	//hardware.buffer() += "helmet|4|a|very huge and very massive|\n";
+	//hardware.buffer() += "bonzai vest|15|a|armorness vest, made with bonzai leaves|\n";
+	//hardware.buffer() += "stick|2|w|fresh, from branch|\n";
+	//hardware.buffer() += "toy knife|11|w|from kitchen toy kit|\n\0";
+	//hardware.write_from_buffer("../../../resources/item.rctxt");
 
-	hardware.buffer() = "";
+	//hardware.buffer() = "";
 
-	hardware.read_to_buffer("../../../resources/item.rctxt");
-	std::cout<<hardware.buffer();
+	//hardware.read_to_buffer("../../../resources/item.rctxt");
+	//std::cout<<hardware.buffer();
 
 	item some;
-	some.load("../../../resources/item.rctxt", 1);
+	some.load("../../../resources/item.rctxt", 2);
 
-	std::cout <<some.description();
+	std::cout <<some.description()<<'\n';
 
 	return 0;
 }
