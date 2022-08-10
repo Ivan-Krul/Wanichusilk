@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 
-class basic_hardware
+class kernel_hardware
 {
 protected:
 	std::string _buf;
@@ -28,7 +28,7 @@ public:
 	template <typename T> T convert_from_buffer();
 };
 
-std::string& basic_hardware::buffer()
+std::string& kernel_hardware::buffer()
 {
 	return _buf;
 }

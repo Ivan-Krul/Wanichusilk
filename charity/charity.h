@@ -5,5 +5,5 @@
 class charity : public kernel_charity {
 	armor_item _armor[2];
 	weapon_item _weapon;
-	item _bag[8] = nothing_item()[8];
+	kernel_item _bag[8] = nothing_item()[8];
 };

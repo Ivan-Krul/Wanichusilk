@@ -12,15 +12,15 @@ __interface Imonolog {
 	std::string get_monolog();
 };
 
-class monolog {
+class kernel_monolog {
 protected:
 	name* _author = nullptr;
 	std::string _words = "[word]";
 public:
-	monolog() {}
-	monolog(name& author_) { create(author_); }
-	monolog(name& author_, std::string word_) { create(author_, word_); }
-	monolog(std::string word_) { create(word_); }
+	kernel_monolog() {}
+	kernel_monolog(name& author_) { create(author_); }
+	kernel_monolog(name& author_, std::string word_) { create(author_, word_); }
+	kernel_monolog(std::string word_) { create(word_); }
 	void create(name& author_) { _author = &author_; }
 	void create(name& author_, std::string word_);
 	void create(std::string word_) { _words = word_; }

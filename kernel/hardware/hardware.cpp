@@ -1,6 +1,6 @@
 #include "hardware.h"
 
-std::ofstream basic_hardware::_openFileO(const std::string dir_)
+std::ofstream kernel_hardware::_openFileO(const std::string dir_)
 {
 	std::ofstream ofs;
 	ofs.open(dir_);
@@ -9,7 +9,7 @@ std::ofstream basic_hardware::_openFileO(const std::string dir_)
 	return ofs;
 }
 
-std::ifstream basic_hardware::_openFileI(const std::string dir_)
+std::ifstream kernel_hardware::_openFileI(const std::string dir_)
 {
 	std::ifstream ifs;
 	ifs.open(dir_);
@@ -19,7 +19,7 @@ std::ifstream basic_hardware::_openFileI(const std::string dir_)
 	return ifs;
 }
 
-uint32_t basic_hardware::_getSizeFile(const std::string dir_)
+uint32_t kernel_hardware::_getSizeFile(const std::string dir_)
 {
 	std::ifstream in(dir_, std::ifstream::ate | std::ifstream::binary);
 	uint32_t size = in.tellg();
@@ -27,7 +27,7 @@ uint32_t basic_hardware::_getSizeFile(const std::string dir_)
 	return size;
 }
 
-void basic_hardware::read_to_buffer(const std::string dir_)
+void kernel_hardware::read_to_buffer(const std::string dir_)
 {
 	uint32_t size = _getSizeFile(dir_);
 
@@ -37,14 +37,14 @@ void basic_hardware::read_to_buffer(const std::string dir_)
 	ifs.close();
 }
 
-void basic_hardware::write_from_buffer(const std::string dir_)
+void kernel_hardware::write_from_buffer(const std::string dir_)
 {
 	auto ofs = _openFileO(dir_);
 	ofs.write(_buf.c_str(), _buf.size());
 	ofs.close();
 }
 
-void basic_hardware::read_to_buffer_ln(const std::string dir_, size_t line_)
+void kernel_hardware::read_to_buffer_ln(const std::string dir_, size_t line_)
 {
 	auto ifs = _openFileI(dir_);
 	for(size_t i = 0; i < line_ && !ifs.eof(); i++)
@@ -53,7 +53,7 @@ void basic_hardware::read_to_buffer_ln(const std::string dir_, size_t line_)
 	}
 	ifs.close();
 }
-void basic_hardware::write_from_buffer_ln(const std::string dir_, const size_t beg_)
+void kernel_hardware::write_from_buffer_ln(const std::string dir_, const size_t beg_)
 {
 	auto ofs = _openFileO(dir_);
 	ofs.seekp(beg_, std::ios_base::beg);
@@ -61,7 +61,7 @@ void basic_hardware::write_from_buffer_ln(const std::string dir_, const size_t b
 	ofs.close();
 }
 
-bool basic_hardware::is_open(const std::string dir_)
+bool kernel_hardware::is_open(const std::string dir_)
 {
 	std::ifstream ofs;
 	ofs.open(dir_);
@@ -74,7 +74,7 @@ bool basic_hardware::is_open(const std::string dir_)
 }
 
 template<typename T>
-T basic_hardware::read_binary(const std::string dir_, const size_t beg_)
+T kernel_hardware::read_binary(const std::string dir_, const size_t beg_)
 {
 	T what;
 	auto ifs = std::ifstream();
@@ -88,7 +88,7 @@ T basic_hardware::read_binary(const std::string dir_, const size_t beg_)
 }
 
 template<typename T>
-void basic_hardware::write_binary(const std::string dir_, const size_t beg_, T thing_)
+void kernel_hardware::write_binary(const std::string dir_, const size_t beg_, T thing_)
 {
 	auto ofs = std::ofstream();
 	ofs.open(dir_, std::ios_base::binary);
@@ -100,7 +100,7 @@ void basic_hardware::write_binary(const std::string dir_, const size_t beg_, T t
 }
 
 template<typename T>
-T basic_hardware::convert_from_buffer()
+T kernel_hardware::convert_from_buffer()
 {
 	size_t size = sizeof(T);
 	T a;

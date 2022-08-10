@@ -13,7 +13,7 @@ enum class type : char
 	weapon = 'w'
 };
 
-class item : public name, public loader
+class kernel_item : public name, public loader
 {
 protected:
 	std::string _description = "[description]";
@@ -21,8 +21,8 @@ protected:
 	int _use = 0;
 
 public:
-	item(){}
-	item(name name_, std::string description_, type type_, int use_) { create(name_, description_, type_, use_); }
+	kernel_item(){}
+	kernel_item(name name_, std::string description_, type type_, int use_) { create(name_, description_, type_, use_); }
 	void create(name name_, std::string description_, type type_, int use_);
 
 	std::string description();
@@ -31,6 +31,6 @@ public:
 	void load(std::string dir_, size_t line_);
 	void parse(std::string raw_);
 
-	virtual ~item() {}
+	virtual ~kernel_item() {}
 };
 #include "item.cpp"
