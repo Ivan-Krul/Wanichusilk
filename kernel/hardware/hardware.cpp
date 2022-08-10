@@ -61,6 +61,18 @@ void basic_hardware::write_from_buffer_ln(const std::string dir_, const size_t b
 	ofs.close();
 }
 
+bool basic_hardware::is_open(const std::string dir_)
+{
+	std::ofstream ofs;
+	ofs.open(dir_);
+	if(ofs.is_open())
+	{
+		ofs.close();
+		return true;
+	}
+	else return false;
+}
+
 template<typename T>
 T basic_hardware::read_binary(const std::string dir_, const size_t beg_)
 {

@@ -19,6 +19,8 @@ public:
 	void read_to_buffer_ln(const std::string dir_, size_t line_);
 	void write_from_buffer_ln(const std::string dir_, const size_t beg_);
 
+	bool is_open(const std::string dir_);
+
 	std::string& buffer();
 	
 	template <typename T> T read_binary(const std::string dir_, const size_t beg_);
