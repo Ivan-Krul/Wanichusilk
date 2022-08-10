@@ -6,6 +6,8 @@
 int main()
 {
 	buildCounter build;
+	std::cout << "[Wanichusilk]" << std::endl;
+	std::cout <<"build: " << build.get() << std::endl;
 	//kernel_charity charit[2];
 	//charit[0].create("Jeff", 4, 2);
 	//charit[1].create("Brebius", 4, 3);
@@ -43,7 +45,7 @@ int main()
 	item some;
 	some.load("../../../resources/item.rctxt", 2);
 
-	std::cout <<some.description()<<'\n';
+	std::cout <<some.description() << std::endl;
 
 	return 0;
 }

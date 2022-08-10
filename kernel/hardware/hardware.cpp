@@ -63,7 +63,7 @@ void basic_hardware::write_from_buffer_ln(const std::string dir_, const size_t b
 
 bool basic_hardware::is_open(const std::string dir_)
 {
-	std::ofstream ofs;
+	std::ifstream ofs;
 	ofs.open(dir_);
 	if(ofs.is_open())
 	{
