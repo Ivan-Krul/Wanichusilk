@@ -2,6 +2,8 @@
 //
 
 #include "Wanichusilk.h"
+#include <thread>
+#include <chrono>
 
 int main()
 {
@@ -51,6 +53,15 @@ int main()
 	std::cout << charit.get_description() << std::endl;
 	std::cout <<some.get_description() << std::endl;
 
+	kernel_monolog chat[13];
+
+	using namespace std::chrono_literals;
+	for(size_t i = 0; i < 13; i++)
+	{
+		chat[i].load("../../../resources/monolog.rctxt", i + 1);
+		std::cout << chat[i].get_monolog()<<std::endl;
+		std::this_thread::sleep_for(2s);
+	}
 
 	return 0;
 }

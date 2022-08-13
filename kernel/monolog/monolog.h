@@ -19,10 +19,8 @@ protected:
 	std::string _words = "[word]";
 public:
 	kernel_monolog() {}
-	kernel_monolog(std::string author_) { create(author_); }
 	kernel_monolog(std::string author_, std::string word_) { create(author_, word_); }
 	kernel_monolog(std::string word_) { create(word_); }
-	void create(std::string author_) { _author = &author_; }
 	void create(std::string author_, std::string word_);
 	void create(std::string word_) { _words = word_; }
 

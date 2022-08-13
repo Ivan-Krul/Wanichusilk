@@ -1,7 +1,7 @@
 #include "monolog.h"
 
 void kernel_monolog::create(std::string author_, std::string word_) {
-	_author = &author_;
+	_author = author_;
 	_words = word_;
 }
 
@@ -22,7 +22,7 @@ void kernel_monolog::parse(std::string raw_)
 
 std::string kernel_monolog::get_monolog() {
 	std::string str;
-	if(_author = "[action]") str = "";
+	if(_author == "[action]") str = "";
 	else if(_author == "[?]") str = "[?]: ";
 	else str = str=_author+": ";
 	str += _words;
