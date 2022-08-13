@@ -1,15 +1,16 @@
 #include "charity.h"
 
-kernel_charity::kernel_charity(std::string name, uint16_t def, int16_t atk)
+kernel_charity::kernel_charity(std::string name, uint16_t def, int16_t atk, std::string description_)
 {
-	create(name, def, atk);
+	create(name, def, atk, _description);
 }
 
-void kernel_charity::create(std::string name, uint16_t def, int16_t atk)
+void kernel_charity::create(std::string name, uint16_t def, int16_t atk, std::string description_)
 {
 	_name = name;
 	_def = def;
 	_atk = atk;
+	_description = description_;
 }
 
 void kernel_charity::_digestion()
@@ -33,9 +34,11 @@ void kernel_charity::load(std::string dir_, size_t line_)
 void kernel_charity::parse(std::string raw_)
 {
 	checkParse(raw_, _name);
+	checkParse(raw_, _prod);
 	checkParse(raw_, _atk);
 	checkParse(raw_, _def);
 	checkParse(raw_, _edibleHeal);
+	checkParse(raw_, _description);
 }
 
 void kernel_charity::tick()
@@ -43,9 +46,9 @@ void kernel_charity::tick()
 	_digestion();
 }
 
-std::string kernel_charity::info()
+std::string kernel_charity::get_description()
 {
-	return _name + " - def: " + std::to_string(_def) + " atk: " + std::to_string(_atk);
+	return _name + " (def: " + std::to_string(_def) + " atk: " + std::to_string(_atk) + ") - " + _description;
 }
 
 float kernel_charity::damage(kernel_charity& charit)

@@ -9,8 +9,6 @@ class description
 {
 protected:
 	std::string _description = "[description]";
-public:
-
 };
 
 #include "description.cpp"

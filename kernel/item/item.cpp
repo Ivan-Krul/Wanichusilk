@@ -8,29 +8,29 @@ void kernel_item::create(name name_, std::string description_, type type_, int u
 	_use = use_;
 }
 
-std::string kernel_item::description()
+std::string kernel_item::get_description()
 {
 	std::stringstream desc;
 	desc << _name << " ";
 	switch(_type)
 	{
-	case type::nothing:
-	break;
-	case type::edible:
-	desc << "(edible " << _use << ")";
-	break;
-	case type::heal:
-	desc << "(heal " << _use << ")";
-	break;
-	case type::armor:
-	desc << "(armor " << _use << ")";
-	break;
-	case type::weapon:
-	desc << "(weapon " << _use << ")";
-	break;
-	default:
-	desc << "([type] " << _use << ")";
-	break;
+		case type::nothing:
+			break;
+		case type::edible:
+			desc << "(edible " << _use << ")";
+			break;
+		case type::heal:
+			desc << "(heal " << _use << ")";
+			break;
+		case type::armor:
+			desc << "(armor " << _use << ")";
+			break;
+		case type::weapon:
+			desc << "(weapon " << _use << ")";
+			break;
+		default:
+			desc << "([type] " << _use << ")";
+			break;
 	}
 
 	desc << " - " << _description;

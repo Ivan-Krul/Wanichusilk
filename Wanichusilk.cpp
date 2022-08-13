@@ -44,12 +44,13 @@ int main()
 
 	kernel_charity charit;
 	kernel_item some;
-	some.load("../../../resources/item.rctxt", 2);
+	some.load("../../../resources/item.rctxt", 1);
 
-	charit.load("../../../resources/charity.rctxt", 2);
+	charit.load("../../../resources/charity.rctxt", 1);
 
-	std::cout <<some.description() << std::endl;
-	std::cout << charit.info() << std::endl;
+	std::cout << charit.get_description() << std::endl;
+	std::cout <<some.get_description() << std::endl;
+
 
 	return 0;
 }

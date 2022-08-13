@@ -1,8 +1,9 @@
 #pragma once
 #include "../../abstractes/name.h"
 #include "../../abstractes/loader.h"
+#include "../../abstractes/description.h"
 
-class kernel_charity : public name, public loader {
+class kernel_charity : public name, public loader, public description {
 protected:
 	float _prod = 1.0f;
 	uint16_t _def = 0;
@@ -12,8 +13,8 @@ protected:
 	void _digestion();
 public:
 	kernel_charity() {}
-	kernel_charity(std::string name, uint16_t def, int16_t atk);
-	void create(std::string name, uint16_t def, int16_t atk);
+	kernel_charity(std::string name, uint16_t def, int16_t atk, std::string description_);
+	void create(std::string name, uint16_t def, int16_t atk, std::string description_);
 
 	float damage(kernel_charity& charit);
 
@@ -30,7 +31,7 @@ public:
 
 	void tick();
 
-	std::string info();
+	std::string get_description();
 
 	~kernel_charity() {};
 };
