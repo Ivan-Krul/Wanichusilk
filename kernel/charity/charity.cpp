@@ -32,6 +32,10 @@ void kernel_charity::load(std::string dir_, size_t line_)
 
 void kernel_charity::parse(std::string raw_)
 {
+	checkParse(raw_, _name);
+	checkParse(raw_, _atk);
+	checkParse(raw_, _def);
+	checkParse(raw_, _edibleHeal);
 }
 
 void kernel_charity::tick()
