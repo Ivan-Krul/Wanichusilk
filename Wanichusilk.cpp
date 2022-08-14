@@ -60,7 +60,8 @@ int main()
 	{
 		chat[i].load("../../../resources/monolog.rctxt", i + 1);
 		std::cout << chat[i].get_monolog()<<std::endl;
-		std::this_thread::sleep_for(2s);
+		std::this_thread::sleep_for(1s);
+		
 	}
 
 	return 0;

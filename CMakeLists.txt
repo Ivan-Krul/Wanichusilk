@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 project ("Wanichusilk")
 
 # Add source to this project's executable.
-add_executable (Wanichusilk "Wanichusilk.cpp" "Wanichusilk.h")
+add_executable (Wanichusilk "Wanichusilk.cpp" "Wanichusilk.h" "kernel/monochoice/monochoice.cpp" "kernel/monolang/monolang.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Wanichusilk PROPERTY CXX_STANDARD 20)
