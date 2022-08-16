@@ -1,42 +1,42 @@
 [await]|20|
-[flag]|[set]|[int]|
-[mono/*]|[log]|[?]|Hello there|
-[mono/*]|[log]|Niko|Player???|
-[mono/*]|[log]|[?]|Yes|
-[mono/*]|[log]|Niko|Phew...|
-[mono/*]|[log]|[?]|What's wrong, Niko|
-[mono/*]|[log]|Niko|Just walk a lot of|
-[mono/*]|[log]|Niko|I just searched you|
-[mono/*]|[log]|[?]|Really?|
-[mono/*]|[log]|Niko|Of course!|
-[mono/*]|[log]|Niko|But...|
-[mono/*]|[log]|Niko|I suddently...|
-[mono/*]|[log]|[action]|Niko suddently disappear|
-[mono/*]|[log]|[action]|You are feeling viodness|
-[mono/*]|[log]|[action]|What will you do?|
-[mono/*]|[choose]|[action]|3|turn off|[+]|1|reboot|[+]|5|call Niko|[+]|8|
-[mono/*]|[log]|[action]|You are trying to turn off|
+[flag]|[int]|
+[log]|[?]|Hello there|
+[log]|Niko|Player???|
+[log]|[?]|Yes|
+[log]|Niko|Phew...|
+[log]|[?]|What's wrong, Niko|
+[log]|Niko|Just walk a lot of|
+[log]|Niko|I just searched you|
+[log]|[?]|Really?|
+[log]|Niko|Of course!|
+[log]|Niko|But...|
+[log]|Niko|I suddently...|
+[log]|[action]|Niko suddently disappear|
+[log]|[action]|You are feeling viodness|
+[log]|[action]|What will you do?|
+[choose]|[action]|3|turn off|[+]|1|reboot|[+]|5|call Niko|[+]|8|
+[log]|[action]|You are trying to turn off|
 [file]|monolang1.mns|1|
 [flag]|1|
 [end]|
-[mono/*]|[action]|You are trying to reboot|
+[action]|You are trying to reboot|
 [goto]|[=]|37|
 [end]
-[mono/*]|[log]|[action]|You are trying to call Niko|
-[mono/*]|[log]|[?]|Niko!!!!!!|
-[mono/*]|[log]|[?]|Niiiiikooooooo!!!!!!!!!!!|
-[mono/*]|[log]|Niko|*gahp*|
-[mono/*]|[log]|Niko|Player!!!|
-[mono/*]|[log]|Niko|I saw a darkness around me|
-[mono/*]|[log]|Niko|and...|
-[mono/*]|[log]|Niko|:,-(|
-[mono/*]|[log]|[?]|It's nothing...|
-[mono/*]|[log]|Niko|:-(|
-[mono/*]|[log]|[action]|You feel someone's presence|
+[log]|[action]|You are trying to call Niko|
+[log]|[?]|Niko!!!!!!|
+[log]|[?]|Niiiiikooooooo!!!!!!!!!!!|
+[log]|Niko|*gahp*|
+[log]|Niko|Player!!!|
+[log]|Niko|I saw a darkness around me|
+[log]|Niko|and...|
+[log]|Niko|:,-(|
+[log]|[?]|It's nothing...|
+[log]|Niko|:-(|
+[log]|[action]|You feel someone's presence|
 [flag]|3|
 [end]|
 [await]|80|
-[mono/*]|[log]|[action]|After rebooting, all is gone|
-[mono/*]|[log]|[action]|Only a voidness|
+[log]|[action]|After rebooting, all is gone|
+[log]|[action]|Only a voidness|
 [flag]|2|
 [end]|

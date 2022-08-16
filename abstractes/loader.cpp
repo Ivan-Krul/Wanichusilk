@@ -16,6 +16,11 @@ void loader::checkParse(std::string& raw_, std::string& thing_, char breakpoint_
 	thing_ = _bakeParse(raw_,breakpoint_);
 }
 
+void loader::checkParse(std::string& raw_, bool& thing_, char breakpoint_)
+{
+	thing_ = _bakeParse(raw_, breakpoint_) == "true" ? true : false;
+}
+
 void loader::checkParse(std::string& raw_, char& thing_, char breakpoint_)
 {
 	thing_ = _bakeParse(raw_, breakpoint_)[0];

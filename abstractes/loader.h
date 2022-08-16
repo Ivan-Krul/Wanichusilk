@@ -12,6 +12,7 @@ protected:
 	std::string _bakeParse(std::string& raw_, char breakpoint_);
 public:
 	void checkParse(std::string& raw_, std::string& thing_, char breakpoint_ = '|');
+	void checkParse(std::string& raw_, bool& thing_, char breakpoint_ = '|');
 	void checkParse(std::string& raw_, char& thing_, char breakpoint_ = '|');
 	void checkParse(std::string& raw_, short& thing_, char breakpoint_ = '|');
 	void checkParse(std::string& raw_, int& thing_, char breakpoint_ = '|');
