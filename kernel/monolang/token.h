@@ -18,11 +18,20 @@ enum class stateTypeFlag : int
 };
 struct state
 {
-	unsigned short _line;
+	std::string formatForInterpretation = "mns";
+	std::string _dir = "[directory]." + formatForInterpretation;
+	char breakpoint = '|';
+
+	bool _needTakeFlag : 1;
+	bool _needTakeLog : 1;
+	bool _isEnd : 1;
+
 	stateTypeFlag _typeFlag : 3;
-	void* _returnedFlag;
-	int _isEnd : 1;
-	token _currentToken;
+	void* _flag;
+	
+	std::string _log;
+
+	unsigned short _line;
 	unsigned short _await;
 };
 
@@ -35,10 +44,6 @@ std::list<token>listToken = {
 	{"TYPE_CHAR","[char]"},
 	{"TYPE_BOOL","[bool]"},
 	{"END","[end]"},
-	{"GOTO","[goto]"},
-	{"PLUS","[+]"},
-	{"ASSIGN","[=]"},
-	{"MINUS","[-]"},
 	{"GOTO","[goto]"},
 	{"LOG","[log]"},
 	{"CHOOSE","[choose]"},
