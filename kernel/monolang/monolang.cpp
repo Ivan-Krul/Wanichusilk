@@ -41,10 +41,45 @@ stateTypeFlag monolang::typedata_flag()
 	return _state._typeFlag;
 }
 
-void* monolang::get_resp()
+void* monolang::get_flag()
 {
 	_state._needTakeFlag = false;
 	return _state._flag;
+}
+
+bool monolang::get_flag(bool)
+{
+	bool* var = (bool*)_state._flag;
+	_state._needTakeFlag = false;
+	return *var;
+}
+
+char monolang::get_flag(char)
+{
+	char* var = (char*)_state._flag;
+	_state._needTakeFlag = false;
+	return *var;
+}
+
+int monolang::get_flag(int)
+{
+	int* var = (int*)_state._flag;
+	_state._needTakeFlag = false;
+	return *var;
+}
+
+float monolang::get_flag(float)
+{
+	float* var = (float*)_state._flag;
+	_state._needTakeFlag = false;
+	return *var;
+}
+
+std::string monolang::get_flag(std::string)
+{
+	std::string* var = (std::string*)_state._flag;
+	_state._needTakeFlag = false;
+	return *var;
 }
 
 bool monolang::take_log()
@@ -56,5 +91,16 @@ std::string monolang::get_log()
 {
 	_state._needTakeLog = false;
 	return _state._log;
+}
+
+bool monolang::take_choose()
+{
+	return _state._needTakeChoose;
+}
+
+monochoice monolang::get_choose()
+{
+	_state._needTakeChoose = false;
+	return _state._choose;
 }
 

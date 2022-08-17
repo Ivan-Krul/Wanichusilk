@@ -19,7 +19,6 @@ protected:
 	// go to the line to string
 	void _cmdGoto();
 	// make monolog and give into string
-	// GOTO: delete monolog class
 	void _cmdLog();
 	// make monochoise and give into class
 	// GOTO: shrink monochoise class
@@ -36,10 +35,18 @@ public:
 
 	bool take_flag();
 	stateTypeFlag typedata_flag();
-	void* get_resp();
+	void* get_flag();
+	bool get_flag(bool);
+	char get_flag(char);
+	int get_flag(int);
+	float get_flag(float);
+	std::string get_flag(std::string);
 
 	bool take_log();
 	std::string get_log();
+
+	bool take_choose();
+	monochoice get_choose();
 
 	void load(std::string dir_, size_t line_) {}
 	void parse(std::string raw_) {}

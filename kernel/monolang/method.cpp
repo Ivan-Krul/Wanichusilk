@@ -2,7 +2,7 @@
 
 void monolang::_cmdAwait()
 {
-	checkParse(_hardware.buffer(), _state._await, breakpoint);
+	checkParse(_hardware.buffer(), _state._await, _state.breakpoint);
 }
 
 void monolang::_declairFlag(std::string type_)
@@ -40,23 +40,23 @@ void monolang::_assignFlag()
 	{
 		case stateTypeFlag::BOOL:
 			bool* var = (bool*)_state._flag;
-			checkParse(_hardware.buffer(), *var, breakpoint);
+			checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			break;
 		case stateTypeFlag::CHAR:
 			char* var = (char*)_state._flag;
-			checkParse(_hardware.buffer(), *var, breakpoint);
+			checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			break;
 		case stateTypeFlag::INT:
 			int* var = (int*)_state._flag;
-			checkParse(_hardware.buffer(), *var, breakpoint);
+			checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			break;
 		case stateTypeFlag::FLOAT:
 			float* var = (float*)_state._flag;
-			checkParse(_hardware.buffer(), *var, breakpoint);
+			checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			break;
 		case stateTypeFlag::STRING:
 			std::string* var = (std::string*)_state._flag;
-			checkParse(_hardware.buffer(), *var, breakpoint);
+			checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			break;
 		default:
 			break;
@@ -102,11 +102,11 @@ void monolang::_cmdFlag()
 {
 	std::string checker = _hardware.buffer();
 	char firstSym;
-	checkParse(checker, firstSym, breakpoint);
+	checkParse(checker, firstSym, _state.breakpoint);
 	if(firstSym == '[')
 	{
 		std::string type;
-		checkParse(_hardware.buffer(), type, breakpoint);
+		checkParse(_hardware.buffer(), type, _state.breakpoint);
 		for(auto iter : listToken)
 		{
 			if(type == iter.regex)
@@ -127,8 +127,8 @@ void monolang::_cmdGoto()
 {
 	std::string operato;
 	int delta;
-	checkParse(_hardware.buffer(), operato, breakpoint);
-	checkParse(_hardware.buffer(), delta, breakpoint);
+	checkParse(_hardware.buffer(), operato, _state.breakpoint);
+	checkParse(_hardware.buffer(), delta, _state.breakpoint);
 
 	if(operato == "[-]") _state._line -= delta;
 	else if(operato == "[+]") _state._line += delta;
@@ -140,13 +140,33 @@ void monolang::_cmdLog()
 	std::string author;
 	std::string text;
 
-	checkParse(_hardware.buffer(), author, breakpoint);
-	checkParse(_hardware.buffer(), text, breakpoint);
+	checkParse(_hardware.buffer(), author, _state.breakpoint);
+	checkParse(_hardware.buffer(), text, _state.breakpoint);
 
 	if(author == "[action]") _state._log = "";
 	else _state._log = author + ": ";
 	_state._log += text;
-																																																																																																						
+
 	_state._needTakeLog = true;
+}
+
+void monolang::_cmdChoose()
+{
+	std::string author;
+	std::vector<std::pair<int, std::string>> choice;
+	size_t size;
+
+	checkParse(_hardware.buffer(), author, _state.breakpoint);
+	checkParse(_hardware.buffer(), size, _state.breakpoint);
+	choice.resize(size);
+	std::pair<int, std::string> pair;
+	for(size_t i = 0; i < size; i++)
+	{
+		checkParse(_hardware.buffer(), pair.second, _state.breakpoint);
+		checkParse(_hardware.buffer(), pair.first, _state.breakpoint);
+		choice[i] = pair;
+	}
+	_state._choose.create(author, choice);
+	_state._needTakeChoose = true;
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <list>
+#include "../monochoice/monochoice.h"
 struct token
 {
 	std::string name;
@@ -24,12 +25,14 @@ struct state
 
 	bool _needTakeFlag : 1;
 	bool _needTakeLog : 1;
+	bool _needTakeChoose : 1;
 	bool _isEnd : 1;
 
 	stateTypeFlag _typeFlag : 3;
 	void* _flag;
 	
 	std::string _log;
+	monochoice _choose;
 
 	unsigned short _line;
 	unsigned short _await;
