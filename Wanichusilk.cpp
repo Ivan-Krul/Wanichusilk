@@ -53,15 +53,37 @@ int main()
 	std::cout << charit.get_description() << std::endl;
 	std::cout <<some.get_description() << std::endl;
 
-	kernel_monolog chat[13];
-
-	using namespace std::chrono_literals;
-	for(size_t i = 0; i < 13; i++)
+	monolang mnlg;
+	mnlg.start("../../../resources/monolang.mns");
+	
+	while(!mnlg.end() && !mnlg.aborted())
 	{
-		chat[i].load("../../../resources/monolog.rctxt", i + 1);
-		std::cout << chat[i].get_monolog()<<std::endl;
-		std::this_thread::sleep_for(1s);
-		
+		mnlg.step();
+		if(mnlg.is_log())
+		{
+			std::cout<<mnlg.get_log()<<std::endl;
+		}
+		else if(mnlg.is_choose())
+		{
+			monochoice choice = mnlg.get_choose();
+			for(size_t i = 0; i < choice.size();i++)
+			{
+				std::cout <<i<<": " << choice.variant(i) << std::endl;
+			}
+			int var;
+			std::cin >> var;
+			choice.choose(var);
+			mnlg.get_choice(choice);
+		}
+		else if(mnlg.is_flag())
+		{
+			std::cout << mnlg.get_flag((int)1);
+		}
+	}
+
+	if(mnlg.aborted())
+	{
+		std::cout << mnlg.errorHandler() << std::endl;
 	}
 
 	return 0;

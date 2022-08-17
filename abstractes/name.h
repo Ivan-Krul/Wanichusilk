@@ -2,11 +2,7 @@
 #include "../define.h"
 #include <string>
 
-__interface Iname {
-	std::string get_name();
-};
-
-class name : public Iname {
+class name{
 protected:
 	std::string _name = "[name]";
 public:

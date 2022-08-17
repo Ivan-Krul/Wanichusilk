@@ -2,6 +2,7 @@
 #include <string>
 #include <list>
 #include "../monochoice/monochoice.h"
+#define MNLG_STABLE "[stable]"
 struct token
 {
 	std::string name;
@@ -21,11 +22,14 @@ struct state
 {
 	std::string formatForInterpretation = "mns";
 	std::string _dir = "[directory]." + formatForInterpretation;
+	std::string _errorHandler = "[error]";
+	std::string _logger = "[logger]";
 	char breakpoint = '|';
 
 	bool _needTakeFlag : 1;
 	bool _needTakeLog : 1;
 	bool _needTakeChoose : 1;
+	bool _isAborted : 1;
 	bool _isEnd : 1;
 
 	stateTypeFlag _typeFlag : 3;

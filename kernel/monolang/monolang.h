@@ -4,7 +4,7 @@
 class monolang : public loader
 {
 protected:
-	state _state = { 0 };
+	state _state;
 	kernel_hardware _hardware;
 
 	// set delay with printing
@@ -13,7 +13,6 @@ protected:
 	void _cmdFlag();
 	void _declairFlag(std::string type_);
 	void _assignFlag();
-	void _deleteFlag();
 	// end of the interpretation
 	void _cmdEnd();
 	// go to the line to string
@@ -21,19 +20,18 @@ protected:
 	// make monolog and give into string
 	void _cmdLog();
 	// make monochoise and give into class
-	// GOTO: shrink monochoise class
 	void _cmdChoose();
 	// retarget interpretation in another file
 	// without turning back, if it's have a format of interpretation
 	void _cmdFile();
 
+	void _stop();
 public:
-	void create(std::string dir_);
-
-	void start();
+	void start(std::string dir_);
+	void start(state state_);
 	void step();
 
-	bool take_flag();
+	bool is_flag();
 	stateTypeFlag typedata_flag();
 	void* get_flag();
 	bool get_flag(bool);
@@ -42,11 +40,18 @@ public:
 	float get_flag(float);
 	std::string get_flag(std::string);
 
-	bool take_log();
+	bool is_log();
 	std::string get_log();
 
-	bool take_choose();
+	bool is_choose();
 	monochoice get_choose();
+	void get_choice(monochoice& choice_);
+
+	std::string log();
+	bool aborted();
+	std::string errorHandler();
+
+	bool end();
 
 	void load(std::string dir_, size_t line_) {}
 	void parse(std::string raw_) {}

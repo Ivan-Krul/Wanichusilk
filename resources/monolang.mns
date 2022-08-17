@@ -16,11 +16,11 @@
 [log]|[action]|What will you do?|
 [choose]|[action]|3|turn off|[+]|1|reboot|[+]|5|call Niko|[+]|8|
 [log]|[action]|You are trying to turn off|
-[file]|monolang1.mns|1|
+[file]|../../../resources/monolang1.mns|1|
 [flag]|1|
 [end]|
-[action]|You are trying to reboot|
-[goto]|[=]|37|
+[log][action]|You are trying to reboot|
+[goto]|[=]|40|
 [end]
 [log]|[action]|You are trying to call Niko|
 [log]|[?]|Niko!!!!!!|
@@ -33,6 +33,8 @@
 [log]|[?]|It's nothing...|
 [log]|Niko|:-(|
 [log]|[action]|You feel someone's presence|
+[log]|[action]|You are starting see the brigthness|
+[log]|[action]|You has blinded|
 [flag]|3|
 [end]|
 [await]|80|
