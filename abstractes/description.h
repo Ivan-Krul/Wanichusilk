@@ -10,5 +10,3 @@ class description
 protected:
 	std::string _description = "[description]";
 };
-
-#include "description.cpp"

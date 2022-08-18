@@ -2,17 +2,17 @@
 
 void monolang::_stop()
 {
-	if(_state._needTakeFlag)
-	{
-		_state._logger = "[take flag]";
-	}
-	else if(_state._isEnd)
+	if(_state._isEnd)
 	{
 		_state._logger = "[end]";
 	}
 	else if(_state._isAborted)
 	{
 		_state._logger = "[abort]";
+	}
+	else if(_state._needTakeFlag)
+	{
+		_state._logger = "[take flag]";
 	}
 	else if(_state._needTakeChoose)
 	{
@@ -60,7 +60,7 @@ void monolang::start(state state_)
 
 void monolang::step()
 {
-	if(_state._needTakeFlag || _state._isEnd || _state._isAborted || _state._needTakeChoose || _state._needTakeLog)
+	if(_state._isAborted || _state._isEnd || _state._needTakeChoose || _state._needTakeFlag || _state._needTakeLog)
 	{
 		_stop();
 		return;
@@ -108,6 +108,13 @@ void* monolang::get_flag()
 
 bool monolang::get_flag(bool)
 {
+	if(_state._typeFlag != stateTypeFlag::BOOL)
+	{
+		_state._isAborted = true;
+		_state._errorHandler = "[unstable] -> wrong type of variable";
+		return NULL;
+	}
+
 	bool* var = (bool*)_state._flag;
 	_state._needTakeFlag = false;
 	return *var;
@@ -115,6 +122,12 @@ bool monolang::get_flag(bool)
 
 char monolang::get_flag(char)
 {
+	if(_state._typeFlag != stateTypeFlag::CHAR)
+	{
+		_state._isAborted = true;
+		_state._errorHandler = "[unstable] -> wrong type of variable";
+		return NULL;
+	}
 	char* var = (char*)_state._flag;
 	_state._needTakeFlag = false;
 	return *var;
@@ -122,6 +135,12 @@ char monolang::get_flag(char)
 
 int monolang::get_flag(int)
 {
+	if(_state._typeFlag != stateTypeFlag::INT)
+	{
+		_state._isAborted = true;
+		_state._errorHandler = "[unstable] -> wrong type of variable";
+		return NULL;
+	}
 	int* var = (int*)_state._flag;
 	_state._needTakeFlag = false;
 	return *var;
@@ -129,6 +148,12 @@ int monolang::get_flag(int)
 
 float monolang::get_flag(float)
 {
+	if(_state._typeFlag != stateTypeFlag::FLOAT)
+	{
+		_state._isAborted = true;
+		_state._errorHandler = "[unstable] -> wrong type of variable";
+		return NULL;
+	}
 	float* var = (float*)_state._flag;
 	_state._needTakeFlag = false;
 	return *var;
@@ -136,6 +161,13 @@ float monolang::get_flag(float)
 
 std::string monolang::get_flag(std::string)
 {
+	if(_state._typeFlag != stateTypeFlag::STRING)
+	{
+		_state._isAborted = true;
+
+		_state._errorHandler = "[unstable] -> wrong type of variable";
+		return NULL;
+	}
 	std::string* var = (std::string*)_state._flag;
 	_state._needTakeFlag = false;
 	return *var;
@@ -182,6 +214,11 @@ bool monolang::aborted()
 std::string monolang::errorHandler()
 {
 	return _state._errorHandler;
+}
+
+int monolang::delay()
+{
+	return _state._await;
 }
 
 bool monolang::end()

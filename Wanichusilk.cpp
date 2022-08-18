@@ -10,81 +10,56 @@ int main()
 	buildCounter build;
 	std::cout << "[Wanichusilk]" << std::endl;
 	std::cout <<"build: " << build.get() << std::endl;
-	//kernel_charity charit[2];
-	//charit[0].create("Jeff", 4, 2);
-	//charit[1].create("Brebius", 4, 3);
+	try
+	{
+		kernel_charity charit;
+		kernel_item some;
+		some.load("../../../resources/item.rctxt", 1);
 
-	//kernel_monolog mon[6];
-	//mon[0].create(charit[0], "what are you doing?");
-	//mon[1].create(charit[1], "tee hee...");
-	//mon[2].create(charit[0], "go away and don't disturbe me!");
-	//mon[3].create(charit[0], "should me fight with you?");
-	//mon[4].create(charit[1], "... yes");
-	//mon[5].create("wow");
-	//for (size_t i = 0;i < std::size(mon); i++) {
-	//	std::cout << mon[i].get_monolog() << '\n';
-	//}
-	//std::cout<<"you damaged " << charit[0].damage(charit[1])<<" to "<<charit[1].get_name()<<'\n';
-	//std::cout << kernel_monolog(charit[1], "ow").get_monolog()<<'\n';
+		charit.load("../../../resources/charity.rctxt", 1);
 
-	//sandwich san; 
-	//std::cout << "there laying a " << san.get_name() << "\nit " << san.get_description()<<'\n';
+		std::cout << charit.get_description() << std::endl;
+		std::cout <<some.get_description() << std::endl;
 
-	//kernel_hardware hardware;
-	//hardware.buffer() = "sandwich|5|e|simple combination of a bread, salad, ham and souces, borrowed from Heavy|\n";
-	//hardware.buffer() += "banana|3|e|fruit for fitness, filled potassium|\n";
-	//hardware.buffer() += "helmet|4|a|very huge and very massive|\n";
-	//hardware.buffer() += "bonzai vest|15|a|armorness vest, made with bonzai leaves|\n";
-	//hardware.buffer() += "stick|2|w|fresh, from branch|\n";
-	//hardware.buffer() += "toy knife|11|w|from kitchen toy kit|\n\0";
-	//hardware.write_from_buffer("../../../resources/item.rctxt");
-
-	//hardware.buffer() = "";
-
-	//hardware.read_to_buffer("../../../resources/item.rctxt");
-	//std::cout<<hardware.buffer();
-
-	kernel_charity charit;
-	kernel_item some;
-	some.load("../../../resources/item.rctxt", 1);
-
-	charit.load("../../../resources/charity.rctxt", 1);
-
-	std::cout << charit.get_description() << std::endl;
-	std::cout <<some.get_description() << std::endl;
-
-	monolang mnlg;
-	mnlg.start("../../../resources/monolang.mns");
+		monolang mnlg;
+		mnlg.start("../../../resources/monolang.mns");
 	
-	while(!mnlg.end() && !mnlg.aborted())
-	{
-		mnlg.step();
-		if(mnlg.is_log())
+		while(!mnlg.end())
 		{
-			std::cout<<mnlg.get_log()<<std::endl;
-		}
-		else if(mnlg.is_choose())
-		{
-			monochoice choice = mnlg.get_choose();
-			for(size_t i = 0; i < choice.size();i++)
+			mnlg.step();
+			if(mnlg.is_log()) std::cout<<mnlg.get_log()<<std::endl;
+			else if(mnlg.is_choose())
 			{
-				std::cout <<i<<": " << choice.variant(i) << std::endl;
+				monochoice choice = mnlg.get_choose();
+				for(size_t i = 0; i < choice.size();i++) std::cout <<i<< ": " << choice.variant(i) << std::endl;
+				int var;
+				std::cin >> var;
+				choice.choose(var);
+				mnlg.get_choice(choice);
 			}
-			int var;
-			std::cin >> var;
-			choice.choose(var);
-			mnlg.get_choice(choice);
+			else if(mnlg.is_flag())
+			{
+				switch(mnlg.typedata_flag())
+				{
+					case stateTypeFlag::INT:
+						std::cout << mnlg.get_flag((int)1) << std::endl;
+						break;
+					case stateTypeFlag::STRING:
+						std::cout << mnlg.get_flag(std::string()) << std::endl;
+					default:
+						break;
+				}
+			}
+			if(mnlg.aborted()) throw std::bad_typeid();
+			std::this_thread::sleep_for(std::chrono::milliseconds(mnlg.delay()));
 		}
-		else if(mnlg.is_flag())
-		{
-			std::cout << mnlg.get_flag((int)1);
-		}
-	}
+		if(mnlg.aborted()) std::cout << mnlg.errorHandler() << std::endl;
+		return 0;
 
-	if(mnlg.aborted())
+	}
+	catch(const std::exception&)
 	{
-		std::cout << mnlg.errorHandler() << std::endl;
+		std::cout << "exception!\n";
+		system("mp4.mp4");
 	}
-
-	return 0;
 }

@@ -1,44 +1,23 @@
-[await]|20|
+[await]|200|
 [flag]|[int]|
-[log]|[?]|Hello there|
-[log]|Niko|Player???|
-[log]|[?]|Yes|
-[log]|Niko|Phew...|
-[log]|[?]|What's wrong, Niko|
-[log]|Niko|Just walk a lot of|
-[log]|Niko|I just searched you|
-[log]|[?]|Really?|
-[log]|Niko|Of course!|
-[log]|Niko|But...|
-[log]|Niko|I suddently...|
-[log]|[action]|Niko suddently disappear|
-[log]|[action]|You are feeling viodness|
-[log]|[action]|What will you do?|
-[choose]|[action]|3|turn off|[+]|1|reboot|[+]|5|call Niko|[+]|8|
-[log]|[action]|You are trying to turn off|
-[file]|../../../resources/monolang1.mns|1|
-[flag]|1|
-[end]|
-[log][action]|You are trying to reboot|
-[goto]|[=]|40|
+[log]|[?]|Hello there, it's first log|
+[log]|[action]|And now, action, second|
+[goto]|[+]|2|
 [end]
-[log]|[action]|You are trying to call Niko|
-[log]|[?]|Niko!!!!!!|
-[log]|[?]|Niiiiikooooooo!!!!!!!!!!!|
-[log]|Niko|*gahp*|
-[log]|Niko|Player!!!|
-[log]|Niko|I saw a darkness around me|
-[log]|Niko|and...|
-[log]|Niko|:,-(|
-[log]|[?]|It's nothing...|
-[log]|Niko|:-(|
-[log]|[action]|You feel someone's presence|
-[log]|[action]|You are starting see the brigthness|
-[log]|[action]|You has blinded|
-[flag]|3|
-[end]|
-[await]|80|
-[log]|[action]|After rebooting, all is gone|
-[log]|[action]|Only a voidness|
-[flag]|2|
+[log]|[?]|And now, worked goto|
+[log]|[?]|Ok, choose this|
+[choose]|[?]|2|Yes|[+]|0|No|[-]|2|
+[log]|[?]|You said "Yes"|
+[log]|[?]|Ok, another file|
+[file]|../../../resources/monolang1.mns|1|
+[end]
+[log]|[?]|We are back|
+[log]|[?]|Ok, flag!|
+[flag]|4|
+[log]|[?]|We are throught 4|
+[log]|[?]|Change type and throught "What"|
+[flag]|[string]|
+[flag]|What|
+[log]|[author]|Sented!|
+[log]|End!|End!|
 [end]|

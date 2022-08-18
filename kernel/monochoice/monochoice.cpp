@@ -1,5 +1,14 @@
 #include "monochoice.h"
 
+monochoice::monochoice()
+{
+}
+
+monochoice::monochoice(std::string name_, std::vector<Variant> choice_)
+{
+	create(name_, choice_);
+}
+
 void monochoice::create(std::string name_, std::vector<Variant> choice_)
 {
 	_name = name_;
@@ -24,6 +33,21 @@ void monochoice::switch_prev()
 	}
 }
 
+size_t monochoice::numChoice()
+{
+	return _numChoice;
+}
+
+bool monochoice::isChoosed()
+{
+	return _isChoosed;
+}
+
+size_t monochoice::size()
+{
+	return _choice.size();
+}
+
 std::string monochoice::variant(size_t ind_)
 {
 	ind_ %= _choice.size();
@@ -40,5 +64,15 @@ void monochoice::choose(size_t what_)
 void monochoice::choose()
 {
 	_isChoosed = true;
+}
+
+bool monochoice::is_assign()
+{
+	return _choice[_numChoice]._isAssign;
+}
+
+int monochoice::delta()
+{
+	return _choice[_numChoice]._delta;
 }
 

@@ -1,4 +1,5 @@
 [await]|50|
-[log]|[?]|What??|
-[file]|../../../resources/monolang.mns|20|
+[log]|[?]|We are in another file|
+[log]|[?]|Go back!|
+[file]|../../../resources/monolang.mns|14|
 [end]|

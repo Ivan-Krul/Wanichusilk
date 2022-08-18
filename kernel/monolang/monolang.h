@@ -51,6 +51,8 @@ public:
 	bool aborted();
 	std::string errorHandler();
 
+	int delay();
+
 	bool end();
 
 	void load(std::string dir_, size_t line_) {}
