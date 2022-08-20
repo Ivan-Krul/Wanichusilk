@@ -29,7 +29,7 @@ void monolang::start(std::string dir_)
 	_state._line = 1;
 	_state._await = 100;
 
-	_state._typeFlag = stateTypeFlag::UNDEFINED;
+	_state._typeFlag = typeflag::UNDEFINED;
 	_state._errorHandler = MNLG_STABLE;
 
 	_state._needTakeFlag = false;
@@ -38,7 +38,7 @@ void monolang::start(std::string dir_)
 	_state._isAborted = false;
 	_state._isEnd = false;
 
-	_state.breakpoint = '|';
+	_state.breakpoint = ' ';
 	_state.formatForInterpretation = "mns";
 	_state._dir = dir_;
 
@@ -52,6 +52,7 @@ void monolang::start(state state_)
 {
 
 	_state = state_;
+	std::clog << "start\n";
 	if(_hardware.is_open(_state._dir)) return;
 
 	_state._isAborted = true;
@@ -63,12 +64,16 @@ void monolang::step()
 	if(_state._isAborted || _state._isEnd || _state._needTakeChoose || _state._needTakeFlag || _state._needTakeLog)
 	{
 		_stop();
+		std::clog << "monolang -> abort\n";
+		std::clog << _state._logger << '\n' << _state._errorHandler << std::endl;
 		return;
 	}
+	std::clog << "step\n";
 	_hardware.read_to_buffer_ln(_state._dir, _state._line);
 	std::string string;
+	std::clog << string << std::endl;
 	checkParse(_hardware.buffer(), string, _state.breakpoint);
-	
+
 	for(auto iter : listToken)
 	{
 		if(string == iter.regex)
@@ -95,82 +100,26 @@ bool monolang::is_flag()
 	return _state._needTakeFlag;
 }
 
-stateTypeFlag monolang::typedata_flag()
+typeflag monolang::typedata_flag()
 {
 	return _state._typeFlag;
 }
 
-void* monolang::get_flag()
+template<typename T>
+T monolang::flag()
 {
 	_state._needTakeFlag = false;
-	return _state._flag;
-}
-
-bool monolang::get_flag(bool)
-{
-	if(_state._typeFlag != stateTypeFlag::BOOL)
-	{
-		_state._isAborted = true;
-		_state._errorHandler = "[unstable] -> wrong type of variable";
-		return NULL;
-	}
-
-	bool* var = (bool*)_state._flag;
-	_state._needTakeFlag = false;
-	return *var;
-}
-
-char monolang::get_flag(char)
-{
-	if(_state._typeFlag != stateTypeFlag::CHAR)
-	{
-		_state._isAborted = true;
-		_state._errorHandler = "[unstable] -> wrong type of variable";
-		return NULL;
-	}
-	char* var = (char*)_state._flag;
-	_state._needTakeFlag = false;
-	return *var;
-}
-
-int monolang::get_flag(int)
-{
-	if(_state._typeFlag != stateTypeFlag::INT)
-	{
-		_state._isAborted = true;
-		_state._errorHandler = "[unstable] -> wrong type of variable";
-		return NULL;
-	}
-	int* var = (int*)_state._flag;
-	_state._needTakeFlag = false;
-	return *var;
-}
-
-float monolang::get_flag(float)
-{
-	if(_state._typeFlag != stateTypeFlag::FLOAT)
-	{
-		_state._isAborted = true;
-		_state._errorHandler = "[unstable] -> wrong type of variable";
-		return NULL;
-	}
-	float* var = (float*)_state._flag;
-	_state._needTakeFlag = false;
-	return *var;
-}
-
-std::string monolang::get_flag(std::string)
-{
-	if(_state._typeFlag != stateTypeFlag::STRING)
-	{
-		_state._isAborted = true;
-
-		_state._errorHandler = "[unstable] -> wrong type of variable";
-		return NULL;
-	}
-	std::string* var = (std::string*)_state._flag;
-	_state._needTakeFlag = false;
-	return *var;
+	if(typeid(T).name() == "bool" && _state._typeFlag == typeflag::BOOL)
+		return *(bool*)(_state._flag);
+	else if(typeid(T).name() == "char" && _state._typeFlag == typeflag::CHAR)
+		return *(char*)(_state._flag);
+	else if(typeid(T).name() == "int" && _state._typeFlag == typeflag::INT)
+		return *(int*)(_state._flag);
+	else if(typeid(T).name() == "float" && _state._typeFlag == typeflag::FLOAT)
+		return *(float*)(_state._flag);
+	else if(typeid(T).name() == "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >" && _state._typeFlag == typeflag::STRING)
+		return *(std::string*)(_state._flag);
+	else return 0;
 }
 
 bool monolang::is_log()
@@ -178,7 +127,7 @@ bool monolang::is_log()
 	return _state._needTakeLog;
 }
 
-std::string monolang::get_log()
+std::string monolang::log()
 {
 	_state._needTakeLog = false;
 	return _state._log;
@@ -189,24 +138,24 @@ bool monolang::is_choose()
 	return _state._needTakeChoose;
 }
 
-monochoice monolang::get_choose()
+monochoice monolang::choose()
 {
 	return _state._choose;
 }
 
-void monolang::get_choice(monochoice& choice_)
+void monolang::choice(monochoice& choice_)
 {
 	_state._needTakeChoose = false;
 	if(choice_.is_assign()) _state._line = choice_.delta();
 	else _state._line += choice_.delta();
 }
 
-std::string monolang::log()
+std::string monolang::logger()
 {
 	return _state._logger;
 }
 
-bool monolang::aborted()
+bool monolang::is_aborted()
 {
 	return _state._isAborted;
 }
@@ -221,7 +170,7 @@ int monolang::delay()
 	return _state._await;
 }
 
-bool monolang::end()
+bool monolang::is_end()
 {
 	return _state._isEnd;
 }

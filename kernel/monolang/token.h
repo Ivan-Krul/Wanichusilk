@@ -9,7 +9,7 @@ struct token
 	std::string regex;
 };
 
-enum class stateTypeFlag : int
+enum class typeflag : int
 {
 	UNDEFINED = 0b000,
 	BOOL = 0b001,
@@ -24,7 +24,7 @@ struct state
 	std::string _dir = "[directory]." + formatForInterpretation;
 	std::string _errorHandler = "[error]";
 	std::string _logger = "[logger]";
-	char breakpoint = '|';
+	char breakpoint = ' ';
 
 	bool _needTakeFlag : 1;
 	bool _needTakeLog : 1;
@@ -32,7 +32,7 @@ struct state
 	bool _isAborted : 1;
 	bool _isEnd : 1;
 
-	stateTypeFlag _typeFlag : 3;
+	typeflag _typeFlag : 3;
 	void* _flag;
 	
 	std::string _log;
@@ -43,16 +43,21 @@ struct state
 };
 
 std::list<token>listToken = {
-	{"AWAIT","[await]"},
-	{"FLAG","[flag]"},
-	{"TYPE_INT","[int]"},
-	{"TYPE_STRING","[string]"},
-	{"TYPE_FLOAT","[float]"},
-	{"TYPE_CHAR","[char]"},
-	{"TYPE_BOOL","[bool]"},
-	{"END","[end]"},
-	{"GOTO","[goto]"},
-	{"LOG","[log]"},
-	{"CHOOSE","[choose]"},
-	{"FILE","[file]"},
+	{"AWAIT","await"},
+	{"FLAG","flag"},
+	{"END","end"},
+	{"GOTO","goto"},
+	{"LOG","log"},
+	{"CHOOSE","choose"},
+	{"FILE","disk"},
+	{"GET","get"},
+	{"ACT","act"},
 };
+
+std::list<token>listTypeVariable = {
+	{"TYPE_INT","int"},
+	{"TYPE_STRING","string"},
+	{"TYPE_FLOAT","float"},
+	{"TYPE_CHAR","char"},
+	{"TYPE_BOOL","bool"}
+}

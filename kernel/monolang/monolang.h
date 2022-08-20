@@ -1,6 +1,7 @@
 #pragma once
 #include "../../abstractes/loader.h"
 #include "token.h"
+#include <iostream>
 class monolang : public loader
 {
 protected:
@@ -13,7 +14,7 @@ protected:
 	void _cmdFlag();
 	void _declairFlag(std::string type_);
 	void _assignFlag();
-	// end of the interpretation
+	// is_end of the interpretation
 	void _cmdEnd();
 	// go to the line to string
 	void _cmdGoto();
@@ -32,28 +33,24 @@ public:
 	void step();
 
 	bool is_flag();
-	stateTypeFlag typedata_flag();
-	void* get_flag();
-	bool get_flag(bool);
-	char get_flag(char);
-	int get_flag(int);
-	float get_flag(float);
-	std::string get_flag(std::string);
+	typeflag typedata_flag();
+	template<typename T>
+	T flag();
 
 	bool is_log();
-	std::string get_log();
+	std::string log();
 
 	bool is_choose();
-	monochoice get_choose();
-	void get_choice(monochoice& choice_);
+	monochoice choose();
+	void choice(monochoice& choice_);
 
-	std::string log();
-	bool aborted();
+	std::string logger();
+	bool is_aborted();
 	std::string errorHandler();
 
 	int delay();
 
-	bool end();
+	bool is_end();
 
 	void load(std::string dir_, size_t line_) {}
 	void parse(std::string raw_) {}

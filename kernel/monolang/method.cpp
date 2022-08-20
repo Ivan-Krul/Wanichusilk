@@ -10,27 +10,27 @@ void monolang::_declairFlag(std::string type_)
 	if(type_ == "[bool]")
 	{
 		_state._flag = malloc(sizeof(bool));
-		_state._typeFlag = stateTypeFlag::BOOL;
+		_state._typeFlag = typeflag::BOOL;
 	}
 	else if(type_ == "[char]")
 	{
 		_state._flag = malloc(sizeof(char));
-		_state._typeFlag = stateTypeFlag::CHAR;
+		_state._typeFlag = typeflag::CHAR;
 	}
 	else if(type_ == "[int]")
 	{
 		_state._flag = malloc(sizeof(int));
-		_state._typeFlag = stateTypeFlag::INT;
+		_state._typeFlag = typeflag::INT;
 	}
 	else if(type_ == "[float]")
 	{
 		_state._flag = malloc(sizeof(float));
-		_state._typeFlag = stateTypeFlag::FLOAT;
+		_state._typeFlag = typeflag::FLOAT;
 	}
 	else if(type_ == "[string]")
 	{
 		_state._flag = malloc(sizeof(std::string));
-		_state._typeFlag = stateTypeFlag::STRING;
+		_state._typeFlag = typeflag::STRING;
 	}
 }
 
@@ -38,31 +38,31 @@ void monolang::_assignFlag()
 {
 	switch(_state._typeFlag)
 	{
-		case stateTypeFlag::BOOL:
+		case typeflag::BOOL:
 			{
 				bool* var = (bool*)_state._flag;
 				checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			}
 			break;
-		case stateTypeFlag::CHAR:
+		case typeflag::CHAR:
 			{
 				char* var = (char*)_state._flag;
 				checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			}
 			break;
-		case stateTypeFlag::INT:
+		case typeflag::INT:
 			{
 				int* var = (int*)_state._flag;
 				checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			}
 			break;
-		case stateTypeFlag::FLOAT:
+		case typeflag::FLOAT:
 			{
 				float* var = (float*)_state._flag;
 				checkParse(_hardware.buffer(), *var, _state.breakpoint);
 			}
 			break;
-		case stateTypeFlag::STRING:
+		case typeflag::STRING:
 			{
 				std::string* var = (std::string*)_state._flag;
 				checkParse(_hardware.buffer(), *var, _state.breakpoint);
@@ -86,7 +86,7 @@ void monolang::_cmdFlag()
 	checkParse(checker, firstSym, _state.breakpoint);
 	if(firstSym == '[')
 	{
-		if(_state._typeFlag != stateTypeFlag::UNDEFINED) free(_state._flag);
+		if(_state._typeFlag != typeflag::UNDEFINED) free(_state._flag);
 		std::string type;
 		checkParse(_hardware.buffer(), type, _state.breakpoint);
 		for(auto iter : listToken)
@@ -193,4 +193,3 @@ void monolang::_cmdFile()
 		_state._logger = _hardware.buffer();
 	}
 }
-

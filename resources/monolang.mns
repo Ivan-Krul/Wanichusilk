@@ -1,23 +1,28 @@
-[await]|200|
-[flag]|[int]|
-[log]|[?]|Hello there, it's first log|
-[log]|[action]|And now, action, second|
-[goto]|[+]|2|
-[end]
-[log]|[?]|And now, worked goto|
-[log]|[?]|Ok, choose this|
-[choose]|[?]|2|Yes|[+]|0|No|[-]|2|
-[log]|[?]|You said "Yes"|
-[log]|[?]|Ok, another file|
-[file]|../../../resources/monolang1.mns|1|
-[end]
-[log]|[?]|We are back|
-[log]|[?]|Ok, flag!|
-[flag]|4|
-[log]|[?]|We are throught 4|
-[log]|[?]|Change type and throught "What"|
-[flag]|[string]|
-[flag]|What|
-[log]|[author]|Sented!|
-[log]|End!|End!|
-[end]|
+await 200
+flag int
+log "[?]" "Hello there, it's first log"
+log "[action]" "And now, action, second"
+goto + 1
+end
+log "[?]" "And now, worked goto"
+log "[?]" "Ok, choose this"
+choose 2 "[?]"
+	"Yes" + 0
+	"No" - 2
+log "[?]" "You said \"Yes\""
+log "[?]" "Ok, another file"
+disk "../../../resources/monolang1.mns" 1
+end
+log "[?]" "We are back"
+log "[?]" "Ok, flag!"
+flag 4
+log "[?]" "We are throught 4"
+log "[?]" "Await 1000ms"
+await 1000
+log "[?]" "Now, we getting int abcd"
+get int #abcd
+log "[?]" "we are get #[abcd]"
+log "Someone" "Yay"
+act "happy"
+log "END" "End!"
+end
