@@ -1,5 +1,4 @@
 await 200
-flag int
 log "[?]" "Hello there, it's first log"
 log "[action]" "And now, action, second"
 goto + 1
@@ -17,6 +16,9 @@ log "[?]" "We are back"
 log "[?]" "Ok, flag!"
 flag 4
 log "[?]" "We are throught 4"
+log "[?]" "Ok, now, throw string"
+flag "lalllie"
+log "[?]" "We are throught "Lalllie""
 log "[?]" "Await 1000ms"
 await 1000
 log "[?]" "Now, we getting int abcd"
@@ -24,5 +26,7 @@ get int #abcd
 log "[?]" "we are get #[abcd]"
 log "Someone" "Yay"
 act "happy"
+if ( #abcd > 0 ) + 0 : + - 1
+
 log "END" "End!"
 end

@@ -5,104 +5,18 @@ void monolang::_cmdAwait()
 	checkParse(_hardware.buffer(), _state._await, _state.breakpoint);
 }
 
-void monolang::_declairFlag(std::string type_)
-{
-	if(type_ == "[bool]")
-	{
-		_state._flag = malloc(sizeof(bool));
-		_state._typeFlag = typeflag::BOOL;
-	}
-	else if(type_ == "[char]")
-	{
-		_state._flag = malloc(sizeof(char));
-		_state._typeFlag = typeflag::CHAR;
-	}
-	else if(type_ == "[int]")
-	{
-		_state._flag = malloc(sizeof(int));
-		_state._typeFlag = typeflag::INT;
-	}
-	else if(type_ == "[float]")
-	{
-		_state._flag = malloc(sizeof(float));
-		_state._typeFlag = typeflag::FLOAT;
-	}
-	else if(type_ == "[string]")
-	{
-		_state._flag = malloc(sizeof(std::string));
-		_state._typeFlag = typeflag::STRING;
-	}
-}
-
-void monolang::_assignFlag()
-{
-	switch(_state._typeFlag)
-	{
-		case typeflag::BOOL:
-			{
-				bool* var = (bool*)_state._flag;
-				checkParse(_hardware.buffer(), *var, _state.breakpoint);
-			}
-			break;
-		case typeflag::CHAR:
-			{
-				char* var = (char*)_state._flag;
-				checkParse(_hardware.buffer(), *var, _state.breakpoint);
-			}
-			break;
-		case typeflag::INT:
-			{
-				int* var = (int*)_state._flag;
-				checkParse(_hardware.buffer(), *var, _state.breakpoint);
-			}
-			break;
-		case typeflag::FLOAT:
-			{
-				float* var = (float*)_state._flag;
-				checkParse(_hardware.buffer(), *var, _state.breakpoint);
-			}
-			break;
-		case typeflag::STRING:
-			{
-				std::string* var = (std::string*)_state._flag;
-				checkParse(_hardware.buffer(), *var, _state.breakpoint);
-			}
-			break;
-		default:
-			break;
-	}
-}
-
 void monolang::_cmdEnd()
 {
 	_state._isEnd = true;
-	free(_state._flag);
+	_state._flag.~flag();
 }
 
 void monolang::_cmdFlag()
 {
-	std::string checker = _hardware.buffer();
-	char firstSym;
-	checkParse(checker, firstSym, _state.breakpoint);
-	if(firstSym == '[')
-	{
-		if(_state._typeFlag != typeflag::UNDEFINED) free(_state._flag);
-		std::string type;
-		checkParse(_hardware.buffer(), type, _state.breakpoint);
-		for(auto iter : listToken)
-		{
-			if(type == iter.regex)
-			{
-				_declairFlag(type);
-				return;
-			}
-		}
-	}
-	else
-	{
-		_assignFlag();
-		_state._needTakeFlag = true;
-	}
+	std::string checker;
+	checkParse(_hardware.buffer(), checker, _state.breakpoint);
+	
+	_state._flag.from_string(checker);
 }
 
 void monolang::_cmdGoto()

@@ -29,7 +29,7 @@ void monolang::start(std::string dir_)
 	_state._line = 1;
 	_state._await = 100;
 
-	_state._typeFlag = typeflag::UNDEFINED;
+	_state._flag = mnlg::flag();
 	_state._errorHandler = MNLG_STABLE;
 
 	_state._needTakeFlag = false;
@@ -48,7 +48,7 @@ void monolang::start(std::string dir_)
 	_state._errorHandler = "[unstable] -> file isn't open: " + dir_;
 }
 
-void monolang::start(state state_)
+void monolang::start(mnlg::state state_)
 {
 
 	_state = state_;
@@ -74,7 +74,7 @@ void monolang::step()
 	std::clog << string << std::endl;
 	checkParse(_hardware.buffer(), string, _state.breakpoint);
 
-	for(auto iter : listToken)
+	for(auto iter : mnlg::listToken)
 	{
 		if(string == iter.regex)
 		{
@@ -98,11 +98,6 @@ void monolang::step()
 bool monolang::is_flag()
 {
 	return _state._needTakeFlag;
-}
-
-typeflag monolang::typedata_flag()
-{
-	return _state._typeFlag;
 }
 
 template<typename T>

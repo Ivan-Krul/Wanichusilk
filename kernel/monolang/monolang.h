@@ -1,19 +1,18 @@
 #pragma once
 #include "../../abstractes/loader.h"
 #include "token.h"
+#include "flag.h"
 #include <iostream>
 class monolang : public loader
 {
 protected:
-	state _state;
+	mnlg::state _state;
 	kernel_hardware _hardware;
 
 	// set delay with printing
 	void _cmdAwait();
 	// manipulate with flag and set it
 	void _cmdFlag();
-	void _declairFlag(std::string type_);
-	void _assignFlag();
 	// is_end of the interpretation
 	void _cmdEnd();
 	// go to the line to string
@@ -29,11 +28,10 @@ protected:
 	void _stop();
 public:
 	void start(std::string dir_);
-	void start(state state_);
+	void start(mnlg::state state_);
 	void step();
 
 	bool is_flag();
-	typeflag typedata_flag();
 	template<typename T>
 	T flag();
 
