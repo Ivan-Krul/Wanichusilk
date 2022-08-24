@@ -17,12 +17,8 @@ namespace mnlg
 		std::string formatForInterpretation = "mns";
 		std::string _dir = "[directory]." + formatForInterpretation;
 		std::string _errorHandler = "[error]";
-		std::string _logger = "[logger]";
 		char breakpoint = ' ';
 
-		bool _needTakeFlag : 1;
-		bool _needTakeLog : 1;
-		bool _needTakeChoose : 1;
 		bool _isAborted : 1;
 		bool _isEnd : 1;
 

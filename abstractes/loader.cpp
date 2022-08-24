@@ -3,7 +3,7 @@
 std::string loader::_bakeParse(std::string& raw_, char breakpoint_)
 {
 	size_t ind = 0;
-	while(raw_[ind] != breakpoint_)
+	while(raw_[ind] != breakpoint_ && raw_.size() == ind)
 		ind++;
 	
 	std::string buf = raw_.substr(0, ind);

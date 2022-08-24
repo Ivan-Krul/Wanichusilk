@@ -2,7 +2,6 @@
 #include "../../abstractes/loader.h"
 #include "token.h"
 #include "flag.h"
-#include <iostream>
 class monolang : public loader
 {
 protected:
@@ -22,23 +21,22 @@ protected:
 	// make monochoise and give into class
 	void _cmdChoose();
 	// retarget interpretation in another file
-	// without turning back, if it's have a format of interpretation
 	void _cmdFile();
-
-	void _stop();
+	// create new definition of flag
+	void _cmdGet();
+	// mark action on name
+	void _cmdAct();
+	// operator if
+	void _cmdIf();
+	
 public:
 	void start(std::string dir_);
 	void start(mnlg::state state_);
 	void step();
 
-	bool is_flag();
 	template<typename T>
 	T flag();
 
-	bool is_log();
-	std::string log();
-
-	bool is_choose();
 	monochoice choose();
 	void choice(monochoice& choice_);
 

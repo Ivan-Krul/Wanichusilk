@@ -6,6 +6,7 @@ namespace mnlg
 
 	class flag
 	{
+	protected:
 		bool* _fbool;
 		char* _fchar;
 		int* _fint;
@@ -26,6 +27,12 @@ namespace mnlg
 		int fint();
 		float ffloat();
 		std::string fstring();
+
+		void fbool(bool a);
+		void fchar(char a);
+		void fint(int a);
+		void ffloat(float a);
+		void fstring(std::string a);
 
 		~flag();
 	};

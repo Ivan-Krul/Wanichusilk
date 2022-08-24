@@ -100,6 +100,36 @@ std::string mnlg::flag::fstring()
 	return *_fstring;
 }
 
+void mnlg::flag::fbool(bool a)
+{
+	if(_fbool == nullptr) _fbool = new bool(a);
+	else *_fbool = a;
+}
+
+void mnlg::flag::fchar(char a)
+{
+	if(_fchar == nullptr) _fchar = new char(a);
+	else *_fchar = a;
+}
+
+void mnlg::flag::fint(int a)
+{
+	if(_fint == nullptr) _fint = new int(a);
+	else *_fint = a;
+}
+
+void mnlg::flag::ffloat(float a)
+{
+	if(_ffloat == nullptr) _ffloat = new float(a);
+	else *_ffloat = a;
+}
+
+void mnlg::flag::fstring(std::string a)
+{
+	if(_fstring == nullptr) _fstring = new std::string(a);
+	else *_fstring = a;
+}
+
 mnlg::flag::~flag()
 {
 	_clear();

@@ -42,7 +42,6 @@ void monolang::_cmdLog()
 	if(author == "[action]") _state._log = "";
 	else _state._log = author + ": ";
 	_state._log += text;
-	_state._needTakeLog = true;
 }
 
 void monolang::_cmdChoose()
@@ -61,11 +60,11 @@ void monolang::_cmdChoose()
 		checkParse(_hardware.buffer(), pair._str, _state.breakpoint);
 		checkParse(_hardware.buffer(), oper, _state.breakpoint);
 		checkParse(_hardware.buffer(), pair._delta, _state.breakpoint);
-		if(oper == "[+]")
+		if(oper == "+")
 		{
 			pair._isAssign = false;
 		}
-		else if(oper == "[-]")
+		else if(oper == "-")
 		{
 			pair._delta *= -1;
 			pair._isAssign = false;
@@ -78,7 +77,6 @@ void monolang::_cmdChoose()
 		choice[i] = pair;
 	}
 	_state._choose.create(author, choice);
-	_state._needTakeChoose = true;
 }
 
 void monolang::_cmdFile()
@@ -100,10 +98,5 @@ void monolang::_cmdFile()
 	{
 		_state._dir = dir;
 		_state._line = line;
-	}
-	else
-	{
-		_hardware.read_to_buffer_ln(dir, line);
-		_state._logger = _hardware.buffer();
 	}
 }
