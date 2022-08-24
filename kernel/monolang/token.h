@@ -3,6 +3,7 @@
 #include <list>
 #include "../monochoice/monochoice.h"
 #include "flag.h"
+#include "variables.h"
 namespace mnlg
 {
 #define MNLG_STABLE "[stable]"
@@ -12,6 +13,17 @@ namespace mnlg
 		std::string regex;
 	};
 
+	struct access
+	{
+		bool _isFlag : 1;
+		bool _isAct : 1;
+		bool _isLog : 1;
+		bool _isChoose : 1;
+		bool _isVar : 1;
+		bool _isAborted : 1;
+		bool _isEnd : 1;
+	};
+
 	struct state
 	{
 		std::string formatForInterpretation = "mns";
@@ -19,13 +31,13 @@ namespace mnlg
 		std::string _errorHandler = "[error]";
 		char breakpoint = ' ';
 
-		bool _isAborted : 1;
-		bool _isEnd : 1;
+		access _access;
 
 		flag _flag;
-
+		std::list<std::pair<std::string, std::string>> _act;
 		std::string _log;
 		monochoice _choose;
+		variables _var;
 
 		unsigned short _line;
 		unsigned short _await;
@@ -41,6 +53,7 @@ namespace mnlg
 		{"FILE","disk"},
 		{"GET","get"},
 		{"ACT","act"},
+		{"IF","if"},
 	};
 
 	std::list<token>listTypeVariable = {

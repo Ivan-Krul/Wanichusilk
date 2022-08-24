@@ -34,23 +34,34 @@ public:
 	void start(mnlg::state state_);
 	void step();
 
+	mnlg::access access();
+
 	template<typename T>
 	T flag();
+	template<typename T>
+	void flag(T thing_);
+
+	template<typename T>
+	T var(std::string var_);
+	template<typename T>
+	void var(T thing_, std::string var_);
+	void new_var(std::string new_name_);
 
 	monochoice choose();
 	void choice(monochoice& choice_);
 
-	std::string logger();
-	bool is_aborted();
+	std::string act(std::string who_);
+
+	std::string log();
 	std::string errorHandler();
 
 	int delay();
 
-	bool is_end();
+
+
 
 	void load(std::string dir_, size_t line_) {}
 	void parse(std::string raw_) {}
-
 };
 #include "monolang.cpp"
 #include "method.cpp"

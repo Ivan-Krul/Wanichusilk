@@ -7,7 +7,7 @@ void monolang::_cmdAwait()
 
 void monolang::_cmdEnd()
 {
-	_state._isEnd = true;
+	_state._access._isEnd = true;
 	_state._flag.~flag();
 }
 
@@ -88,7 +88,7 @@ void monolang::_cmdFile()
 	
 	if(!_hardware.is_open(dir))
 	{
-		_state._isAborted = true;
+		_state._access._isAborted = true;
 		_state._errorHandler = "[unstable] -> file isn't open: " + dir;
 		return;
 	}
@@ -100,3 +100,20 @@ void monolang::_cmdFile()
 		_state._line = line;
 	}
 }
+
+void monolang::_cmdGet()
+{
+	std::string name;
+	name = _hardware.buffer().substr(2, _hardware.buffer().size() - 2);
+	new_var(name);
+	_state._access._isVar = true;
+}
+
+void monolang::_cmdAct()
+{
+}
+
+void monolang::_cmdIf()
+{
+}
+

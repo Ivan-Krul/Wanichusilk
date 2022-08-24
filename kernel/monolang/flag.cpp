@@ -20,7 +20,7 @@ bool mnlg::flag::_isAllEmpty()
 
 bool mnlg::flag::_isNumber(char chr_)
 {
-	return '0' <= chr_ <= '9';
+	return '0' <= chr_ && chr_ <= '9';
 }
 
 int mnlg::flag::_number(char chr_)
@@ -33,9 +33,9 @@ void mnlg::flag::_convertSToNum(std::string var_)
 	// we are dealing with numbers
 	bool isNegative = false;
 	if(var_[0] == '-') isNegative = true;
-	int i;
+	int i = 0;
 	bool isF = false;
-	float f;
+	float f = 0;
 	int flagfloat = 0;
 	for(int iter = isNegative; iter < var_.size(); iter++)
 	{

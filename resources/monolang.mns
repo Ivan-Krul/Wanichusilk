@@ -22,10 +22,10 @@ log "[?]" "We are throught "lalllie""
 log "[?]" "Await 1000ms"
 await 1000
 log "[?]" "Now, we getting abcd"
-get #abcd
-log "[?]" "we are get #abcd[int]"
+get #[abcd]
+log "[?]" "we are get #[abcd[int]]"
 act "Someone" "happy"
 log "Someone" "Yay"
-if ( #abcd[int] > 0 ) + 0 : - 1
+if ( #[abcd[int]] > 0 ) + 0 : - 1
 log "END" "End!"
 end

@@ -25,11 +25,11 @@ int main()
 	monolang mnlg;
 	mnlg.start("../../../resources/monolang.mns");
 	
-	while(!mnlg.is_end() || !mnlg.is_aborted())
+	while(!mnlg.access()._isEnd || !mnlg.access()._isAborted)
 	{
 		mnlg.step();
-		if(mnlg.is_log()) std::cout << mnlg.log();
-		else if(mnlg.is_choose())
+		if(mnlg.access()._isLog) std::cout << mnlg.log();
+		else if(mnlg.access()._isChoose)
 		{
 			monochoice choice = mnlg.choose();
 			for(size_t i = 0; i < choice.size();i++) std::cout <<i<< ": " << choice.variant(i) << std::endl;
@@ -38,13 +38,11 @@ int main()
 			choice.choose(var);
 			mnlg.choice(choice);
 		}
-		else if(mnlg.is_flag())
+		else if(mnlg.access()._isFlag)
 		{
 		}
-		if(mnlg.is_aborted()) throw std::bad_typeid();
-		std::cout << "\tlog: " << mnlg.logger() << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(mnlg.delay()));
 	}
-	if(mnlg.is_aborted()) std::cout << mnlg.errorHandler() << std::endl;
+	if(mnlg.access()._isAborted) std::cout << mnlg.errorHandler() << std::endl;
 	return 0;
 }
