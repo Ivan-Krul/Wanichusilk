@@ -1,31 +1,6 @@
-await 200
-log "[?]" "Hello there, it's first log"
-log "[action]" "And now, action, second"
-goto + 1
-end
-log "[?]" "And now, worked goto"
-log "[?]" "Ok, choose this"
-choose 2 "[?]"
-	"Yes" + 0
-	"No" - 2
-log "[?]" "You said \"Yes\""
-log "[?]" "Ok, another file"
-disk "../../../resources/monolang1.mns" 1
-end
-log "[?]" "We are back"
-log "[?]" "Ok, flag!"
-flag 4
-log "[?]" "We are throught 4"
-log "[?]" "Ok, now, throw string"
-flag "lalllie"
-log "[?]" "We are throught "lalllie""
-log "[?]" "Await 1000ms"
-await 1000
-log "[?]" "Now, we getting abcd"
-get #[abcd]
-log "[?]" "we are get #[abcd[int]]"
-act "Someone" "happy"
-log "Someone" "Yay"
-if ( #[abcd[int]] > 0 ) + 0 : - 1
-log "END" "End!"
-end
+[delay] 100
+[get][task #1]
+[text][Calamus][smile] "Hello"
+[text][Calamus][idle] "We with Alula are trying to get water moss"
+[text][Alula][idle] "Yes, my bro wanted "
+[end]
