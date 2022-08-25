@@ -1,6 +1,0 @@
-[delay] 100
-[get][task #1]
-[text][Calamus][smile] "Hello"
-[text][Calamus][idle] "We with Alula are trying to get water moss"
-[text][Alula][idle] "Yes, my bro wanted "
-[end]

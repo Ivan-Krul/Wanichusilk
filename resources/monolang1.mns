@@ -1,5 +1,0 @@
-await 50 
-log [?] We are in another file 
-log [?] Go back! 
-file ../../../resources/monolang.mns 14 
-end 
