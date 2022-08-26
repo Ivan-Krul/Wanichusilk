@@ -13,7 +13,7 @@ int main()
 
 	kernel::dialang dial;
 	dial.test();
-	dial.start("D:\\Progect\\Visual Studio 2019\\C++\\Wanichusilk\\resources\\dialang.das");
-	while(!dial.state().is_end) dial.step();
+	//dial.start("D:\\Progect\\Visual Studio 2019\\C++\\Wanichusilk\\resources\\dialang.das");
+	//while(!dial.state().is_end) dial.step();
 	return 0;
 }

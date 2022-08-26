@@ -2,7 +2,7 @@
 
 buildCounter::buildCounter()
 {
-	hardware hardware;
+	kernel::hardware hardware;
 	if(hardware.is_open("buildCount.txt"))
 	{
 		hardware.read_to_buffer_ln("buildCount.txt",1);

@@ -34,7 +34,9 @@ namespace kernel::dalg
 		{"WAIT","wait"},
 		{"END","end"},
 		{"GOTO","goto"},
-		{"FILE","file"}
+		{"FILE","file"},
+		{"ACT","act"},
+		{"NEXT","next"}
 	};
 	const std::list<token> operatorlist = {
 		{"NEXT_COMMAND","->"},
