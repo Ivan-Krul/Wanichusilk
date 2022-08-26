@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <list>
+#include <map>
 namespace kernel::dalg
 {
 	struct token
@@ -8,16 +9,22 @@ namespace kernel::dalg
 		std::string name;
 		std::string regex;
 	};
+	struct flagtask
+	{
+		bool is_started : 3;
+		bool is_completed : 2;
+		bool is_hotkey : 3;
+	};
 	struct state
 	{
 		char char_operator = '|';
 		char char_string = '"';
 		char char_startcommand = '[';
 		char char_endcommand = ']';
-		char char_space = ' ';
 		std::string dir;
 
 		unsigned short line;
+		std::map<std::string, flagtask> mission_stage;
 
 		bool is_started : 1;
 		bool is_end : 1;
@@ -25,18 +32,16 @@ namespace kernel::dalg
 		int wait : 14;
 	};
 	const std::list<token> tokenlist = {
-		{"DELAY","delay"},
-		{"GET","get"},
+		{"DELAY","delay"},//
 		{"IF","if"},
 		{"TEXT","text"},
 		{"CHOOSE","choose"},
-		{"SET","set"},
-		{"WAIT","wait"},
-		{"END","end"},
-		{"GOTO","goto"},
-		{"FILE","file"},
+		{"TASK","task"},
+		{"WAIT","wait"},//
+		{"END","end"},//
+		{"GOTO","goto"},//
+		{"FILE","file"},//
 		{"ACT","act"},
-		{"NEXT","next"}
 	};
 	const std::list<token> operatorlist = {
 		{"NEXT_COMMAND","->"},

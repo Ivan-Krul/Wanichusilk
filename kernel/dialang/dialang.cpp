@@ -39,17 +39,15 @@ bool kernel::dialang::_command(std::string& str_)
 	{
 		if(var.regex == cmd)
 		{
-			if(var.name == "DELAY");
-			else if(var.name == "GET");
+			if(var.name == "DELAY") _Cdelay(str_);
 			else if(var.name == "IF");
 			else if(var.name == "TEXT");
 			else if(var.name == "CHOOSE");
-			else if(var.name == "SET");
-			else if(var.name == "WAIT");
-			else if(var.name == "END") _state.is_end = true;
+			else if(var.name == "TASK");
+			else if(var.name == "WAIT") _Cwait(str_);
+			else if(var.name == "END") _Cend(str_);
 			else if(var.name == "GOTO");
 			else if(var.name == "FILE");
-			else if(var.name == "NEXT") _state.line++;
 			else if(var.name == "ACT");
 			return true;
 		}
@@ -63,7 +61,6 @@ void kernel::dialang::start(std::string dir_)
 	_state.char_string = '"';
 	_state.char_startcommand = '[';
 	_state.char_endcommand = ']';
-	_state.char_space = ' ';
 	_state.dir = dir_;
 	_state.line = 1;
 	_state.is_end = false;
@@ -123,12 +120,30 @@ void kernel::dialang::test()
 	assert((!_command(strtest)));
 	std::clog << "TEST: _command() OK\n";
 
+	// another methodes
+	_methodestest();
+}
+
+void kernel::dialang::load_task(std::string task_, bool is_started_, bool is_completed_)
+{
+	_state.mission_stage.insert({ (const std::string)task_,{is_started_,is_completed_,false} });
+}
+
+void kernel::dialang::_methodestest()
+{
 	//_Cdelay()
-	strtest = "  100     no";
+	std::string strtest = "  100   also no";
 	assert((_Cdelay(strtest)));
 	assert((_state.delay == 100));
 	assert((!_Cdelay(strtest)));
 	std::clog << "TEST: _Cdelay() OK\n";
+
+	//_Cwait()
+	strtest = "  500 no";
+	assert((_Cwait(strtest)));
+	assert((_state.wait == 500));
+	assert((!_Cwait(strtest)));
+	std::clog << "TEST: _Cwait() OK\n";
 }
 
 bool kernel::isdigit(char num_)
@@ -139,4 +154,9 @@ bool kernel::isdigit(char num_)
 int kernel::ctodigit(char num_)
 {
 	return num_ - '0';
+}
+
+bool kernel::isspace(char chr_)
+{
+	return (chr_ == ' ') || (chr_ == '\t') || (chr_ == '\r');
 }
