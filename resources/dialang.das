@@ -1,5 +1,5 @@
 [delay] 50
-[get][task #1] 
+[task][get][task #1] 
 [if][task #1] |-> [goto] 15
 [text][Calamus][smile] "Hello"
 [text][Calamus][] "We with Alula are trying to get water moss"
@@ -10,7 +10,7 @@
 [text][Calamus][] "Of course! You can find some"
 [text][Calamus][smile] "for example, basket, I want more"
 [text][Alula][speak] "Tee-hee, he want a lot!"
-[set][task #1]
+[task][add][task #1]
 [end]
 [text][Alula][] "Oh, hello, Niko!"
 [text][Alula][gahp] "*gahp* It's so beauty!"
@@ -29,4 +29,5 @@
 [wait] 5000
 [end]
 [file][monolang.das] 1
+[task][done][task #1]
 [end]

@@ -1,11 +1,11 @@
 #include "charity.h"
 
-kernel_charity::kernel_charity(std::string name, uint16_t def, int16_t atk, std::string description_)
+kernel::charity::charity(std::string name, uint16_t def, int16_t atk, std::string description_)
 {
 	create(name, def, atk, _description);
 }
 
-void kernel_charity::create(std::string name, uint16_t def, int16_t atk, std::string description_)
+void kernel::charity::create(std::string name, uint16_t def, int16_t atk, std::string description_)
 {
 	_name = name;
 	_def = def;
@@ -13,25 +13,25 @@ void kernel_charity::create(std::string name, uint16_t def, int16_t atk, std::st
 	_description = description_;
 }
 
-void kernel_charity::_digestion()
+void kernel::charity::_digestion()
 {
 	heal((float)_edibleHeal / (_def + 1));
 	_edibleHeal /= 2;
 }
 
-void kernel_charity::eat(int16_t benefit_)
+void kernel::charity::eat(int16_t benefit_)
 {
 	_edibleHeal = benefit_;
 }
 
-void kernel_charity::load(std::string dir_, size_t line_)
+void kernel::charity::load(std::string dir_, size_t line_)
 {
-	kernel_hardware hardware;
+	hardware hardware;
 	hardware.read_to_buffer_ln(dir_, line_);
 	parse(hardware.buffer());
 }
 
-void kernel_charity::parse(std::string raw_)
+void kernel::charity::parse(std::string raw_)
 {
 	checkParse(raw_, _name);
 	checkParse(raw_, _prod);
@@ -41,17 +41,17 @@ void kernel_charity::parse(std::string raw_)
 	checkParse(raw_, _description);
 }
 
-void kernel_charity::tick()
+void kernel::charity::tick()
 {
 	_digestion();
 }
 
-std::string kernel_charity::get_description()
+std::string kernel::charity::get_description()
 {
 	return _name + " (def: " + std::to_string(_def) + " atk: " + std::to_string(_atk) + ") - " + _description;
 }
 
-float kernel_charity::damage(kernel_charity& charit)
+float kernel::charity::damage(charity& charit)
 {
 	float colidedam = float(_atk) * _prod;
 	colidedam /= float(charit.defense_point() + 1);
@@ -60,27 +60,27 @@ float kernel_charity::damage(kernel_charity& charit)
 	return colidedam;
 }
 
-uint16_t kernel_charity::defense_point()
+uint16_t kernel::charity::defense_point()
 {
 	return _def;
 }
 
-int16_t kernel_charity::attack_point()
+int16_t kernel::charity::attack_point()
 {
 	return _atk;
 }
 
-int16_t kernel_charity::edible_heal()
+int16_t kernel::charity::edible_heal()
 {
 	return _edibleHeal;
 }
 
-void kernel_charity::heal(float prod_)
+void kernel::charity::heal(float prod_)
 {
 	_prod += prod_;
 }
 
-void kernel_charity::hurt(float prod_)
+void kernel::charity::hurt(float prod_)
 {
 	_prod -= prod_;
 }

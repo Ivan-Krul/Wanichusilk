@@ -1,6 +1,6 @@
 #include "item.h"
 
-void kernel_item::create(name name_, std::string description_, type type_, int use_)
+void kernel::item::create(abstractes::name name_, std::string description_, type type_, int use_)
 {
 	_name = name_.get_name();
 	_description = description_;
@@ -8,7 +8,7 @@ void kernel_item::create(name name_, std::string description_, type type_, int u
 	_use = use_;
 }
 
-std::string kernel_item::get_description()
+std::string kernel::item::get_description()
 {
 	std::stringstream desc;
 	desc << _name << " ";
@@ -38,26 +38,26 @@ std::string kernel_item::get_description()
 	return desc.str();
 }
 
-type kernel_item::type_c()
+kernel::type kernel::item::type_c()
 {
 	return _type;
 }
 
-int kernel_item::usage()
+int kernel::item::usage()
 {
 	return _use;
 }
 
-void kernel_item::load(std::string dir_, size_t line_)
+void kernel::item::load(std::string dir_, size_t line_)
 {
-	kernel_hardware hardware;
+	hardware hardware;
 	hardware.read_to_buffer_ln(dir_, line_);
 	std::string raw = hardware.buffer();
 
  	parse(raw);
 }
 
-void kernel_item::parse(std::string raw_)
+void kernel::item::parse(std::string raw_)
 {
 	checkParse(raw_, _name);
 	checkParse(raw_, _use);
