@@ -58,7 +58,7 @@ bool kernel::dialang::_Cgoto(std::string& line_)
 bool kernel::dialang::_Cfile(std::string& line_)
 {
 	//assign dir
-	_state.dir = _divcommand(line_);
+	_state.dir = divide(line_,_state.char_startcommand,_state.char_endcommand);
 
 	//delete space and knowing is input - number
 	while(isspace(line_[0])) line_ = line_.substr(1);
@@ -77,8 +77,8 @@ bool kernel::dialang::_Cfile(std::string& line_)
 
 bool kernel::dialang::_Ctask(std::string& line_)
 {
-	std::string addetive = _divcommand(line_);
-	std::string name_task = _divcommand(line_);;
+	std::string addetive = divide(line_, _state.char_startcommand, _state.char_endcommand);
+	std::string name_task = divide(line_, _state.char_startcommand, _state.char_endcommand);
 	if(addetive == "get")
 	{
 		auto element = _state.mission_stage.find(name_task);
@@ -96,31 +96,51 @@ bool kernel::dialang::_Ctask(std::string& line_)
 
 bool kernel::dialang::_Cif(std::string& line_)
 {
-	// getting all properties about task and condition
-	std::string name_task = _divcommand(line_);
+	std::string name_task = divide(line_, _state.char_startcommand, _state.char_endcommand);
 	assert(((*_state.mission_stage.find(name_task)).second.is_hotkey));
 	bool is_true = (*_state.mission_stage.find(name_task)).second.is_started ? (*_state.mission_stage.find(name_task)).second.is_completed : false;
 
-	// detect operator
 	while(isspace(line_[0])) line_ = line_.substr(1);
-	if(line_[0] != _state.char_operator)
+	if(!isdigit(line_[0]))
 	{
 		if(is_true) _state.line++;
 		else _Cend(line_);
+
 		return true;
 	}
-	for(auto iter : dalg::operatorlist)
+	int gto = 0;
+	while(isdigit(line_[0]))
 	{
-		auto croped = line_.substr(0,)
-		(iter.name)
+		gto = gto * 10 + ctodigit(line_[0]);
+		line_ = line_.substr(1);
 	}
+	if(is_true) _state.line = gto;
+	return true;
+}
 
-	// complete command in if
-	
-	// detect else
-	while(isspace(line_[0])) line_ = line_.substr(1);
-	
-	// complete command in else
+bool kernel::dialang::_Ctext(std::string& line_)
+{
+	_state.text_.author = divide(line_, _state.char_startcommand, _state.char_endcommand);
+	_state.text_.emotion = divide(line_, _state.char_startcommand, _state.char_endcommand);
+	std::string text = divide(line_, _state.char_string, _state.char_string);
+	if(text.substr(text.size() - 2, 2) == "\n") 
+		_state.text_.text += text;
+	else 
+		_state.text_.text = text;
+	return true;
+}
 
-	return false;
+bool kernel::dialang::_Cchoose(std::string& line_)
+{
+	_state.choose_.author = divide(line_, _state.char_startcommand, _state.char_endcommand);
+	while(!line_.empty())
+		_state.choose_.links.push_back({ divide(line_,_state.char_string,_state.char_string),std::stoi(divide(line_,' ',' ')) });
+	_state.choose_.is_chosen = false;
+	return true;
+}
+
+bool kernel::dialang::_Cact(std::string& line_)
+{
+	_state.act_.name_act = divide(line_, _state.char_startcommand, _state.char_endcommand);
+	return true;
 }

@@ -1,14 +1,15 @@
 [delay] 50
 [act][null]
 [task][get][task #1] // mark what it's hotkey
-[if][task #1] |-> [goto] 15 // if it completed
+[if][task #1] 15
 [text][Calamus][smile] "Hello"
 [text][Calamus][] "We with Alula are trying to get water moss"
 [act][Alula turn]
 [text][Alula][] "Yes, my bro wanted it!"
 [text][Alula][speak] "He think, what there can get some phosphor"
 [text][Niko][2] "Oh, can I help you with this"
-[choose][Niko] "Of course!" |-> [text][Niko][smile] "Of cource!" |, "Not now" |-> [text][Alula][oh] "Oh c'mon!" |-> [act][null] |-> [end]
+[choose][Niko] "Of course!" 12 [text][Alula][oh] "Oh c'mon!" 17
+[text][Niko][smile] "Of cource!"
 [text][Calamus][] "Of course! You can find some"
 [text][Calamus][smile] "for example, basket, I want more"
 [text][Alula][speak] "Tee-hee, he want a lot!"
@@ -22,11 +23,14 @@
 [text][Calamus][heh] "She is so excited, really, where did you find it?"
 [text][Niko][83c] "Oh, I have traded in with Magpie"
 [text][Calamus][shock] "Hold on! On What has you traded!?"
-[choose][Niko] "Instead of the Light-bulb" |-> [next] |, "Instead of a notebook" |-> [goto] 31
+[choose][Niko] "Instead of the Light-bulb" 27 "Instead of a notebook" 38
 [delay] 250
 [text][Niko][distressed2] "Instead of the Light-bulb"
-[text][Calamus][shock] "Whaaaaaat!!?" |-> [text][Alula][oh] "What?" 
-[text][Niko][distressed_talk] "I..." |-> [text][Niko][distressed_meow] "has lost it..." |->  [text][Niko][cry] ""
+[text][Calamus][shock] "Whaaaaaat!!?"
+[text][Alula][oh] "What?" 
+[text][Niko][distressed_talk] "I...\n"
+[text][Niko][distressed_meow] "has lost it...\n" 
+[text][Niko][cry] ""
 [text][action][] "Darkness is filled everywhere..."
 [text][action][messagebox] "You failed with rescue of Niko!"
 [text][action][messagebox] "And now, enjoy your darkness"
