@@ -5,6 +5,14 @@
 #include <map>
 namespace kernel::dalg
 {
+	enum class type_out
+	{
+		interacted,
+		flagtask,
+		text,
+		choose,
+		act
+	};
 	struct token
 	{
 		std::string name;
@@ -20,7 +28,7 @@ namespace kernel::dalg
 	{
 		std::string author;
 		std::string emotion;
-		std::string text;
+		std::string txt;
 	};
 	struct choose {
 		std::string author;
@@ -31,6 +39,7 @@ namespace kernel::dalg
 	struct act
 	{
 		std::string name_act;
+		bool is_null = false;
 	};
 	struct state
 	{
@@ -44,6 +53,8 @@ namespace kernel::dalg
 		text text_;
 		choose choose_;
 		act act_;
+
+		type_out out : 3;
 
 		bool is_started : 1;
 		bool is_end : 1;

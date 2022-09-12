@@ -1,20 +1,23 @@
 [delay] 50
 [act][null]
-[task][get][task #1] // mark what it's hotkey
-[if][task #1] 15
+[task][get][task #1]
+[if][task #1] 22
 [text][Calamus][smile] "Hello"
 [text][Calamus][] "We with Alula are trying to get water moss"
 [act][Alula turn]
 [text][Alula][] "Yes, my bro wanted it!"
 [text][Alula][speak] "He think, what there can get some phosphor"
 [text][Niko][2] "Oh, can I help you with this"
-[choose][Niko] "Of course!" 12 [text][Alula][oh] "Oh c'mon!" 17
+[choose][Niko] "Of course!" 15 "Not now" 12
+[text][Alula][oh] "Oh c'mon!"
+[act][null]
+[end]
 [text][Niko][smile] "Of cource!"
 [text][Calamus][] "Of course! You can find some"
 [text][Calamus][smile] "for example, basket, I want more"
 [text][Alula][speak] "Tee-hee, he want a lot!"
 [task][add][task #1]
-[act][null] // reset
+[act][null]
 [end]
 [text][Alula][] "Oh, hello, Niko!"
 [text][Alula][gahp] "*gahp* It's so beauty!"

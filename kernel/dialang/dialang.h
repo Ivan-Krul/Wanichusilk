@@ -36,8 +36,6 @@ namespace kernel
 		void test();
 		void load_task(std::string task_, bool is_started_, bool is_completed_);
 		void load_choose(dalg::choose choose_);
-		dalg::act get_act();
-		dalg::text get_text();
 	};
 #include "dialang.cpp"
 #include "methodes.cpp"

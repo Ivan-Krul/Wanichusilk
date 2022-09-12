@@ -91,6 +91,7 @@ bool kernel::dialang::_Ctask(std::string& line_)
 		(*element).second.is_started = true;
 	}
 	else return false;
+	_state.out = dalg::type_out::flagtask;
 	return true;
 }
 
@@ -123,10 +124,11 @@ bool kernel::dialang::_Ctext(std::string& line_)
 	_state.text_.author = divide(line_, _state.char_startcommand, _state.char_endcommand);
 	_state.text_.emotion = divide(line_, _state.char_startcommand, _state.char_endcommand);
 	std::string text = divide(line_, _state.char_string, _state.char_string);
-	if(text.substr(text.size() - 2, 2) == "\n") 
-		_state.text_.text += text;
+	if(line_[0] == '\n')
+		_state.text_.txt += text;
 	else 
-		_state.text_.text = text;
+		_state.text_.txt = text;
+	_state.out = dalg::type_out::text;
 	return true;
 }
 
@@ -134,13 +136,20 @@ bool kernel::dialang::_Cchoose(std::string& line_)
 {
 	_state.choose_.author = divide(line_, _state.char_startcommand, _state.char_endcommand);
 	while(!line_.empty())
-		_state.choose_.links.push_back({ divide(line_,_state.char_string,_state.char_string),std::stoi(divide(line_,' ',' ')) });
+	{
+		std::string text_choose = divide(line_, _state.char_string, _state.char_string);
+		int got = std::stoi(divide(line_, ' ', ' '));
+		_state.choose_.links.push_back({ text_choose,got });
+	}
 	_state.choose_.is_chosen = false;
+	_state.out = dalg::type_out::choose;
 	return true;
 }
 
 bool kernel::dialang::_Cact(std::string& line_)
 {
 	_state.act_.name_act = divide(line_, _state.char_startcommand, _state.char_endcommand);
+	if(_state.act_.name_act == "null") _state.act_.is_null = true;
+	_state.out = dalg::type_out::act;
 	return true;
 }
