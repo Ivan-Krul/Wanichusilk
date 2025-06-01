@@ -7,15 +7,34 @@ void Application::OnInit() {
     }
 
     OpenWindow();
+
+    mResMgr.SetRenderer(mMainWindow.getWindowRenderer());
+
+
+    if (mResMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
+    }
+
+    mResMgr.GetLockerTexture(0).setOffset(256, 100);
+
+    mTex.create("./Stefan chill emoji.png", mMainWindow.getWindowRenderer());
 }
 
 void Application::OnLoop() {
     PullEvents();
+
+    SDL_RenderClear(mMainWindow.getWindowRenderer());
+
+    OnRender();
+
+    SDL_RenderPresent(mMainWindow.getWindowRenderer());
     SDL_Delay(10);
 }
 
 void Application::OpenWindow() {
-    mMainWindow.create("Wanichusilk", 640, 480);
+    if (!mMainWindow.create("Wanichusilk", DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y)) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create window: %s\n", SDL_GetError());
+    }
 }
 
 void Application::PullEvents() {
@@ -28,4 +47,12 @@ void Application::PullEvents() {
             break;
         }
     }
+}
+
+void Application::OnRender() {
+    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 200, 100, 200, 255);
+
+    mResMgr.GetLockerTexture(0).render();
+
+    mTex.render();
 }

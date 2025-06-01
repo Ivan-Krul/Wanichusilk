@@ -25,8 +25,8 @@ bool Window::create(const char* name, int width, int height, SDL_WindowFlags fla
 	//Create window
 	if ((mpWindow = SDL_CreateWindow(mWindowName, width, height, flags)) == nullptr)
 		return false;
-	else
-		if (!createRenderer()) return false; // Get window surface
+
+	if (!createRenderer()) return false; // Get window surface
 
 	if (mfOnCreate)
 		mfOnCreate();
@@ -36,6 +36,9 @@ bool Window::create(const char* name, int width, int height, SDL_WindowFlags fla
 }
 
 void Window::terminate() {
+	if (mfOnDestroy)
+		mfOnDestroy();
+
 	if (mpWindow == nullptr) return;
 
 	SDL_DestroyWindow(mpWindow);
@@ -46,13 +49,10 @@ void Window::terminate() {
 	terminateRenderer();
 	mpWindow = nullptr;
 	mWindowName = nullptr;
-
-	if (mfOnDestroy)
-		mfOnDestroy();
 }
 
 bool Window::createRenderer() {
-	return (mpRenderer = SDL_GetRenderer(mpWindow)) == nullptr;
+	return (mpRenderer = SDL_CreateRenderer(mpWindow, NULL));
 }
 
 void Window::terminateRenderer() {
