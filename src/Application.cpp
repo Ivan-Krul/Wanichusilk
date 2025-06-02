@@ -8,21 +8,26 @@ void Application::OnInit() {
 
     OpenWindow();
 
-    mResMgr.SetRenderer(mMainWindow.getWindowRenderer());
+    mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
 
-    if (mResMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
+    if (mTexMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
     }
-    if (mResMgr.RequestTextureLoad("./Stefan is laying.png") == -1) {
+    if (mTexMgr.RequestTextureLoad("./Stefan is laying.png") == -1) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
     }
-    if (mResMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
+    if (mTexMgr.RequestTextureLoad("./Stefan is laying.png") == -1) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
+    }
+    mTexMgr.RequestTextureClean(1);
+    if (mTexMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
     }
 
-    mResMgr.GetLockerTexture(0).setOffset(0, 0);
-    mResMgr.GetLockerTexture(1).setOffset(256, 100);
-    mResMgr.GetLockerTexture(2).setOffset(100,100);
+    mTexMgr.GetLockerTexture(0).setOffset(0, 0);
+    mTexMgr.GetLockerTexture(1).setOffset(DEFAULT_SCR_RES_X - 256, DEFAULT_SCR_RES_Y - 256);
+    mTexMgr.GetLockerTexture(2).setOffset(0,0);
+    mTexMgr.GetLockerTexture(2).setResolution(DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y);
 }
 
 void Application::OnLoop() {
@@ -57,7 +62,7 @@ void Application::PullEvents() {
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 200, 100, 200, 255);
 
-    mResMgr.GetLockerTexture(2).render();
-    mResMgr.GetLockerTexture(0).render();
-    mResMgr.GetLockerTexture(1).render();
+    mTexMgr.GetLockerTexture(2).render();
+    mTexMgr.GetLockerTexture(0).render();
+    mTexMgr.GetLockerTexture(1).render();
 }

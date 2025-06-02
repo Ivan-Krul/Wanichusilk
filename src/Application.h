@@ -3,7 +3,7 @@
 
 #include "Window.h"
 #include "Texture.h"
-#include "ResourceManager.h"
+#include "TextureManager.h"
 #include "define.h"
 
 class Application {
@@ -23,5 +23,5 @@ private:
     SDL_Event mEvent; // want to make an event queuing
     bool mNeedQuit = false;
 
-    ResourceManager mResMgr;
+    TextureManager mTexMgr;
 };

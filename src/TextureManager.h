@@ -8,14 +8,14 @@
 
 typedef size_t ResourceIndex;
 
-class ResourceManager {
+class TextureManager {
     struct TextureArgContainer {
         const char* path;
         SDL_Renderer* renderer;
     };
 
 public:
-    ResourceManager() : mTextureLocker(
+    TextureManager() : mTextureLocker(
         [](Texture& tex, TextureArgContainer cont) { return tex.create(cont.path, cont.renderer);  }) {
     }
 

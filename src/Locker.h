@@ -5,14 +5,8 @@
 #include <functional>
 
 #include "define.h"
-#include "Texture.h"
 
 typedef size_t LockerIndex;
-
-struct TextureArgContainer {
-    const char* path;
-    SDL_Renderer* renderer;
-};
 
 template<class T, typename Cont>
 class Locker {
@@ -37,6 +31,7 @@ private:
 
     std::list<T> maLockArray;
     std::vector<decltype(maLockArray.begin())> mapLockPtr;
+protected:
     std::vector<bool> maOccupied;
 
     LockerIndex mNearestFreeLocker = 0;
@@ -70,6 +65,18 @@ inline LockerIndex Locker<T, Cont>::pushInLocker(Cont container) {
     LockerIndex next = mNearestFreeLocker;
     updateLockerStatus();
     return next;
+}
+
+template<class T, typename Cont>
+inline void Locker<T, Cont>::popFromLocker(LockerIndex index) {
+    static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "Has to be a destructor or a primitive variable");
+
+    if (index >= maLockArray.size()) return;
+
+    maOccupied[index] = false;
+    maLockArray.erase(mapLockPtr[index]);
+    mapLockPtr[index]._Ptr = nullptr;
+    mNearestFreeLocker = index;
 }
 
 template<class T, typename Cont>
