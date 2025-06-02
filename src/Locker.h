@@ -1,4 +1,5 @@
 #pragma once
+#include <list>
 #include <vector>
 #include <bitset>
 #include <functional>
@@ -8,13 +9,18 @@
 
 typedef size_t LockerIndex;
 
+struct TextureArgContainer {
+    const char* path;
+    SDL_Renderer* renderer;
+};
+
 template<class T, typename Cont>
 class Locker {
 public:
     Locker(std::function<bool(T&, Cont)> check_create);
 
     LockerIndex pushInLocker(Cont container);
-    inline T& operator[] (LockerIndex index) { return maLockArray[index]; }
+    inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
     void popFromLocker(LockerIndex index);
 
     inline size_t getCapacity() const { return maLockArray.size(); }
@@ -29,7 +35,8 @@ private:
 
     std::function<bool(T&, Cont)> mfCheckCreate;
 
-    std::vector<T> maLockArray;
+    std::list<T> maLockArray;
+    std::vector<decltype(maLockArray.begin())> mapLockPtr;
     std::vector<bool> maOccupied;
 
     LockerIndex mNearestFreeLocker = 0;
@@ -49,15 +56,17 @@ inline LockerIndex Locker<T, Cont>::pushInLocker(Cont container) {
             maLockArray.pop_back();
             return -1;
         }
+        mapLockPtr.push_back(--maLockArray.end());
         maOccupied.push_back(true);
         return mNearestFreeLocker++;
     }
 
-    maLockArray[mNearestFreeLocker] = T();
-    if (!mfCheckCreate(maLockArray[mNearestFreeLocker], container)) {
+    maLockArray.emplace_back();
+    if (!mfCheckCreate(maLockArray.back(), container)) {
         return -1;
     }
     maOccupied[mNearestFreeLocker] = true;
+    mapLockPtr[mNearestFreeLocker] = --maLockArray.end();
     LockerIndex next = mNearestFreeLocker;
     updateLockerStatus();
     return next;

@@ -24,5 +24,4 @@ private:
     bool mNeedQuit = false;
 
     ResourceManager mResMgr;
-    Texture mTex;
 };

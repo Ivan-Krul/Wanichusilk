@@ -13,8 +13,10 @@ bool Texture::create(const char* src, SDL_Renderer* renderer) {
 }
 
 void Texture::render() {
-    if(mpTexture)
-    SDL_RenderTexture(mpRendererOrigin, mpTexture, NULL, &mRect);
+    if (mpTexture)
+        SDL_RenderTexture(mpRendererOrigin, mpTexture, NULL, &mRect);
+    else
+        SDL_Log("Not rendering");
 }
 
 void Texture::clear() {

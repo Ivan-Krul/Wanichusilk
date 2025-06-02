@@ -10,14 +10,19 @@ void Application::OnInit() {
 
     mResMgr.SetRenderer(mMainWindow.getWindowRenderer());
 
-
+    if (mResMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
+    }
+    if (mResMgr.RequestTextureLoad("./Stefan is laying.png") == -1) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
+    }
     if (mResMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
     }
 
-    mResMgr.GetLockerTexture(0).setOffset(256, 100);
-
-    mTex.create("./Stefan chill emoji.png", mMainWindow.getWindowRenderer());
+    mResMgr.GetLockerTexture(0).setOffset(0, 0);
+    mResMgr.GetLockerTexture(1).setOffset(256, 100);
+    mResMgr.GetLockerTexture(2).setOffset(100,100);
 }
 
 void Application::OnLoop() {
@@ -52,7 +57,7 @@ void Application::PullEvents() {
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 200, 100, 200, 255);
 
+    mResMgr.GetLockerTexture(2).render();
     mResMgr.GetLockerTexture(0).render();
-
-    mTex.render();
+    mResMgr.GetLockerTexture(1).render();
 }

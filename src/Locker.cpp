@@ -7,6 +7,8 @@ void Locker<T, Cont>::popFromLocker(LockerIndex index) {
     if (index >= maLockArray.size()) return;
 
     maOccupied[index] = false;
+    maLockArray.erase(mapLockPtr[index]);
+    mapLockPtr[index] = nullptr;
     mNearestFreeLocker = index;
 }
 
