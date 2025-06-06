@@ -1,12 +1,15 @@
 #pragma once
+#include "define.h"
+
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+
 
 class Texture {
 public:
     inline Texture() = default;
-    inline Texture(const char* src, SDL_Renderer* renderer) { create(src, renderer); }
-    bool   create(const char* src, SDL_Renderer* renderer);
+    inline Texture(const char* src, RENDERER* renderer) { create(src, renderer); }
+    bool   create(const char* src, RENDERER* renderer);
 
     inline void setWidth(float w) { mRect.w = w; }
     inline void setHeight(float h) { mRect.h = h; }
@@ -28,6 +31,6 @@ private:
     SDL_FRect     mRectSrc = { 0.f };
     SDL_FRect     mRect = { 0.f };
 
-    SDL_Renderer* mpRendererOrigin = NULL;
+    RENDERER* mpRendererOrigin = NULL;
 
 };

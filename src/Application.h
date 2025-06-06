@@ -2,8 +2,8 @@
 #include <SDL3/SDL.h>
 
 #include "Window.h"
-#include "Texture.h"
 #include "TextureManager.h"
+#include "FilmScene.h"
 #include "define.h"
 
 class Application {
@@ -24,4 +24,5 @@ private:
     bool mNeedQuit = false;
 
     TextureManager mTexMgr;
+    FilmScene mScene;
 };

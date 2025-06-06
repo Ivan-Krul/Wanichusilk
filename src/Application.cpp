@@ -10,24 +10,43 @@ void Application::OnInit() {
 
     mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
 
-    if (mTexMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
-    }
-    if (mTexMgr.RequestTextureLoad("./Stefan is laying.png") == -1) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
-    }
-    if (mTexMgr.RequestTextureLoad("./Stefan is laying.png") == -1) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
-    }
-    mTexMgr.RequestTextureClean(1);
-    if (mTexMgr.RequestTextureLoad("./Stefan chill emoji.png") == -1) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not load texture: %s\n", SDL_GetError());
-    }
+    std::vector<std::string> vec {
+        "./Stefan chill emoji.png",
+        "./Stefan is laying.png"
+    };
 
-    mTexMgr.GetLockerTexture(0).setOffset(0, 0);
-    mTexMgr.GetLockerTexture(1).setOffset(DEFAULT_SCR_RES_X - 256, DEFAULT_SCR_RES_Y - 256);
-    mTexMgr.GetLockerTexture(2).setOffset(0,0);
-    mTexMgr.GetLockerTexture(2).setResolution(DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y);
+    mScene.create(&mTexMgr, vec);
+
+    FilmKeypointSwap swap;
+    swap.from = -1;
+    swap.to = 0;
+    mScene.addKeypoint(swap);
+    swap.from = 0;
+    swap.to = 1;
+    mScene.addKeypoint(swap);
+    swap.from = 1;
+    swap.to = 0;
+    mScene.addKeypoint(swap);
+    swap.from = 0;
+    swap.to = 1;
+    mScene.addKeypoint(swap);
+    swap.from = 1;
+    swap.to = 0;
+    mScene.addKeypoint(swap);
+    swap.from = 0;
+    swap.to = 1;
+    mScene.addKeypoint(swap);
+    swap.from = 1;
+    swap.to = 0;
+    mScene.addKeypoint(swap);
+    swap.from = 0;
+    swap.to = 1;
+    mScene.addKeypoint(swap);
+    swap.from = 1;
+    swap.to = -1;
+    mScene.addKeypoint(swap);
+
+    mScene.start();
 }
 
 void Application::OnLoop() {
@@ -53,6 +72,8 @@ void Application::PullEvents() {
         case SDL_EVENT_QUIT:
             mNeedQuit = true;
             break;
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            mScene.next();
         default:
             break;
         }
@@ -62,7 +83,5 @@ void Application::PullEvents() {
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 200, 100, 200, 255);
 
-    mTexMgr.GetLockerTexture(2).render();
-    mTexMgr.GetLockerTexture(0).render();
-    mTexMgr.GetLockerTexture(1).render();
+    mScene.render();
 }

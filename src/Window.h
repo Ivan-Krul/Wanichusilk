@@ -1,4 +1,6 @@
 #pragma once
+#include "define.h"
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_render.h>
 
@@ -18,7 +20,7 @@ public:
 	void setOnDestroy(void(*onDestroy)(void)) { mfOnDestroy = onDestroy; }
 
 	SDL_Window* getWindow() { return mpWindow; }
-	SDL_Renderer* getWindowRenderer() { return mpRenderer; }
+	RENDERER* getWindowRenderer() { return mpRenderer; }
 
 	void terminate();
 
@@ -40,6 +42,6 @@ protected:
 	void(*mfOnCreate)(void) = nullptr;
 	void(*mfOnDestroy)(void) = nullptr;
 
-	SDL_Renderer* mpRenderer = nullptr;
+	RENDERER* mpRenderer = nullptr;
 };
 
