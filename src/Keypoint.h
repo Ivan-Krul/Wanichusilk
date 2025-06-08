@@ -2,27 +2,24 @@
 #include <stdint.h>
 #include <chrono>
 
+#include "TextureManager.h"
+
 enum class FilmKeypointType {
+    BlankDelay,
     Swap
 };
 
 struct FilmKeypoint {
-    size_t from;
-    size_t to;
+    std::chrono::duration<float> delay;
+    int frame_delay : 31;
+    int need_input : 1;
 
-    union NextCondition {
-        std::chrono::duration<float> delay;
-        size_t need_input = 0;
-        
-    } next_condition;
-
-    virtual FilmKeypointType type() const = 0;
+    virtual FilmKeypointType type() const { return FilmKeypointType::BlankDelay; }
 };
 
 struct FilmKeypointSwap : public FilmKeypoint {
+    ResourceIndex to;
+
     FilmKeypointType type() const override { return FilmKeypointType::Swap; }
 };
-
-//using FilmKeypointSwap = FilmKeypoint;
-
 

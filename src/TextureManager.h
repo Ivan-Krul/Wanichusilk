@@ -6,7 +6,7 @@
 #include "Locker.h"
 #include "Texture.h"
 
-typedef size_t ResourceIndex;
+typedef int ResourceIndex;
 
 class TextureManager {
     struct TextureArgContainer {
@@ -16,7 +16,7 @@ class TextureManager {
 
 public:
     TextureManager() : mTextureLocker(
-        [](Texture& tex, TextureArgContainer cont) { return tex.create(cont.path, cont.renderer);  }) {
+        [](Texture& tex, TextureArgContainer cont) -> bool { return tex.create(cont.path, cont.renderer);  }) {
     }
 
     inline void SetRenderer(RENDERER* renderer) { mpRenderer = renderer; }
@@ -37,6 +37,7 @@ public:
     }
 
 private:
+    
     Locker<Texture, TextureArgContainer> mTextureLocker;
 
     RENDERER* mpRenderer = nullptr;

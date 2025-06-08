@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "TextureManager.h"
 #include "FilmScene.h"
+#include "Clock.h"
 #include "define.h"
 
 class Application {
@@ -16,6 +17,7 @@ public:
 private:
     void OpenWindow();
     void PullEvents();
+    void OnUpdate();
     void OnRender();
 
 private:
@@ -25,4 +27,5 @@ private:
 
     TextureManager mTexMgr;
     FilmScene mScene;
+    Clock mClock;
 };

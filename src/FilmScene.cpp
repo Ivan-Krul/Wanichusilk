@@ -26,6 +26,8 @@ void FilmScene::start() {
 void FilmScene::update() {
     if (!isGoing()) return;
 
+    if (mFrameDelay) mFrameDelay--;
+
     auto target = maKeypoints[mKeypointPtr];
 
     //if (target->next_condition.need_input == -1) return;
@@ -33,12 +35,12 @@ void FilmScene::update() {
     //target->next_condition.delay;
 }
 
-bool FilmScene::needNext() const {
-    //return isGoing() ? maKeypoints[mKeypointPtr]->next_condition.need_input == -1 : false;
-}
-
 void FilmScene::next() {
+    if (!needNext()) return;
+
+    mFrameDelay = 0;
     mKeypointPtr++;
+    onNext();
 }
 
 void FilmScene::finish() {
@@ -46,11 +48,15 @@ void FilmScene::finish() {
 }
 
 void FilmScene::render() {
-    if (!isGoing()) return;
-    auto target = maKeypoints[mKeypointPtr]->to;
+    if (!isGoing() || maKeypoints[mKeypointPtr]->type() == FilmKeypointType::BlankDelay) return;
 
-    if(target != -1)
-        mpTexMgr->GetLockerTexture(mTextureIndexes[maKeypoints[mKeypointPtr]->to]).render();
+    if (maKeypoints[mKeypointPtr]->type() == FilmKeypointType::Swap) {
+        auto swapkp = *reinterpret_cast<FilmKeypointSwap*>(maKeypoints[mKeypointPtr].get());
+        auto target = swapkp.to;
+
+        if (target != -1)
+            mpTexMgr->GetLockerTexture(mTextureIndexes[swapkp.to]).render();
+    }
 
 #if 0
     SDL_SetTextureBlendMode(mpTexMgr->GetLockerTexture(0).getTexture(), SDL_BLENDMODE_BLEND);
@@ -65,4 +71,8 @@ void FilmScene::clear() {
     }
 
     maKeypoints.clear();
+}
+
+void FilmScene::onNext() {
+    mFrameDelay = maKeypoints[mKeypointPtr]->frame_delay;
 }

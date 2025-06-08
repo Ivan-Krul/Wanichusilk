@@ -4,14 +4,22 @@
 #include <bitset>
 #include <functional>
 
-#include "define.h"
+#include "TextureManager.h"
 
-typedef size_t LockerIndex;
+#include "define.h"
+#include "ResizableBitset.h"
+
+typedef int LockerIndex;
 
 template<class T, typename Cont>
 class Locker {
 public:
-    Locker(std::function<bool(T&, Cont)> check_create);
+    using checkFunctionPtr = bool(*)(T&, Cont);
+
+    static_assert(std::is_default_constructible<T>::value, "default constructor must be, empty one");
+    static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "has to be a destructor or a primitive variable");
+
+    Locker(checkFunctionPtr check_create);
 
     LockerIndex pushInLocker(Cont container);
     inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
@@ -20,47 +28,46 @@ public:
     inline size_t getCapacity() const { return maLockArray.size(); }
     inline size_t getOccuipedLocks() const {
         size_t count = 0;
-        for (size_t i = 0; i < maLockArray.size(); i++) count += maOccupied[i];
+        for (size_t i = 0; i < maLockArray.size(); i++) count += maOccupied.get(i);
         return count;
     }
 
 private:
     void updateLockerStatus();
 
-    std::function<bool(T&, Cont)> mfCheckCreate;
+    checkFunctionPtr mfCheckCreateRaw;
 
     std::list<T> maLockArray;
     std::vector<decltype(maLockArray.begin())> mapLockPtr;
 protected:
-    std::vector<bool> maOccupied;
+    ResBitset maOccupied;
 
     LockerIndex mNearestFreeLocker = 0;
 };
 
 template<class T, typename Cont>
-inline Locker<T, Cont>::Locker(std::function<bool(T&, Cont)> check_create) {
-    mfCheckCreate = check_create;
+inline Locker<T, Cont>::Locker(checkFunctionPtr check_create) {
+    mfCheckCreateRaw = check_create;
 }
 
 template<class T, typename Cont>
 inline LockerIndex Locker<T, Cont>::pushInLocker(Cont container) {
-    static_assert(std::is_default_constructible<T>::value, "Default constructor must be, empty one");
     if (mNearestFreeLocker == maLockArray.size()) {
         maLockArray.emplace_back();
-        if (!mfCheckCreate(maLockArray.back(), container)) {
+        if (!mfCheckCreateRaw(maLockArray.back(), container)) {
             maLockArray.pop_back();
             return -1;
         }
         mapLockPtr.push_back(--maLockArray.end());
-        maOccupied.push_back(true);
+        maOccupied.set(maOccupied.maxcalledbit(), true);
         return mNearestFreeLocker++;
     }
 
     maLockArray.emplace_back();
-    if (!mfCheckCreate(maLockArray.back(), container)) {
+    if (!mfCheckCreateRaw(maLockArray.back(), container)) {
         return -1;
     }
-    maOccupied[mNearestFreeLocker] = true;
+    maOccupied.set(mNearestFreeLocker, true);
     mapLockPtr[mNearestFreeLocker] = --maLockArray.end();
     LockerIndex next = mNearestFreeLocker;
     updateLockerStatus();
@@ -69,11 +76,9 @@ inline LockerIndex Locker<T, Cont>::pushInLocker(Cont container) {
 
 template<class T, typename Cont>
 inline void Locker<T, Cont>::popFromLocker(LockerIndex index) {
-    static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "Has to be a destructor or a primitive variable");
-
     if (index >= maLockArray.size()) return;
 
-    maOccupied[index] = false;
+    maOccupied.set(index, false);
     maLockArray.erase(mapLockPtr[index]);
     mapLockPtr[index]._Ptr = nullptr;
     mNearestFreeLocker = index;
@@ -82,5 +87,5 @@ inline void Locker<T, Cont>::popFromLocker(LockerIndex index) {
 template<class T, typename Cont>
 inline void Locker<T, Cont>::updateLockerStatus() {
     for (mNearestFreeLocker; mNearestFreeLocker < maLockArray.size(); mNearestFreeLocker++)
-        if (!maOccupied[mNearestFreeLocker]) break;
+        if (!maOccupied.get(mNearestFreeLocker)) break;
 }

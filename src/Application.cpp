@@ -18,31 +18,24 @@ void Application::OnInit() {
     mScene.create(&mTexMgr, vec);
 
     FilmKeypointSwap swap;
-    swap.from = -1;
+    swap.need_input = true;
+    swap.frame_delay = 60;
     swap.to = 0;
     mScene.addKeypoint(swap);
-    swap.from = 0;
     swap.to = 1;
     mScene.addKeypoint(swap);
-    swap.from = 1;
     swap.to = 0;
     mScene.addKeypoint(swap);
-    swap.from = 0;
     swap.to = 1;
     mScene.addKeypoint(swap);
-    swap.from = 1;
     swap.to = 0;
     mScene.addKeypoint(swap);
-    swap.from = 0;
     swap.to = 1;
     mScene.addKeypoint(swap);
-    swap.from = 1;
     swap.to = 0;
     mScene.addKeypoint(swap);
-    swap.from = 0;
     swap.to = 1;
     mScene.addKeypoint(swap);
-    swap.from = 1;
     swap.to = -1;
     mScene.addKeypoint(swap);
 
@@ -51,13 +44,18 @@ void Application::OnInit() {
 
 void Application::OnLoop() {
     PullEvents();
+    OnUpdate();
 
     SDL_RenderClear(mMainWindow.getWindowRenderer());
 
     OnRender();
 
     SDL_RenderPresent(mMainWindow.getWindowRenderer());
-    SDL_Delay(10);
+
+    auto delay = mClock.FrameDelay(60);
+    if (delay.count() > 0.0f) {
+        SDL_Delay(static_cast<Uint32>(delay.count() * 1000.0f));
+    }
 }
 
 void Application::OpenWindow() {
@@ -80,8 +78,13 @@ void Application::PullEvents() {
     }
 }
 
+void Application::OnUpdate() {
+    mClock.Update();
+    mScene.update();
+}
+
 void Application::OnRender() {
-    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 200, 100, 200, 255);
+    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), mScene.needNext() * 100+ 100, 100, 200, 255);
 
     mScene.render();
 }
