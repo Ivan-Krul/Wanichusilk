@@ -6,7 +6,9 @@ void Application::OnInit() {
         exit(1);
     }
 
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
     OpenWindow();
+    SDL_SetRenderVSync(mMainWindow.getWindowRenderer(), false);
 
     mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
 
@@ -19,7 +21,7 @@ void Application::OnInit() {
 
     FilmKeypointSwap swap;
     swap.need_input = true;
-    swap.frame_delay = 60;
+    swap.frame_delay = 50;
     swap.to = 0;
     mScene.addKeypoint(swap);
     swap.to = 1;
@@ -43,19 +45,19 @@ void Application::OnInit() {
 }
 
 void Application::OnLoop() {
+    mClock.StartMeasure();
+
     PullEvents();
     OnUpdate();
 
     SDL_RenderClear(mMainWindow.getWindowRenderer());
-
     OnRender();
-
     SDL_RenderPresent(mMainWindow.getWindowRenderer());
 
-    auto delay = mClock.FrameDelay(60);
-    if (delay.count() > 0.0f) {
-        SDL_Delay(static_cast<Uint32>(delay.count() * 1000.0f));
-    }
+    mClock.FinishMeasure(50);
+
+    //float delta = mClock.DeltaTime().count();
+    //SDL_Log("dt %zu: %.2fms (%.1f FPS)", mCount++, delta * 1000.0f, 1.0f / delta);
 }
 
 void Application::OpenWindow() {
@@ -79,7 +81,6 @@ void Application::PullEvents() {
 }
 
 void Application::OnUpdate() {
-    mClock.Update();
     mScene.update();
 }
 

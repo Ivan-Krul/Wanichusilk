@@ -37,10 +37,10 @@ void FilmScene::update() {
 
 void FilmScene::next() {
     if (!needNext()) return;
+    mKeypointPtr++;
 
     mFrameDelay = 0;
-    mKeypointPtr++;
-    onNext();
+    if(mKeypointPtr < maKeypoints.size()) onNext();
 }
 
 void FilmScene::finish() {

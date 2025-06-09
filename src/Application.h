@@ -28,4 +28,6 @@ private:
     TextureManager mTexMgr;
     FilmScene mScene;
     Clock mClock;
+
+    size_t mCount = 0;
 };
