@@ -8,8 +8,8 @@
 
 class FilmScene {
 public:
-    bool create(TextureManager* texmgr, const std::vector<ResourceIndex>& texture_indexes);
-    bool create(TextureManager* texmgr, const std::vector<std::string>& texture_paths);
+    bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<ResourceIndex>& texture_indexes);
+    bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<std::string>& texture_paths);
 
     template<typename T>
     void addKeypoint(const T keypoint);
@@ -43,6 +43,8 @@ private:
     //std::chrono::steady_clock::time_point mFrameEnd;
 
     TextureManager* mpTexMgr;
+
+    SDL_Rect mScreenResolution;
 
     size_t mKeypointPtr = -1;
     int mFrameDelay = 0;

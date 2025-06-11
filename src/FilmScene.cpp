@@ -1,13 +1,15 @@
 #include "FilmScene.h"
 
-bool FilmScene::create(TextureManager* texmgr, const std::vector<ResourceIndex>& texture_indexes) {
+bool FilmScene::create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<ResourceIndex>& texture_indexes) {
     mpTexMgr = texmgr;
     mTextureIndexes = texture_indexes;
+    mScreenResolution = scr_res;
     return true;
 }
 
-bool FilmScene::create(TextureManager* texmgr, const std::vector<std::string>& texture_paths) {
+bool FilmScene::create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<std::string>& texture_paths) {
     mpTexMgr = texmgr;
+    mScreenResolution = scr_res;
     mTextureIndexes.reserve(texture_paths.size());
 
     ResourceIndex indx;
@@ -54,8 +56,9 @@ void FilmScene::render() {
         auto swapkp = *reinterpret_cast<FilmKeypointSwap*>(maKeypoints[mKeypointPtr].get());
         auto target = swapkp.to;
 
-        if (target != -1)
+        if (target != -1) {
             mpTexMgr->GetLockerTexture(mTextureIndexes[swapkp.to]).render();
+        }
     }
 
 #if 0
@@ -75,4 +78,24 @@ void FilmScene::clear() {
 
 void FilmScene::onNext() {
     mFrameDelay = maKeypoints[mKeypointPtr]->frame_delay;
+
+    if (maKeypoints[mKeypointPtr]->type() == FilmKeypointType::Swap) {
+        auto swapkp = *reinterpret_cast<FilmKeypointSwap*>(maKeypoints[mKeypointPtr].get());
+        auto target = swapkp.to;
+        if (target != -1) {
+            auto& tex = mpTexMgr->GetLockerTexture(mTextureIndexes[target]);
+            auto scale = 0.f;
+            if (mScreenResolution.w > mScreenResolution.h) {
+                scale = mScreenResolution.h / float(tex.getTexture()->h);
+                tex.setResolution(tex.getTexture()->w * scale, mScreenResolution.h);
+                tex.setOffset((tex.getRect().w - tex.getTexture()->w) / 2, 0);
+            }
+            else {
+                scale = mScreenResolution.w / float(tex.getTexture()->w);
+                tex.setResolution(mScreenResolution.w, tex.getTexture()->h * scale);
+                tex.setOffset(0,(tex.getRect().h - tex.getTexture()->h) / 2);
+            }
+
+        }
+    }
 }

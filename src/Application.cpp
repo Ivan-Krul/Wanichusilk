@@ -17,7 +17,7 @@ void Application::OnInit() {
         "./Stefan is laying.png"
     };
 
-    mScene.create(&mTexMgr, vec);
+    mScene.create(&mTexMgr, SDL_Rect{0,0, DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }, vec);
 
     FilmKeypointSwap swap;
     swap.need_input = true;
