@@ -23,6 +23,7 @@ bool FilmScene::create(TextureManager* texmgr, SDL_Rect scr_res, const std::vect
 
 void FilmScene::start() {
     mKeypointPtr = 0;
+    onNext();
 }
 
 void FilmScene::update() {
@@ -84,18 +85,23 @@ void FilmScene::onNext() {
         auto target = swapkp.to;
         if (target != -1) {
             auto& tex = mpTexMgr->GetLockerTexture(mTextureIndexes[target]);
-            auto scale = 0.f;
+            float scale = 0.f;
+            float scaled_w = 0.f;
+            float scaled_h = 0.f;
+
             if (mScreenResolution.w > mScreenResolution.h) {
                 scale = mScreenResolution.h / float(tex.getTexture()->h);
-                tex.setResolution(tex.getTexture()->w * scale, mScreenResolution.h);
-                tex.setOffset((tex.getRect().w - tex.getTexture()->w) / 2, 0);
-            }
-            else {
+                scaled_w = tex.getTexture()->w * scale;
+                scaled_h = mScreenResolution.h;
+                tex.setResolution(scaled_w, scaled_h);
+                tex.setOffset((mScreenResolution.w - scaled_w) / 2.f, 0.f);
+            } else {
                 scale = mScreenResolution.w / float(tex.getTexture()->w);
-                tex.setResolution(mScreenResolution.w, tex.getTexture()->h * scale);
-                tex.setOffset(0,(tex.getRect().h - tex.getTexture()->h) / 2);
+                scaled_w = mScreenResolution.w;
+                scaled_h = tex.getTexture()->h * scale;
+                tex.setResolution(scaled_w, scaled_h);
+                tex.setOffset(0.f, (mScreenResolution.h - scaled_h) / 2.f);
             }
-
         }
     }
 }

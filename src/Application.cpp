@@ -13,8 +13,8 @@ void Application::OnInit() {
     mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
 
     std::vector<std::string> vec {
-        "./Stefan chill emoji.png",
-        "./Stefan is laying.png"
+        "./res/Stefan chill emoji.png",
+        "./res/Stefan is laying.png"
     };
 
     mScene.create(&mTexMgr, SDL_Rect{0,0, DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }, vec);

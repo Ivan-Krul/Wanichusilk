@@ -3,3 +3,4 @@ build/
 out/
 vcpkg-configuration.json
 vcpkg_installed/
+res/
