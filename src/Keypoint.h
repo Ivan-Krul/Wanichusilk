@@ -6,11 +6,14 @@
 
 enum class FilmKeypointType {
     BlankDelay,
-    Swap
+    Swap,
+    TransparentSwap
 };
 
 struct FilmKeypoint {
-    std::chrono::duration<float> delay;
+    using Duration = std::chrono::duration<float>;
+
+    Duration delay;
     int frame_delay : 31;
     int need_input : 1;
 
@@ -22,4 +25,11 @@ struct FilmKeypointSwap : public FilmKeypoint {
 
     FilmKeypointType type() const override { return FilmKeypointType::Swap; }
 };
+
+struct FilmKeypointTransparentSwap : public FilmKeypointSwap {
+    ResourceIndex from;
+
+    FilmKeypointType type() const override { return FilmKeypointType::TransparentSwap; }
+};
+
 

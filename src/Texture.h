@@ -11,6 +11,7 @@ public:
     inline Texture(const char* src, RENDERER* renderer) { create(src, renderer); }
     bool   create(const char* src, RENDERER* renderer);
 
+    inline void setAlpha(uint8_t alpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); }
     inline void setWidth(float w) { mRect.w = w; }
     inline void setHeight(float h) { mRect.h = h; }
     inline void setResolution(float w, float h) { mRect.w = w; mRect.h = h; }
@@ -26,11 +27,14 @@ public:
 
     void   clear();
     inline ~Texture() { clear(); }
-private:
+protected:
     SDL_Texture* mpTexture = NULL;
+
     SDL_FRect     mRectSrc = { 0.f };
     SDL_FRect     mRect = { 0.f };
 
     RENDERER* mpRendererOrigin = NULL;
+
+    uint8_t mAlpha = 255;
 
 };

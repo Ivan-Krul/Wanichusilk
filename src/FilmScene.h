@@ -1,6 +1,7 @@
 #pragma once
 #include "TextureManager.h"
 #include "Keypoint.h"
+#include "Clock.h"
 
 #include <vector>
 #include <string>
@@ -10,6 +11,7 @@ class FilmScene {
 public:
     bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<ResourceIndex>& texture_indexes);
     bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<std::string>& texture_paths);
+    void setClock(Clock* clock) { mpClock = clock; }
 
     template<typename T>
     void addKeypoint(const T keypoint);
@@ -28,26 +30,33 @@ public:
 
     void render();
 
-    inline bool needNext() const { return isGoing() ? maKeypoints[mKeypointPtr]->need_input && mFrameDelay == 0 : false; }
+    inline bool needNext() const { return isGoing() ? mFrameDelay == 0 : false; }
     inline bool isGoing() const { return mKeypointPtr != -1 && mKeypointPtr < maKeypoints.size(); }
 
     void clear();
     ~FilmScene() { clear(); }
 private:
+    void centerTexture(ResourceIndex texind);
+    void onUpdate();
     void onNext();
 
     std::vector<ResourceIndex> mTextureIndexes;
     std::vector<std::shared_ptr<FilmKeypoint>> maKeypoints;
-
-    //std::chrono::steady_clock::time_point mFrameStart;
-    //std::chrono::steady_clock::time_point mFrameEnd;
+    decltype(maKeypoints.begin()) pKeypointPtr;
+    FilmKeypoint* pKeypoint;
 
     TextureManager* mpTexMgr;
 
     SDL_Rect mScreenResolution;
 
     size_t mKeypointPtr = -1;
+    Clock* mpClock;
+    Clock::SteadyClock::time_point mPrev = Clock::SteadyClock::now();
+
+    Clock::Duration mDuration = std::chrono::seconds(0);
     int mFrameDelay = 0;
+    bool mIsFrameDelay = true;
+
 };
 
 template<typename T>
@@ -62,5 +71,5 @@ template<typename T>
 inline T FilmScene::getKeypoint(size_t index) const {
     static_assert(std::is_base_of<FilmKeypoint, T>::value, "you should add a derived struct FilmKeypoint");
 
-    return *(reinterpret_cast<T*>(maKeypoints[index].get()));
+    return *(reinterpret_cast<T*>(maKeypoints[index]));
 }

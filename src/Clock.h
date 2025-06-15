@@ -12,6 +12,7 @@ public:
     inline void FinishMeasure();
     inline void FinishMeasure(float targetFps);
     inline Duration DeltaTime() const { return mDeltaTime; }
+    inline SteadyClock::time_point Now() const { return mBegin; }
 private:
     Duration mDeltaTime;
     SteadyClock::time_point mBegin = SteadyClock::now();
