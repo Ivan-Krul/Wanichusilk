@@ -159,4 +159,7 @@ void FilmScene::onNext() {
             centerTexture(kp->to);
         }
     }
+
+    if (mFrameDelay == 0 && !pKeypoint->need_input) next();
+
 }
