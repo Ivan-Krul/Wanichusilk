@@ -1,6 +1,10 @@
 #ifndef EASEFUNC_H
 #define EASEFUNC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef USE_THIRD_PARTY_MATH
 #include <math.h>
 
@@ -66,6 +70,10 @@ float ease_sine_out(float x) {
 
 float ease_sine_in_out(float x) {
     return -0.5f * cosf(M_PI * x) + 0.5f;
+}
+#endif
+
+#ifdef __cplusplus
 }
 #endif
 

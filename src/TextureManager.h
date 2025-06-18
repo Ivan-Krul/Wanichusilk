@@ -23,8 +23,6 @@ public:
     inline RENDERER* GetRenderer() const { return mpRenderer; }
 
     Texture& GetLockerTexture(ResourceIndex index) { return mTextureLocker[index]; }
-
-
     ResourceIndex RequestTextureLoad(const char* path) {
         TextureArgContainer cont;
         cont.path = path;

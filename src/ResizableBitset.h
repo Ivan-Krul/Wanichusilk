@@ -7,35 +7,36 @@
 template<size_t ChunkByte, size_t ChunkBits = POWER_OF_TWO(ChunkByte)>
 class ResizableBitset {
 public:
+    using IndexType = DEFAULT_RESBITSET_INDEX_TYPE;
     using BitsetChunk = std::bitset<ChunkBits>;
     using BitsetMap = std::unique_ptr<BitsetChunk[]>;
 
     inline size_t size() const { return mSize; }
     inline size_t maxcalledbit() const { return mMaxCalledBit; }
 
-    bool get(size_t index) const {
+    bool get(IndexType index) const {
         if (index >= totalBits()) return false;
 
         return mapBitsets[index >> ChunkByte][index % ChunkBits];
     }
 
-    void set(size_t index, bool val) {
+    void set(IndexType index, bool val) {
         if (index >= totalBits()) resizeIfWants(index);
         mMaxCalledBit = std::max(mMaxCalledBit, index + 1);
 
         mapBitsets[index >> ChunkByte][index % ChunkBits] = val;
     }
 private:
-    void resizeIfWants(size_t target);
-    inline size_t totalBits() const { return mSize * ChunkBits; }
+    void resizeIfWants(IndexType target);
+    inline IndexType totalBits() const { return mSize * ChunkBits; }
 
     BitsetMap mapBitsets = nullptr;
-    size_t mSize = 0;
-    size_t mMaxCalledBit = 0;
+    IndexType mSize = 0;
+    IndexType mMaxCalledBit = 0;
 };
 
 template<size_t ChunkByte, size_t ChunkBits>
-void ResizableBitset<ChunkByte, ChunkBits>::resizeIfWants(size_t target) {
+void ResizableBitset<ChunkByte, ChunkBits>::resizeIfWants(IndexType target) {
     assert(target <= DEFAULT_RESBITSET_SIZE_LIM);
     size_t new_size = ((ChunkBits - (target % ChunkBits)) + target) >> ChunkByte;
     if (mapBitsets) {

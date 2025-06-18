@@ -12,9 +12,15 @@ bool Texture::create(const char* src, RENDERER* renderer) {
     return true;
 }
 
+void Texture::renderRaw(SDL_FRect src, SDL_FRect rect, uint8_t alpha) {
+    SDL_SetTextureAlphaMod(mpTexture, alpha);
+    SDL_RenderTexture(mpRendererOrigin, mpTexture, &src, &rect);
+    SDL_SetTextureAlphaMod(mpTexture, mAlpha);
+}
+
 void Texture::render() {
     if (mpTexture)
-        SDL_RenderTexture(mpRendererOrigin, mpTexture, NULL, &mRect);
+        SDL_RenderTexture(mpRendererOrigin, mpTexture, mUseRectSrc ? &mRectSrc : NULL, &mRect);
     else
         SDL_Log("Not rendering");
 }

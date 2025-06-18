@@ -23,8 +23,7 @@ bool FilmScene::create(TextureManager* texmgr, SDL_Rect scr_res, const std::vect
 
 void FilmScene::start() {
     mKeypointPtr = 0;
-    pKeypointPtr = maKeypoints.begin();
-    pKeypoint = (*pKeypointPtr).get();
+    pKeypoint = (*maKeypoints.begin()).get();
     onNext();
 }
 
@@ -41,8 +40,7 @@ void FilmScene::update() {
 void FilmScene::next() {
     if (!needNext()) return;
     mKeypointPtr++;
-    pKeypointPtr++;
-    pKeypoint = (*pKeypointPtr).get();
+    pKeypoint = maKeypoints[mKeypointPtr].get();
 
     if(mKeypointPtr < maKeypoints.size()) onNext();
 }

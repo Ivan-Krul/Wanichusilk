@@ -22,6 +22,7 @@ public:
     inline size_t textureCount() const { return mTextureIndexes.size(); }
 
     inline ResourceIndex getTextureIndex(size_t index) const { return mTextureIndexes[index]; }
+    inline TextureManager* getTextureManager() const { return mpTexMgr; }
 
     void start();
     void update();
@@ -42,7 +43,6 @@ private:
 
     std::vector<ResourceIndex> mTextureIndexes;
     std::vector<std::shared_ptr<FilmKeypoint>> maKeypoints;
-    decltype(maKeypoints.begin()) pKeypointPtr;
     FilmKeypoint* pKeypoint;
 
     TextureManager* mpTexMgr;
