@@ -6,6 +6,8 @@
 #include "FilmKeypoint.h"
 #include "LockerSimple.h"
 #include "FilmScene.h"
+#include "Clock.h"
+#include "easefunc.h"
 
 // it handles layer stuff, transition between positions, using ease functions, etc...
 
@@ -13,20 +15,30 @@ class FilmLayerist {
     struct KeypointTracker {
         FilmKeypoint* keypoint_ptr;
         FilmKeypoint timer;
+        LayerIndex layer_index;
     };
 public:
 
 
     struct Layer {
-        SDL_FRect src;
-        SDL_FRect rect;
+        SDL_FRect src = { 0.f };
+        SDL_FRect rect = { 0.f };
+        SDL_FRect rect_from = { 0.f };
 
-        float(*ease_func_pos)(float);
-        float(*ease_func_alpha)(float);
-        float(*ease_func_swap)(float);
+        float(*ease_func_pos)(float) = nullptr;
+        float(*ease_func_alpha)(float) = nullptr;
+        float(*ease_func_swap)(float) = nullptr;
 
-        ResourceIndex texind;
-        uint8_t alpha;
+        struct LayerEaseProgress {
+            float pos = 0.f;
+            float alpha = 0.f;
+            float swap = 0.f;
+        } ease_progress = { 0.f };
+
+        ResourceIndex texind = -1;
+        ResourceIndex texind_from = -1;
+        uint8_t alpha = 255;
+        uint8_t alpha_from = 255;
 
         bool use_from_manager = true;
 
@@ -38,10 +50,19 @@ public:
     };
 
     inline void setFilmScene(FilmScene* scene) { pFilmScene = scene; }
+    inline void setClock(Clock* clock) { pClock = clock; }
 
     void registerLayerKeypoint(FilmKeypoint* keypoint);
 
-    virtual void render() = 0;
+    void update();
+
+    void render();
+
+private:
+    void registerLayerKeypointAdd(FilmKeypoint* keypoint, LockerIndex kpllocal);
+    void registerLayerKeypointInteractPos(FilmKeypoint* keypoint, LayerIndex li);
+    void registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, LayerIndex li);
+    float updateTimeProcenting(KeypointTracker& tracker);
 
 private:
     std::vector<Layer> maLayers;
@@ -49,6 +70,9 @@ private:
 
     LockerSimple<KeypointTracker> mKeypointPtrLocker;
 
+    Clock::SteadyClock::time_point mPrev = Clock::SteadyClock::now();
+
     FilmScene* pFilmScene;
+    Clock* pClock;
 };
 

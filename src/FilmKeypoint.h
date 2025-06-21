@@ -54,7 +54,7 @@ struct FilmKeypointTransparentSwap : public FilmKeypoint {
 struct FilmKeypointEaseTransparentSwap : public FilmKeypoint {
     ResourceIndex to;
     ResourceIndex from;
-    float (*ease_func)(float);
+    float (*ease_func)(float) = nullptr;
 
     FilmKeypointType type() const override { return FilmKeypointType::EaseTransparentSwap; }
 };
@@ -71,7 +71,7 @@ struct FilmKeypointLayer : public FilmKeypoint {
 
 struct FilmKeypointLayerInteractPos : public FilmKeypointLayer {
     SDL_FRect pos = { 0.f };
-    float (*ease_func)(float);
+    float (*ease_func)(float) = nullptr;
 
     FilmKeypointType type() const override { return FilmKeypointType::LayerInteractPos; }
 };
@@ -84,7 +84,7 @@ struct FilmKeypointLayerInteractSourcePos : public FilmKeypointLayer {
 
 struct FilmKeypointLayerInteractAlpha : public FilmKeypointLayer {
     uint8_t alpha;
-    float (*ease_func)(float);
+    float (*ease_func)(float) = nullptr;
 
     FilmKeypointType type() const override { return FilmKeypointType::LayerInteractAlpha; }
 };
@@ -97,7 +97,7 @@ struct FilmKeypointLayerInteractSwap : public FilmKeypointLayer {
 
 struct FilmKeypointLayerInteractTransparentSwap : public FilmKeypointLayer {
     ResourceIndex texindx;
-    float (*ease_func)(float);
+    float (*ease_func)(float) = nullptr;
 
     FilmKeypointType type() const override { return FilmKeypointType::LayerInteractTransparentSwap; }
 };

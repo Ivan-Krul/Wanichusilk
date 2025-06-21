@@ -32,6 +32,9 @@ public:
         return count;
     }
 
+    inline std::list<T>::iterator begin() { return maLockArray.begin(); }
+    inline std::list<T>::iterator end() { return maLockArray.end(); }
+
 private:
     void updateLockerStatus();
 
