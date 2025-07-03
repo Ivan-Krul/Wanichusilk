@@ -20,7 +20,7 @@ public:
 	void setOnDestroy(void(*onDestroy)(void)) { mfOnDestroy = onDestroy; }
 
 	SDL_Window* getWindow() { return mpWindow; }
-	RENDERER* getWindowRenderer() { return mpRenderer; }
+	SDL_Renderer* getWindowRenderer() { return mpRenderer; }
 
 	void terminate();
 
@@ -42,6 +42,6 @@ protected:
 	void(*mfOnCreate)(void) = nullptr;
 	void(*mfOnDestroy)(void) = nullptr;
 
-	RENDERER* mpRenderer = nullptr;
+	SDL_Renderer* mpRenderer = nullptr;
 };
 

@@ -11,7 +11,11 @@
 
 template<typename T>
 class LockerSimple {
+private:
+    std::list<T> maLockArray;
 public:
+    using Iterator = decltype(maLockArray.begin());
+
     static_assert(std::is_copy_constructible<T>::value || std::is_move_constructible<T>::value, "copy or move constructor must be");
     static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "has to be a destructor or a primitive variable");
 
@@ -26,14 +30,13 @@ public:
         return count;
     }
 
-    inline std::list<T>::iterator begin() { return maLockArray.begin(); }
-    inline std::list<T>::iterator end() { return maLockArray.end(); }
+    inline Iterator begin() { return maLockArray.begin(); }
+    inline Iterator end() { return maLockArray.end(); }
 
 private:
     void updateLockerStatus();
 
-    std::list<T> maLockArray;
-    std::vector<decltype(maLockArray.begin())> mapLockPtr;
+    std::vector<Iterator> mapLockPtr;
 protected:
     ResBitset maOccupied;
 

@@ -4,6 +4,7 @@ bool FilmScene::create(TextureManager* texmgr, SDL_Rect scr_res, const std::vect
     mpTexMgr = texmgr;
     mTextureIndexes = texture_indexes;
     mScreenResolution = scr_res;
+    mLayerist.setTextureManager(texmgr);
     return true;
 }
 
@@ -18,6 +19,7 @@ bool FilmScene::create(TextureManager* texmgr, SDL_Rect scr_res, const std::vect
         if (indx == -1) return false;
         mTextureIndexes.push_back(indx);
     }
+    mLayerist.setTextureManager(texmgr);
     return true;
 }
 
@@ -70,6 +72,7 @@ void FilmScene::render() {
             mpTexMgr->GetLockerTexture(mTextureIndexes[swapkp.to]).render();
         }
     }
+    mLayerist.render();
 
 #if 0
     SDL_SetTextureBlendMode(mpTexMgr->GetLockerTexture(0).getTexture(), SDL_BLENDMODE_BLEND);
@@ -135,6 +138,8 @@ void FilmScene::onUpdate() {
         if(kp->from != -1) mpTexMgr->GetLockerTexture(kp->from).setAlpha(procent * 255);
         if(kp->to != -1) mpTexMgr->GetLockerTexture(kp->to).setAlpha((1.f - procent) * 255);
     }
+
+    mLayerist.update();
 }
 
 void FilmScene::onNext() {
@@ -143,6 +148,10 @@ void FilmScene::onNext() {
     if (mIsFrameDelay) mFrameDelay = pKeypoint->frame_delay;
     else mDuration = pKeypoint->delay;
 
+    if ((int)(pKeypoint->type()) >= cLayerIndexBegin && (int)(pKeypoint->type()) <= cLayerIndexEnd) {
+        mLayerist.registerLayerKeypoint(pKeypoint);
+        next();
+    }
     if (pKeypoint->type() == FilmKeypointType::Swap) {
         centerTexture(((FilmKeypointSwap*)(pKeypoint))->to);
     }

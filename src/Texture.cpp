@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-bool Texture::create(const char* src, RENDERER* renderer) {
+bool Texture::create(const char* src, SDL_Renderer* renderer) {
     if (mpTexture) return false;
     mpRendererOrigin = renderer;
 

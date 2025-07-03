@@ -8,8 +8,8 @@
 class Texture {
 public:
     inline Texture() = default;
-    inline Texture(const char* src, RENDERER* renderer) { create(src, renderer); }
-    bool   create(const char* src, RENDERER* renderer);
+    inline Texture(const char* src, SDL_Renderer* renderer) { create(src, renderer); }
+    bool   create(const char* src, SDL_Renderer* renderer);
 
     inline void setAlpha(uint8_t alpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); }
     inline void setWidth(float w) { mRect.w = w; }
@@ -35,7 +35,7 @@ protected:
     SDL_FRect     mRectSrc = { 0.f };
     SDL_FRect     mRect = { 0.f };
 
-    RENDERER* mpRendererOrigin = NULL;
+    SDL_Renderer* mpRendererOrigin = NULL;
 
     uint8_t mAlpha = 255;
     bool mUseRectSrc = false;

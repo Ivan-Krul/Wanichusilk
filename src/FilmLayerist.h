@@ -5,7 +5,6 @@
 
 #include "FilmKeypoint.h"
 #include "LockerSimple.h"
-#include "FilmScene.h"
 #include "Clock.h"
 #include "easefunc.h"
 
@@ -18,8 +17,6 @@ class FilmLayerist {
         LayerIndex layer_index;
     };
 public:
-
-
     struct Layer {
         SDL_FRect src = { 0.f };
         SDL_FRect rect = { 0.f };
@@ -49,7 +46,7 @@ public:
         } change = { 0 };
     };
 
-    inline void setFilmScene(FilmScene* scene) { pFilmScene = scene; }
+    inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
     inline void setClock(Clock* clock) { pClock = clock; }
 
     void registerLayerKeypoint(FilmKeypoint* keypoint);
@@ -72,7 +69,7 @@ private:
 
     Clock::SteadyClock::time_point mPrev = Clock::SteadyClock::now();
 
-    FilmScene* pFilmScene;
+    TextureManager* pTexMgr;
     Clock* pClock;
 };
 

@@ -13,8 +13,11 @@ typedef int LockerIndex;
 
 template<class T, typename Cont>
 class Locker {
+private: 
+    std::list<T> maLockArray;
 public:
     using checkFunctionPtr = bool(*)(T&, Cont);
+    using Iterator = decltype(maLockArray.begin());
 
     static_assert(std::is_default_constructible<T>::value, "default constructor must be, empty one");
     static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "has to be a destructor or a primitive variable");
@@ -32,16 +35,16 @@ public:
         return count;
     }
 
-    inline std::list<T>::iterator begin() { return maLockArray.begin(); }
-    inline std::list<T>::iterator end() { return maLockArray.end(); }
+    inline Iterator begin() { return maLockArray.begin(); }
+    inline Iterator end() { return maLockArray.end(); }
 
 private:
     void updateLockerStatus();
 
     checkFunctionPtr mfCheckCreateRaw;
 
-    std::list<T> maLockArray;
-    std::vector<decltype(maLockArray.begin())> mapLockPtr;
+    
+    std::vector<Iterator> mapLockPtr;
 protected:
     ResBitset maOccupied;
 

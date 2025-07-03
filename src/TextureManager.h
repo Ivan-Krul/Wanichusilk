@@ -11,7 +11,7 @@ typedef int ResourceIndex;
 class TextureManager {
     struct TextureArgContainer {
         const char* path;
-        RENDERER* renderer;
+        SDL_Renderer* renderer;
     };
 
 public:
@@ -19,8 +19,8 @@ public:
         [](Texture& tex, TextureArgContainer cont) -> bool { return tex.create(cont.path, cont.renderer);  }) {
     }
 
-    inline void SetRenderer(RENDERER* renderer) { mpRenderer = renderer; }
-    inline RENDERER* GetRenderer() const { return mpRenderer; }
+    inline void SetRenderer(SDL_Renderer* renderer) { mpRenderer = renderer; }
+    inline SDL_Renderer* GetRenderer() const { return mpRenderer; }
 
     Texture& GetLockerTexture(ResourceIndex index) { return mTextureLocker[index]; }
     ResourceIndex RequestTextureLoad(const char* path) {
@@ -38,5 +38,5 @@ private:
     
     Locker<Texture, TextureArgContainer> mTextureLocker;
 
-    RENDERER* mpRenderer = nullptr;
+    SDL_Renderer* mpRenderer = nullptr;
 };

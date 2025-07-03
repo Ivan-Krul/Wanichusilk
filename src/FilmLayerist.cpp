@@ -21,9 +21,13 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
     case FilmKeypointType::LayerInteractTransparentSwap:
         maLayers[li].ease_progress.swap = 0.f;
         maLayers[li].change.swap = ((maLayers[li].ease_func_swap = ((FilmKeypointLayerInteractTransparentSwap*)keypoint)->ease_func) == nullptr);
+#if __cplusplus >= 201703L
     case FilmKeypointType::LayerInteractSwap: [[fallthrough]]
+#else
+    case FilmKeypointType::LayerInteractSwap:
+#endif
         maLayers[li].texind = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
-        maLayers[li].rect = pFilmScene->getTextureManager()->GetLockerTexture(pFilmScene->getTextureIndex(maLayers[li].texind)).getRect();
+        maLayers[li].rect = pTexMgr->GetLockerTexture(maLayers[li].texind).getRect();
         maLayers[li].use_from_manager = true;
         break;
     case FilmKeypointType::LayerEnable:
@@ -60,11 +64,14 @@ void FilmLayerist::update() {
             layer.ease_func_swap = nullptr;
             layer.change = { 0 };
             layer.ease_progress = { 0.f };
+            layer.texind_from = -1;
+            
         }
         else {
             if (layer.change.pos) layer.ease_progress.pos = procent; // transition will happen in render 
             if (layer.change.alpha) {
                 layer.ease_progress.alpha = procent;
+                if(layer.ease_func_alpha)
                 layer.alpha = lerp(layer.ease_func_alpha(procent), 0.f, 255.f);
             }
             if (layer.change.swap) layer.ease_progress.swap = procent; // same with this
@@ -73,14 +80,40 @@ void FilmLayerist::update() {
 }
 
 void FilmLayerist::render() {
-    // do there
+    bool tex_from = false;
+    float progress = 0.f;
+    SDL_FRect rect = { 0.f };
+
+    for (auto& layer : maLayers) {
+        tex_from = layer.texind_from != -1;
+
+        if (layer.change.pos) {
+            progress = layer.ease_func_pos(layer.ease_progress.pos);
+            rect.x = lerp(progress, layer.rect_from.x, layer.rect.x);
+            rect.y = lerp(progress, layer.rect_from.y, layer.rect.y);
+            rect.w = lerp(progress, layer.rect_from.w, layer.rect.w);
+            rect.h = lerp(progress, layer.rect_from.h, layer.rect.h);
+        }
+
+        if (layer.change.swap) {
+            progress = layer.ease_func_pos(layer.ease_progress.pos);
+            if (tex_from)
+                pTexMgr->GetLockerTexture(layer.texind_from).renderRaw(layer.src, layer.change.pos ? rect : layer.rect, (1 - progress) * layer.alpha);
+
+            pTexMgr->GetLockerTexture(layer.texind).renderRaw(layer.src, layer.change.pos ? rect : layer.rect, progress * layer.alpha);
+        } else if (layer.use_from_manager)
+            pTexMgr->GetLockerTexture(layer.texind).render();
+        else
+            pTexMgr->GetLockerTexture(layer.texind).renderRaw(layer.src, layer.change.pos ? rect : layer.rect, layer.alpha);
+        
+    }
 }
 
 void FilmLayerist::registerLayerKeypointAdd(FilmKeypoint* keypoint, LockerIndex kpllocal) {
     auto texind = ((FilmKeypointLayerAdd*)keypoint)->texind;
     Layer l;
     l.texind = texind;
-    l.rect = pFilmScene->getTextureManager()->GetLockerTexture(pFilmScene->getTextureIndex(texind)).getRect();
+    l.rect = pTexMgr->GetLockerTexture(texind).getRect();
     mKeypointPtrLocker[kpllocal].layer_index = maLayers.size();
     maLayers.push_back(l);
 }

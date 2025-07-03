@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include "FilmKeypoint.h"
 #include "Clock.h"
+#include "FilmLayerist.h"
 
 #include <vector>
 #include <string>
@@ -9,9 +10,11 @@
 
 class FilmScene {
 public:
+    inline FilmScene() : mFrameDelay(0), mIsFrameDelay(true) {}
+
     bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<ResourceIndex>& texture_indexes);
     bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<std::string>& texture_paths);
-    void setClock(Clock* clock) { mpClock = clock; }
+    void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); }
 
     template<typename T>
     void addKeypoint(const T keypoint);
@@ -47,6 +50,8 @@ private:
 
     TextureManager* mpTexMgr;
 
+    FilmLayerist mLayerist;
+
     SDL_Rect mScreenResolution;
 
     size_t mKeypointPtr = -1;
@@ -54,8 +59,8 @@ private:
     Clock::SteadyClock::time_point mPrev = Clock::SteadyClock::now();
 
     Clock::Duration mDuration = std::chrono::seconds(0);
-    int mFrameDelay = 0;
-    bool mIsFrameDelay = true;
+    int mFrameDelay : 31;
+    int mIsFrameDelay : 1;
 
 };
 

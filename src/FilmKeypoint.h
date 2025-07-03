@@ -26,6 +26,9 @@ enum class FilmKeypointType {
     ReleaseInput
 };
 
+constexpr int cLayerIndexBegin = (int)(FilmKeypointType::LayerAdd);
+constexpr int cLayerIndexEnd = (int)(FilmKeypointType::LayerRemove);
+
 struct FilmKeypoint {
     using Duration = std::chrono::duration<float>;
 
