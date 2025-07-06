@@ -15,6 +15,7 @@ private:
     std::list<T> maLockArray;
 public:
     using Iterator = decltype(maLockArray.begin());
+    using ConstIterator = decltype(maLockArray.cbegin());
 
     static_assert(std::is_copy_constructible<T>::value || std::is_move_constructible<T>::value, "copy or move constructor must be");
     static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "has to be a destructor or a primitive variable");
@@ -32,6 +33,9 @@ public:
 
     inline Iterator begin() { return maLockArray.begin(); }
     inline Iterator end() { return maLockArray.end(); }
+
+    inline ConstIterator cbegin() const { return maLockArray.cbegin(); }
+    inline ConstIterator cend() const { return maLockArray.cend(); }
 
 private:
     void updateLockerStatus();

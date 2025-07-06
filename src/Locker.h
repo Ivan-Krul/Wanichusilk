@@ -18,6 +18,7 @@ private:
 public:
     using checkFunctionPtr = bool(*)(T&, Cont);
     using Iterator = decltype(maLockArray.begin());
+    using ConstIterator = decltype(maLockArray.cbegin());
 
     static_assert(std::is_default_constructible<T>::value, "default constructor must be, empty one");
     static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "has to be a destructor or a primitive variable");
@@ -38,6 +39,8 @@ public:
     inline Iterator begin() { return maLockArray.begin(); }
     inline Iterator end() { return maLockArray.end(); }
 
+    inline ConstIterator cbegin() const { return maLockArray.cbegin(); }
+    inline ConstIterator cend() const { return maLockArray.cend(); }
 private:
     void updateLockerStatus();
 

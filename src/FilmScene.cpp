@@ -113,16 +113,10 @@ void FilmScene::centerTexture(ResourceIndex texind) {
 }
 
 void FilmScene::onUpdate() {
-    bool finished = false;
-    if (mIsFrameDelay) {
-        if (!(finished = (mFrameDelay <= 0))) mFrameDelay--;
-    }
-    else { 
-        if (!(finished = mDuration.count() < 0)) mDuration -= std::chrono::duration_cast<std::chrono::milliseconds>(mpClock->Now() - mPrev);
-    }
+    mTimer.decrement_time_frame(std::chrono::duration_cast<std::chrono::milliseconds>(mpClock->Now() - mPrev));
     mPrev = mpClock->Now();
 
-    if (finished && (!pKeypoint->need_input)) {
+    if (mTimer.is_zero() && !mTimer.need_input) {
         next();
         return;
     }
@@ -130,10 +124,11 @@ void FilmScene::onUpdate() {
     if (pKeypoint->type() == FilmKeypointType::TransparentSwap) {
         auto kp = ((FilmKeypointTransparentSwap*)(pKeypoint));
         float procent;
-        if (mIsFrameDelay)
-            procent = mFrameDelay / float(kp->frame_delay);
-        else
-            procent = mDuration.count() / kp->delay.count();
+        
+        if (mTimer.need_time_delay) procent = mTimer.delay.count() / kp->delay.count();
+        else procent = mTimer.frame_delay / float(kp->frame_delay);
+
+        if (procent < 0.f) procent = 0.f;
 
         if(kp->from != -1) pTexMgr->GetLockerTexture(kp->from).setAlpha(procent * 255);
         if(kp->to != -1) pTexMgr->GetLockerTexture(kp->to).setAlpha((1.f - procent) * 255);
@@ -143,14 +138,11 @@ void FilmScene::onUpdate() {
 }
 
 void FilmScene::onNext() {
-
 #ifdef DEBUG
     SDL_Log("FilmScene handles the keyword %s\n", debugKeypointNames[(int)pKeypoint->type()]);
 #endif
-    mIsFrameDelay = pKeypoint->frame_delay > -1;
 
-    if (mIsFrameDelay) mFrameDelay = pKeypoint->frame_delay;
-    else mDuration = pKeypoint->delay;
+    mTimer = *((FilmTimer*)pKeypoint);
 
     if ((int)(pKeypoint->type()) >= cLayerIndexBegin && (int)(pKeypoint->type()) <= cLayerIndexEnd) {
         mLayerist.registerLayerKeypoint(pKeypoint);
@@ -171,7 +163,7 @@ void FilmScene::onNext() {
         }
     }
 
-    if (mFrameDelay == 0 && !pKeypoint->need_input)
+    if (mTimer.is_zero() && !mTimer.need_input)
         next();
 
 }

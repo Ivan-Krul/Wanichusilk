@@ -15,6 +15,12 @@
 #define DEFAULT_RESBITSET_SIZE_LIM 0x2000
 #define DEFAULT_RESBITSET_INDEX_TYPE int
 
+#if __cplusplus >= 201703L
+#define _FALLTHROUGH [[fallthrough]]
+#else
+#define _FALLTHROUGH
+#endif
+
 //#define USE_THIRD_PARTY_MATH
 
 #endif

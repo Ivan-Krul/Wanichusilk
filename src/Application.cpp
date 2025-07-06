@@ -37,17 +37,20 @@ void Application::OnInit() {
     {
         FilmKeypointLayerAdd la;
         la.texind = 2;
+        la.need_await = true;
         mScene.addKeypoint(la);
     }
     {
         FilmKeypointLayerInteractAlpha lia;
         lia.layerindx = 0;
+        lia.need_await = true;
         lia.alpha = 0;
         mScene.addKeypoint(lia);
     }
     {
         FilmKeypointLayerEnable le;
         le.layerindx = 0;
+        le.need_await = true;
         mScene.addKeypoint(le);
     }
     {
@@ -55,7 +58,8 @@ void Application::OnInit() {
         lia.layerindx = 0;
         lia.alpha = 255;
         lia.ease_func = ease_cubic_in_out;
-        lia.delay = std::chrono::seconds(1);
+        lia.need_time_delay = true;
+        lia.delay = std::chrono::seconds(30);
         mScene.addKeypoint(lia);
     }
     swap.from = 0;

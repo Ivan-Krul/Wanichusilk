@@ -10,8 +10,6 @@
 
 class FilmScene {
 public:
-    inline FilmScene() : mFrameDelay(0), mIsFrameDelay(true) {}
-
     bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<ResourceIndex>& texture_indexes);
     bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<std::string>& texture_paths);
     void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); }
@@ -34,7 +32,7 @@ public:
 
     void render();
 
-    inline bool needNext() const { return isGoing() ? mFrameDelay == 0 : false; }
+    inline bool needNext() const { return isGoing() ? mTimer.is_zero() : false; }
     inline bool isGoing() const { return mKeypointIndex != -1 && (mKeypointIndex + 1) < maKeypoints.size(); }
 
     void clear();
@@ -58,10 +56,7 @@ private:
     Clock* mpClock;
     Clock::SteadyClock::time_point mPrev = Clock::SteadyClock::now();
 
-    Clock::Duration mDuration = std::chrono::seconds(0);
-    int mFrameDelay : 31;
-    int mIsFrameDelay : 1;
-
+    FilmTimer mTimer;
 };
 
 template<typename T>
