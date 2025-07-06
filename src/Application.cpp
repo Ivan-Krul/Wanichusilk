@@ -14,7 +14,8 @@ void Application::OnInit() {
 
     std::vector<std::string> vec {
         "./res/Stefan chill emoji.png",
-        "./res/Stefan is laying.png"
+        "./res/Stefan is laying.png",
+        "./res/Stefan wah.png"
     };
 
     mScene.create(&mTexMgr, SDL_Rect{0,0, DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }, vec);
@@ -33,11 +34,32 @@ void Application::OnInit() {
     swap.from = 1;
     swap.to = 0;
     mScene.addKeypoint(swap);
+    {
+        FilmKeypointLayerAdd la;
+        la.texind = 2;
+        mScene.addKeypoint(la);
+    }
+    {
+        FilmKeypointLayerInteractAlpha lia;
+        lia.layerindx = 0;
+        lia.alpha = 0;
+        mScene.addKeypoint(lia);
+    }
+    {
+        FilmKeypointLayerEnable le;
+        le.layerindx = 0;
+        mScene.addKeypoint(le);
+    }
+    {
+        FilmKeypointLayerInteractAlpha lia;
+        lia.layerindx = 0;
+        lia.alpha = 255;
+        lia.ease_func = ease_cubic_in_out;
+        lia.delay = std::chrono::seconds(1);
+        mScene.addKeypoint(lia);
+    }
     swap.from = 0;
     swap.to = 1;
-    mScene.addKeypoint(swap);
-    swap.from = 1;
-    swap.to = 0;
     mScene.addKeypoint(swap);
     swap.from = -1;
     swap.to = 1;

@@ -38,6 +38,8 @@ struct FilmKeypoint {
     int need_parallel : 1;
     int need_await : 1;
 
+    FilmKeypoint() : delay(std::chrono::seconds(0)), frame_delay(0), need_input(0), need_parallel(0), need_await(0) {}
+
     virtual FilmKeypointType type() const { return FilmKeypointType::BlankDelay; }
 };
 
@@ -79,8 +81,9 @@ struct FilmKeypointLayerInteractPos : public FilmKeypointLayer {
     FilmKeypointType type() const override { return FilmKeypointType::LayerInteractPos; }
 };
 
-struct FilmKeypointLayerInteractSourcePos : public FilmKeypointLayer {
+struct FilmKeypointLayerInteractPartitionPos : public FilmKeypointLayer {
     SDL_FRect src_pos = { 0.f };
+    float (*ease_func)(float) = nullptr;
 
     FilmKeypointType type() const override { return FilmKeypointType::LayerInteractSourcePos; }
 };
@@ -129,3 +132,25 @@ struct FilmKeypointReleaseInput : public FilmKeypoint {
     FilmKeypointType type() const override { return FilmKeypointType::ReleaseInput; }
 };
 
+
+#ifdef DEBUG
+static const char* debugKeypointNames[] = {
+    "BlankDelay",
+    "Swap",
+    "TransparentSwap",
+    "EaseTransparentSwap",
+    "LayerAdd",
+    "LayerInteractPos",
+    "LayerInteractSourcePos",
+    "LayerInteractAlpha",
+    "LayerInteractSwap",
+    "LayerInteractTransparentSwap",
+    "LayerInteractDefault",
+    "LayerEnable",
+    "LayerDisable",
+    "LayerAwait",
+    "LayerRemove",
+    "OccupyInput",
+    "ReleaseInput"
+};
+#endif

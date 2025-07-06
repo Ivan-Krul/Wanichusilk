@@ -25,7 +25,7 @@ public:
     inline size_t textureCount() const { return mTextureIndexes.size(); }
 
     inline ResourceIndex getTextureIndex(size_t index) const { return mTextureIndexes[index]; }
-    inline TextureManager* getTextureManager() const { return mpTexMgr; }
+    inline TextureManager* getTextureManager() const { return pTexMgr; }
 
     void start();
     void update();
@@ -35,7 +35,7 @@ public:
     void render();
 
     inline bool needNext() const { return isGoing() ? mFrameDelay == 0 : false; }
-    inline bool isGoing() const { return mKeypointPtr != -1 && mKeypointPtr < maKeypoints.size(); }
+    inline bool isGoing() const { return mKeypointIndex != -1 && (mKeypointIndex + 1) < maKeypoints.size(); }
 
     void clear();
     ~FilmScene() { clear(); }
@@ -48,13 +48,13 @@ private:
     std::vector<std::shared_ptr<FilmKeypoint>> maKeypoints;
     FilmKeypoint* pKeypoint;
 
-    TextureManager* mpTexMgr;
+    TextureManager* pTexMgr;
 
     FilmLayerist mLayerist;
 
     SDL_Rect mScreenResolution;
 
-    size_t mKeypointPtr = -1;
+    size_t mKeypointIndex = -1;
     Clock* mpClock;
     Clock::SteadyClock::time_point mPrev = Clock::SteadyClock::now();
 

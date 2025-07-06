@@ -6,8 +6,8 @@ bool Texture::create(const char* src, SDL_Renderer* renderer) {
 
     mpTexture = IMG_LoadTexture(mpRendererOrigin, src);
     if (mpTexture == NULL) return false;
-    mRect.w = mpTexture->w;
-    mRect.h = mpTexture->h;
+    mRectRes.w = mpTexture->w;
+    mRectRes.h = mpTexture->h;
 
     return true;
 }
@@ -20,7 +20,7 @@ void Texture::renderRaw(SDL_FRect src, SDL_FRect rect, uint8_t alpha) {
 
 void Texture::render() {
     if (mpTexture)
-        SDL_RenderTexture(mpRendererOrigin, mpTexture, mUseRectSrc ? &mRectSrc : NULL, &mRect);
+        SDL_RenderTexture(mpRendererOrigin, mpTexture, mUseRectPart ? &mRectPart : NULL, &mRectRes);
     else
         SDL_Log("Not rendering");
 }

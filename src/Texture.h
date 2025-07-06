@@ -12,17 +12,18 @@ public:
     bool   create(const char* src, SDL_Renderer* renderer);
 
     inline void setAlpha(uint8_t alpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); }
-    inline void setWidth(float w) { mRect.w = w; }
-    inline void setHeight(float h) { mRect.h = h; }
-    inline void setResolution(float w, float h) { mRect.w = w; mRect.h = h; }
-    inline void setOffsetX(float x) { mRect.x = x; mUseRectSrc = true; }
-    inline void setOffsetY(float y) { mRect.y = y; mUseRectSrc = true; }
-    inline void setOffset(float x, float y) { mRect.x = x; mRect.y = y; mUseRectSrc = true; }
-    inline void resetOffset() { mUseRectSrc = false; }
+    inline void setWidth(float w) { mRectRes.w = w; }
+    inline void setHeight(float h) { mRectRes.h = h; }
+    inline void setResolution(float w, float h) { mRectRes.w = w; mRectRes.h = h; }
+    inline void setOffsetX(float x) { mRectRes.x = x; }
+    inline void setOffsetY(float y) { mRectRes.y = y; }
+    inline void setOffset(float x, float y) { mRectRes.x = x; mRectRes.y = y; }
+    inline void setPartialRenderingResolution(float x = 0, float y = 0, float w = 0, float h = 0) { mRectPart.x = x; mRectPart.y = y; mRectPart.w = w; mRectPart.h = h; }
+    inline void setPartialRenderingUsage(bool use) { mUseRectPart = use; }
 
     inline SDL_Texture*  getTexture()       noexcept { return mpTexture; }
-    inline SDL_FRect     getRectSrc() const noexcept { return mRectSrc; }
-    inline SDL_FRect     getRect()    const noexcept { return mRect; }
+    inline SDL_FRect     getRectPart() const noexcept { return mRectPart; }
+    inline SDL_FRect     getRectRes()    const noexcept { return mRectRes; }
 
     void renderRaw(SDL_FRect src, SDL_FRect rect, uint8_t alpha = 255);
     void render();
@@ -32,12 +33,12 @@ public:
 protected:
     SDL_Texture* mpTexture = NULL;
 
-    SDL_FRect     mRectSrc = { 0.f };
-    SDL_FRect     mRect = { 0.f };
+    SDL_FRect     mRectPart = { 0.f };
+    SDL_FRect     mRectRes = { 0.f };
 
     SDL_Renderer* mpRendererOrigin = NULL;
 
     uint8_t mAlpha = 255;
-    bool mUseRectSrc = false;
+    bool mUseRectPart = false;
 
 };

@@ -1,7 +1,8 @@
 #ifndef DEFINE_H
 #define DEFINE_H
 #include <cassert>
-#include <SDL3/SDL.h>
+
+#define DEBUG
 
 #define DEFAULT_SCR_RES_X 640
 #define DEFAULT_SCR_RES_Y 480

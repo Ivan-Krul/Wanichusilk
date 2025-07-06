@@ -13,7 +13,8 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
     case FilmKeypointType::LayerInteractPos:
         registerLayerKeypointInteractPos(keypoint, li); break;
     case FilmKeypointType::LayerInteractSourcePos:
-        maLayers[li].src = ((FilmKeypointLayerInteractSourcePos*)keypoint)->src_pos;
+        maLayers[li].part = ((FilmKeypointLayerInteractPartitionPos*)keypoint)->src_pos;
+        maLayers[li].change.part = ((maLayers[li].ease_func_part = ((FilmKeypointLayerInteractTransparentSwap*)keypoint)->ease_func) == nullptr);
         maLayers[li].use_from_manager = false;
         break;
     case FilmKeypointType::LayerInteractAlpha:
@@ -27,7 +28,7 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
     case FilmKeypointType::LayerInteractSwap:
 #endif
         maLayers[li].texind = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
-        maLayers[li].rect = pTexMgr->GetLockerTexture(maLayers[li].texind).getRect();
+        maLayers[li].rect = pTexMgr->GetLockerTexture(maLayers[li].texind).getRectRes();
         maLayers[li].use_from_manager = true;
         break;
     case FilmKeypointType::LayerEnable:
@@ -98,13 +99,13 @@ void FilmLayerist::render() {
         if (layer.change.swap) {
             progress = layer.ease_func_pos(layer.ease_progress.pos);
             if (tex_from)
-                pTexMgr->GetLockerTexture(layer.texind_from).renderRaw(layer.src, layer.change.pos ? rect : layer.rect, (1 - progress) * layer.alpha);
+                pTexMgr->GetLockerTexture(layer.texind_from).renderRaw(layer.part, layer.change.pos ? rect : layer.rect, (1 - progress) * layer.alpha);
 
-            pTexMgr->GetLockerTexture(layer.texind).renderRaw(layer.src, layer.change.pos ? rect : layer.rect, progress * layer.alpha);
+            pTexMgr->GetLockerTexture(layer.texind).renderRaw(layer.part, layer.change.pos ? rect : layer.rect, progress * layer.alpha);
         } else if (layer.use_from_manager)
             pTexMgr->GetLockerTexture(layer.texind).render();
         else
-            pTexMgr->GetLockerTexture(layer.texind).renderRaw(layer.src, layer.change.pos ? rect : layer.rect, layer.alpha);
+            pTexMgr->GetLockerTexture(layer.texind).renderRaw(layer.part, layer.change.pos ? rect : layer.rect, layer.alpha);
         
     }
 }
@@ -113,7 +114,7 @@ void FilmLayerist::registerLayerKeypointAdd(FilmKeypoint* keypoint, LockerIndex 
     auto texind = ((FilmKeypointLayerAdd*)keypoint)->texind;
     Layer l;
     l.texind = texind;
-    l.rect = pTexMgr->GetLockerTexture(texind).getRect();
+    l.rect = pTexMgr->GetLockerTexture(texind).getRectRes();
     mKeypointPtrLocker[kpllocal].layer_index = maLayers.size();
     maLayers.push_back(l);
 }

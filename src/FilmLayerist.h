@@ -18,16 +18,19 @@ class FilmLayerist {
     };
 public:
     struct Layer {
-        SDL_FRect src = { 0.f };
+        SDL_FRect part = { 0.f };
+        SDL_FRect part_from = { 0.f };
         SDL_FRect rect = { 0.f };
         SDL_FRect rect_from = { 0.f };
 
         float(*ease_func_pos)(float) = nullptr;
+        float(*ease_func_part)(float) = nullptr;
         float(*ease_func_alpha)(float) = nullptr;
         float(*ease_func_swap)(float) = nullptr;
 
         struct LayerEaseProgress {
             float pos = 0.f;
+            float part = 0.f;
             float alpha = 0.f;
             float swap = 0.f;
         } ease_progress = { 0.f };
@@ -41,6 +44,7 @@ public:
 
         struct LayerChange {
             char pos : 1;
+            char part : 1;
             char alpha : 1;
             char swap : 1;
         } change = { 0 };
