@@ -18,7 +18,7 @@ void Application::OnInit() {
         "./res/Stefan wah.png"
     };
 
-    mScene.create(&mTexMgr, SDL_Rect{0,0, DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }, vec);
+    assert(mScene.create(&mTexMgr, SDL_Rect{ 0,0, DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }, vec));
     mScene.setClock(&mClock);
 
     FilmKeypointTransparentSwap swap;
@@ -43,23 +43,21 @@ void Application::OnInit() {
     {
         FilmKeypointLayerInteractAlpha lia;
         lia.layerindx = 0;
-        lia.need_await = true;
         lia.alpha = 0;
         mScene.addKeypoint(lia);
     }
     {
         FilmKeypointLayerEnable le;
         le.layerindx = 0;
-        le.need_await = true;
         mScene.addKeypoint(le);
     }
     {
         FilmKeypointLayerInteractAlpha lia;
         lia.layerindx = 0;
         lia.alpha = 255;
-        lia.ease_func = ease_cubic_in_out;
-        lia.need_time_delay = true;
-        lia.delay = std::chrono::seconds(30);
+        //lia.ease_func = ease_cubic_in_out;
+        //lia.need_time_delay = true;
+        lia.frame_delay = 180;
         mScene.addKeypoint(lia);
     }
     swap.from = 0;
