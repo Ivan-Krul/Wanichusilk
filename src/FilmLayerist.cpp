@@ -1,50 +1,50 @@
 #include "FilmLayerist.h"
 
 void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
-    assert(keypoint->type() >= FilmKeypointType::LayerAdd && keypoint->type() <= FilmKeypointType::LayerRemove);
+    assert(keypoint->type().specific_type >= FilmKeypointLayer::Add && keypoint->type().specific_type <= FilmKeypointLayer::Remove);
 
-    LayerIndex li = (keypoint->type() != FilmKeypointType::LayerAdd) ? ((FilmKeypointLayer*)keypoint)->layerindx : -1;
+    LayerIndex li = (keypoint->type().specific_type != FilmKeypointLayer::Add) ? ((FilmKeypointLayer*)keypoint)->layerindx : -1;
 
     float(*ease)(float) = nullptr;
 
-    switch (keypoint->type()) { // it's mess now, but I must go further
-    case FilmKeypointType::LayerAdd:             registerLayerKeypointAdd((FilmKeypointLayerAdd*)keypoint);                                break;
-    case FilmKeypointType::LayerInteractPos:     registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, false); break;
-    case FilmKeypointType::LayerInteractPartPos: registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, true);  break;
-    case FilmKeypointType::LayerInteractAlpha:   registerLayerKeypointInteractAlpha(keypoint, li);                                         break;
-    case FilmKeypointType::LayerInteractDefaultPos:
+    switch (keypoint->type().specific_type) { // it's mess now, but I must go further
+    case FilmKeypointLayer::Add:             registerLayerKeypointAdd((FilmKeypointLayerAdd*)keypoint);                                break;
+    case FilmKeypointLayer::InteractPos:     registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, false); break;
+    case FilmKeypointLayer::InteractPartPos: registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, true);  break;
+    case FilmKeypointLayer::InteractAlpha:   registerLayerKeypointInteractAlpha(keypoint, li);                                         break;
+    case FilmKeypointLayer::InteractDefaultPos:
         maLayers[li].rect = Layer::c_ease_use_default;
         break;
-    case FilmKeypointType::LayerInteractDefaultPartPos:
+    case FilmKeypointLayer::InteractDefaultPartPos:
         maLayers[li].part = Layer::c_ease_use_default;
         break;
-    case FilmKeypointType::LayerInteractTransparentSwap:
+    case FilmKeypointLayer::InteractTransparentSwap:
         maLayers[li].texind.set_ease(((FilmKeypointEase*)(keypoint))->ease_func);
         if(maLayers[li].texind.is_easing()) registerTracker(keypoint, li);
-    case FilmKeypointType::LayerInteractSwap: _FALLTHROUGH
+    case FilmKeypointLayer::InteractSwap: _FALLTHROUGH
         maLayers[li].texind.elem_from = maLayers[li].texind.elem_to;
         maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
         maLayers[li].rect.elem_to = pTexMgr->GetLockerTexture(maLayers[li].texind.elem_to).getRectRes();
         break;
-    case FilmKeypointType::LayerEnable:
+    case FilmKeypointLayer::Enable:
         maActiveLayerIndexes.push_back(li);
         break;
-    case FilmKeypointType::LayerDisable:
+    case FilmKeypointLayer::Disable:
     {
         auto iter = std::find(maActiveLayerIndexes.begin(), maActiveLayerIndexes.end(), li);
         if(iter != maActiveLayerIndexes.end()) maActiveLayerIndexes.erase(iter);
     }   break;
-    case FilmKeypointType::LayerInteractDefault:
+    case FilmKeypointLayer::InteractDefault:
         maLayers[li].set_to_default();
         break;
-    case FilmKeypointType::LayerRemove:
+    case FilmKeypointLayer::Remove:
     {
         maLayers.erase(maLayers.begin() + li);
         auto iter = std::find(maActiveLayerIndexes.begin(), maActiveLayerIndexes.end(), li);
         maActiveLayerIndexes.erase(iter);
         mKeypointPtrLocker.popFromLocker(li);
     }   break;
-    case FilmKeypointType::LayerAwait: assert(false); break;
+    case FilmKeypointLayer::Await: assert(false); break;
     default: assert(false); break;
     }
 

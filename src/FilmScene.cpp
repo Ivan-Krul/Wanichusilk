@@ -52,10 +52,10 @@ void FilmScene::finish() {
 }
 
 void FilmScene::render() {
-    if (!isGoing() || pKeypoint->type() == FilmKeypointType::BlankDelay) return;
+    if (!isGoing() || pKeypoint->type().global_type == FilmKeypointChangeType::None) return;
 
-    if (pKeypoint->type() == FilmKeypointType::Swap) {
-        auto swapkp = *reinterpret_cast<FilmKeypointSwap*>(pKeypoint);
+    if (pKeypoint->type().specific_type == FilmKeypointBackground::Swap) {
+        auto swapkp = *reinterpret_cast<FilmKeypointBgSwap*>(pKeypoint);
         auto target = swapkp.to;
 
         if (target != -1) {
@@ -63,8 +63,8 @@ void FilmScene::render() {
         }
     }
 
-    if (pKeypoint->type() == FilmKeypointType::TransparentSwap) {
-        auto swapkp = *reinterpret_cast<FilmKeypointTransparentSwap*>(pKeypoint);
+    if (pKeypoint->type().specific_type == FilmKeypointBackground::TransparentSwap) {
+        auto swapkp = *reinterpret_cast<FilmKeypointBgTransparentSwap*>(pKeypoint);
         if (swapkp.from != -1) {
             pTexMgr->GetLockerTexture(mTextureIndexes[swapkp.from]).render();
         }
@@ -121,8 +121,8 @@ void FilmScene::onUpdate() {
         return;
     }
 
-    if (pKeypoint->type() == FilmKeypointType::TransparentSwap) {
-        auto kp = ((FilmKeypointTransparentSwap*)(pKeypoint));
+    if (pKeypoint->type().specific_type == FilmKeypointBackground::TransparentSwap) {
+        auto kp = ((FilmKeypointBgTransparentSwap*)(pKeypoint));
         float procent;
         
         if (mTimer.need_time_delay) procent = mTimer.delay.count() / kp->delay.count();
@@ -138,21 +138,17 @@ void FilmScene::onUpdate() {
 }
 
 void FilmScene::onNext() {
-#ifdef DEBUG
-    SDL_Log("FilmScene handles the keyword %s\n", debugKeypointNames[(int)pKeypoint->type()]);
-#endif
-
     mTimer = *((FilmTimer*)pKeypoint);
 
-    if ((int)(pKeypoint->type()) >= cLayerIndexBegin && (int)(pKeypoint->type()) <= cLayerIndexEnd) {
+    if (pKeypoint->type().global_type == FilmKeypointChangeType::Layer) {
         mLayerist.registerLayerKeypoint(pKeypoint);
         next();
     }
-    if (pKeypoint->type() == FilmKeypointType::Swap) {
-        centerTexture(((FilmKeypointSwap*)(pKeypoint))->to);
+    if (pKeypoint->type().specific_type == FilmKeypointBackground::Swap) {
+        centerTexture(((FilmKeypointBgSwap*)(pKeypoint))->to);
     }
-    if (pKeypoint->type() == FilmKeypointType::TransparentSwap) {
-        auto kp = ((FilmKeypointTransparentSwap*)(pKeypoint));
+    if (pKeypoint->type().specific_type == FilmKeypointBackground::TransparentSwap) {
+        auto kp = ((FilmKeypointBgTransparentSwap*)(pKeypoint));
         if (kp->from != -1) {
             pTexMgr->GetLockerTexture(kp->from).setAlpha(255);
             centerTexture(kp->from);

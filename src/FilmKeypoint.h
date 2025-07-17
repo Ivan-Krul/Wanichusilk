@@ -6,6 +6,17 @@
 
 typedef int LayerIndex;
 
+enum class FilmKeypointChangeType : short {
+    None = 0,
+    Background,
+    Layer
+};
+
+struct FilmKeypointTypeStruct {
+    FilmKeypointChangeType global_type : 3;
+    short specific_type : 13;
+};
+
 enum class FilmKeypointType {
     BlankDelay = 0,
     Swap,
@@ -50,21 +61,28 @@ struct FilmTimer {
 };
 
 struct FilmKeypoint : public FilmTimer {
-    virtual FilmKeypointType type() const { return FilmKeypointType::BlankDelay; }
+    virtual FilmKeypointTypeStruct type() const { return { 0 }; }
     virtual bool has_ease() const { return false; }
 };
 
-struct FilmKeypointSwap : public FilmKeypoint {
-    ResourceIndex to;
+struct FilmKeypointBackground : public FilmKeypoint {
+    enum Type : short {
+        Swap = 1,
+        TransparentSwap,
+        EaseTransparentSwap
+    };
 
-    FilmKeypointType type() const override { return FilmKeypointType::Swap; }
+    ResourceIndex to;
 };
 
-struct FilmKeypointTransparentSwap : public FilmKeypoint {
-    ResourceIndex to;
+struct FilmKeypointBgSwap : public FilmKeypointBackground {
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Background, Swap }; }
+};
+
+struct FilmKeypointBgTransparentSwap : public FilmKeypointBackground {
     ResourceIndex from;
 
-    FilmKeypointType type() const override { return FilmKeypointType::TransparentSwap; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Background, TransparentSwap }; }
 };
 
 struct FilmKeypointEase {
@@ -73,21 +91,35 @@ struct FilmKeypointEase {
     bool has_ease() const { return ease_func != nullptr; }
 };
 
-struct FilmKeypointEaseTransparentSwap : public FilmKeypoint, public FilmKeypointEase {
-    ResourceIndex to;
+struct FilmKeypointEaseTransparentSwap : public FilmKeypointBackground, public FilmKeypointEase {
     ResourceIndex from;
 
-    FilmKeypointType type() const override { return FilmKeypointType::EaseTransparentSwap; }
-};
-
-struct FilmKeypointLayerAdd : public FilmKeypoint {
-    ResourceIndex texind;
-
-    FilmKeypointType type() const override { return FilmKeypointType::LayerAdd; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Background, EaseTransparentSwap }; }
 };
 
 struct FilmKeypointLayer : public FilmKeypoint {
+    enum Type : short {
+        Add = 1,
+        InteractPos,
+        InteractPartPos,
+        InteractDefaultPos,
+        InteractDefaultPartPos,
+        InteractAlpha,
+        InteractSwap,
+        InteractTransparentSwap,
+        InteractDefault,
+        Enable,
+        Disable,
+        Await,
+        Remove
+    };
     LayerIndex layerindx;
+};
+
+struct FilmKeypointLayerAdd : public FilmKeypointLayer {
+    ResourceIndex texind;
+
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, Add }; }
 };
 
 struct FilmKeypointLayerInteractRect : public FilmKeypointLayer, public FilmKeypointEase {
@@ -95,84 +127,59 @@ struct FilmKeypointLayerInteractRect : public FilmKeypointLayer, public FilmKeyp
 };
 
 struct FilmKeypointLayerInteractPos : public FilmKeypointLayerInteractRect {
-    FilmKeypointType type() const override { return FilmKeypointType::LayerInteractPos; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractPos }; }
 };
 
 struct FilmKeypointLayerInteractPartitionPos : public FilmKeypointLayerInteractRect {
-    FilmKeypointType type() const override { return FilmKeypointType::LayerInteractPartPos; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractPartPos }; }
 };
 
 struct FilmKeypointLayerDefaultInteractPos : public FilmKeypointLayerInteractRect {
-    FilmKeypointType type() const override { return FilmKeypointType::LayerInteractDefaultPos; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractDefaultPos }; }
 };
 
 struct FilmKeypointLayerInteractDefaultPartitionPos : public FilmKeypointLayerInteractRect {
-    FilmKeypointType type() const override { return FilmKeypointType::LayerInteractDefaultPartPos; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractDefaultPartPos }; }
 };
 
 struct FilmKeypointLayerInteractAlpha : public FilmKeypointLayer, public FilmKeypointEase {
     uint8_t alpha;
 
-    FilmKeypointType type() const override { return FilmKeypointType::LayerInteractAlpha; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractAlpha }; }
 };
 
 struct FilmKeypointLayerInteractSwap : public FilmKeypointLayer {
     ResourceIndex texindx;
 
-    FilmKeypointType type() const override { return FilmKeypointType::LayerInteractSwap; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractSwap }; }
 };
 
 struct FilmKeypointLayerInteractTransparentSwap : public FilmKeypointLayer, public FilmKeypointEase {
     ResourceIndex texindx;
 
-    FilmKeypointType type() const override { return FilmKeypointType::LayerInteractTransparentSwap; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractTransparentSwap }; }
 };
 
 struct FilmKeypointLayerInteractDefault : public FilmKeypointLayer {
-    FilmKeypointType type() const override { return FilmKeypointType::LayerInteractDefault; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractDefault }; }
 };
 
 struct FilmKeypointLayerEnable : public FilmKeypointLayer {
-    FilmKeypointType type() const override { return FilmKeypointType::LayerEnable; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, Enable }; }
 };
 
 struct FilmKeypointLayerDisable : public FilmKeypointLayer {
-    FilmKeypointType type() const override { return FilmKeypointType::LayerDisable; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, Disable }; }
 };
 
 struct FilmKeypointLayerRemove : public FilmKeypointLayer {
-    FilmKeypointType type() const override { return FilmKeypointType::LayerRemove; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, Remove }; }
 };
 
 struct FilmKeypointOccupyInput : public FilmKeypoint {
-    FilmKeypointType type() const override { return FilmKeypointType::OccupyInput; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::None, 1 }; }
 };
 
 struct FilmKeypointReleaseInput : public FilmKeypoint {
-    FilmKeypointType type() const override { return FilmKeypointType::ReleaseInput; }
+    FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::None, 2 }; }
 };
-
-
-#ifdef DEBUG
-static const char* debugKeypointNames[] = {
-    "BlankDelay",
-    "Swap",
-    "TransparentSwap",
-    "EaseTransparentSwap",
-    "LayerAdd",
-    "LayerInteractPos",
-    "LayerInteractPartPos",
-    "LayerInteractDefaultPos",
-    "LayerInteractDefaultPartPos",
-    "LayerInteractAlpha",
-    "LayerInteractSwap",
-    "LayerInteractTransparentSwap",
-    "LayerInteractDefault",
-    "LayerEnable",
-    "LayerDisable",
-    "LayerAwait",
-    "LayerRemove",
-    "OccupyInput",
-    "ReleaseInput"
-};
-#endif
