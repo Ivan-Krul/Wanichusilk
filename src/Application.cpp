@@ -18,10 +18,10 @@ void Application::OnInit() {
         "./res/Stefan wah.png"
     };
 
-    assert(mScene.create(&mTexMgr, SDL_Rect{ 0,0, DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }, vec));
+    assert(mScene.create(&mTexMgr, FilmScene::ScaleOption{ SDL_Rect{ 0,0, DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y } }, vec));
     mScene.setClock(&mClock);
 
-    FilmKeypointTransparentSwap swap;
+    FilmKeypointBgTransparentSwap swap;
     swap.need_input = true;
     swap.frame_delay = 50;
     swap.from = -1;

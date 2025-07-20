@@ -1,16 +1,16 @@
 #include "FilmScene.h"
 
-bool FilmScene::create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<ResourceIndex>& texture_indexes) {
+bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<ResourceIndex>& texture_indexes) {
     pTexMgr = texmgr;
     mTextureIndexes = texture_indexes;
-    mScreenResolution = scr_res;
+    mScaleOption = scr_res;
     mLayerist.setTextureManager(texmgr);
     return true;
 }
 
-bool FilmScene::create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<std::string>& texture_paths) {
+bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths) {
     pTexMgr = texmgr;
-    mScreenResolution = scr_res;
+    mScaleOption = scr_res;
     mTextureIndexes.reserve(texture_paths.size());
     
     ResourceIndex indx;
@@ -54,24 +54,7 @@ void FilmScene::finish() {
 void FilmScene::render() {
     if (!isGoing() || pKeypoint->type().global_type == FilmKeypointChangeType::None) return;
 
-    if (pKeypoint->type().specific_type == FilmKeypointBackground::Swap) {
-        auto swapkp = *reinterpret_cast<FilmKeypointBgSwap*>(pKeypoint);
-        auto target = swapkp.to;
-
-        if (target != -1) {
-            pTexMgr->GetLockerTexture(mTextureIndexes[swapkp.to]).render();
-        }
-    }
-
-    if (pKeypoint->type().specific_type == FilmKeypointBackground::TransparentSwap) {
-        auto swapkp = *reinterpret_cast<FilmKeypointBgTransparentSwap*>(pKeypoint);
-        if (swapkp.from != -1) {
-            pTexMgr->GetLockerTexture(mTextureIndexes[swapkp.from]).render();
-        }
-        if (swapkp.to != -1) {
-            pTexMgr->GetLockerTexture(mTextureIndexes[swapkp.to]).render();
-        }
-    }
+    mBackground.render();
     mLayerist.render();
 
 #if 0
@@ -89,28 +72,6 @@ void FilmScene::clear() {
     maKeypoints.clear();
 }
 
-void FilmScene::centerTexture(ResourceIndex texind) {
-    if (texind != -1) {
-        auto& tex = pTexMgr->GetLockerTexture(mTextureIndexes[texind]);
-        float scale = 0.f;
-        float scaled_w = 0.f;
-        float scaled_h = 0.f;
-
-        if (mScreenResolution.w > mScreenResolution.h) {
-            scale = mScreenResolution.h / float(tex.getTexture()->h);
-            scaled_w = tex.getTexture()->w * scale;
-            scaled_h = mScreenResolution.h;
-            tex.setResolution(scaled_w, scaled_h);
-            tex.setOffset((mScreenResolution.w - scaled_w) / 2.f, 0.f);
-        } else {
-            scale = mScreenResolution.w / float(tex.getTexture()->w);
-            scaled_w = mScreenResolution.w;
-            scaled_h = tex.getTexture()->h * scale;
-            tex.setResolution(scaled_w, scaled_h);
-            tex.setOffset(0.f, (mScreenResolution.h - scaled_h) / 2.f);
-        }
-    }
-}
 
 void FilmScene::onUpdate() {
     mTimer.decrement_time_frame(std::chrono::duration_cast<std::chrono::milliseconds>(mpClock->Now() - mPrev));
@@ -121,18 +82,7 @@ void FilmScene::onUpdate() {
         return;
     }
 
-    if (pKeypoint->type().specific_type == FilmKeypointBackground::TransparentSwap) {
-        auto kp = ((FilmKeypointBgTransparentSwap*)(pKeypoint));
-        float procent;
-        
-        if (mTimer.need_time_delay) procent = mTimer.delay.count() / kp->delay.count();
-        else procent = mTimer.frame_delay / float(kp->frame_delay);
-
-        if (procent < 0.f) procent = 0.f;
-
-        if(kp->from != -1) pTexMgr->GetLockerTexture(kp->from).setAlpha(procent * 255);
-        if(kp->to != -1) pTexMgr->GetLockerTexture(kp->to).setAlpha((1.f - procent) * 255);
-    }
+    mBackground.update();
 
     mLayerist.update();
 }

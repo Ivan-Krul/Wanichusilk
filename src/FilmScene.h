@@ -3,6 +3,7 @@
 #include "FilmKeypoint.h"
 #include "Clock.h"
 #include "FilmLayerist.h"
+#include "FilmBackground.h"
 
 #include <vector>
 #include <string>
@@ -10,8 +11,15 @@
 
 class FilmScene {
 public:
-    bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<ResourceIndex>& texture_indexes);
-    bool create(TextureManager* texmgr, SDL_Rect scr_res, const std::vector<std::string>& texture_paths);
+    struct ScaleOption {
+        explicit ScaleOption(SDL_Rect screen_resolution) { mScreenResolution = screen_resolution; }
+        explicit ScaleOption() { mScreenResolution = { 0 }; }
+
+        SDL_Rect mScreenResolution;
+    };
+
+    bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<ResourceIndex>& texture_indexes);
+    bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths);
     void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); }
 
     template<typename T>
@@ -49,8 +57,9 @@ private:
     TextureManager* pTexMgr;
 
     FilmLayerist mLayerist;
+    FilmBackground mBackground;
 
-    SDL_Rect mScreenResolution;
+    ScaleOption mScaleOption;
 
     size_t mKeypointIndex = -1;
     Clock* mpClock;
