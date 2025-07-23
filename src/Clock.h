@@ -38,3 +38,10 @@ inline void Clock::FinishMeasure(float targetFps) {
     
 }
 
+struct ClockHolder {
+    inline void setClock(Clock* clock) { pClock = clock; }
+
+protected:
+    Clock* pClock = nullptr;
+};
+

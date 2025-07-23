@@ -18,7 +18,7 @@ void Application::OnInit() {
         "./res/Stefan wah.png"
     };
 
-    assert(mScene.create(&mTexMgr, FilmScene::ScaleOption{ SDL_Rect{ 0,0, DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y } }, vec));
+    assert(mScene.create(&mTexMgr, ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), vec));
     mScene.setClock(&mClock);
 
     FilmKeypointBgTransparentSwap swap;

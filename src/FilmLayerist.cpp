@@ -165,7 +165,7 @@ float FilmLayerist::updateTimeProcenting(KeypointTracker& tracker) {
         ttimer.frame_delay--;
     } else {
         procent = ttimer.delay.count() / float(tracker.keypoint_ptr->delay.count()); // same with this
-        ttimer.delay -= std::chrono::duration_cast<std::chrono::milliseconds>(pClock->Now() - mPrev);
+        ttimer.delay -= pClock->DeltaTime();
     }
     return 1.f - procent;
 }

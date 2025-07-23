@@ -2,20 +2,19 @@
 #include "FilmKeypoint.h"
 #include "TextureManager.h"
 #include "Clock.h"
+#include "FrameScaling.h"
+#include "EaseTracker.h"
 
 class FilmBackground {
 public:
-    enum RenderMode {
-        blank,
-        simple,
-        centered_black_borders,
-        //centered_fill,
-        //scroll
-    };
-    inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
-    inline void setClock(Clock* clock) { pClock = clock; }
+    static constexpr float c_ease_no_progress = -0.f;
+    static constexpr float c_ease_use_default = 2.f;
 
-    void registerBackgroundKeypoint(FilmKeypoint* keypoint);
+    inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
+    inline void setScaleOption(ScaleOption* scale) { pScale = scale; }
+    void setClock(Clock* clock) { mEaseTimer.setClock(clock); }
+
+    void registerBackgroundKeypoint(FilmKeypointBackground* keypoint);
     void update();
     void render();
 private:
@@ -23,13 +22,11 @@ private:
 
     ResourceIndex mTexPrev;
     ResourceIndex mTex;
-    RenderMode mRendModePrev;
-    RenderMode mRendMode;
-    FilmTimer mTimer;
+    FilmKeypointBackground::RenderMode mRendModePrev;
+    FilmKeypointBackground::RenderMode mRendMode;
+    EaseTracker<> mEaseTimer;
 
-    FilmKeypoint* pKeypoint;
+    FilmKeypointBackground* pKeypoint;
     TextureManager* pTexMgr;
-
-    Clock::SteadyClock::time_point mPrev = Clock::SteadyClock::now();
-    Clock* pClock;
+    ScaleOption* pScale;
 };

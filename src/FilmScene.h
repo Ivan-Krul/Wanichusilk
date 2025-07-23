@@ -4,6 +4,7 @@
 #include "Clock.h"
 #include "FilmLayerist.h"
 #include "FilmBackground.h"
+#include "FrameScaling.h"
 
 #include <vector>
 #include <string>
@@ -11,13 +12,6 @@
 
 class FilmScene {
 public:
-    struct ScaleOption {
-        explicit ScaleOption(SDL_Rect screen_resolution) { mScreenResolution = screen_resolution; }
-        explicit ScaleOption() { mScreenResolution = { 0 }; }
-
-        SDL_Rect mScreenResolution;
-    };
-
     bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<ResourceIndex>& texture_indexes);
     bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths);
     void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); }
@@ -46,7 +40,6 @@ public:
     void clear();
     ~FilmScene() { clear(); }
 private:
-    void centerTexture(ResourceIndex texind);
     void onUpdate();
     void onNext();
 
@@ -63,7 +56,6 @@ private:
 
     size_t mKeypointIndex = -1;
     Clock* mpClock;
-    Clock::SteadyClock::time_point mPrev = Clock::SteadyClock::now();
 
     FilmTimer mTimer;
 };
