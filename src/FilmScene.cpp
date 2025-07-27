@@ -74,42 +74,33 @@ void FilmScene::clear() {
 
 
 void FilmScene::onUpdate() {
-    mTimer.decrement_time_frame(std::chrono::duration_cast<std::chrono::milliseconds>(mpClock->Now() - mPrev));
-    mPrev = mpClock->Now();
-
-    if (mTimer.is_zero() && !mTimer.need_input) {
+    if (mLongestTimer.is_zero() && !mLongestTimer.need_input) {
         next();
         return;
     }
 
+    mLongestTimer.decrement_time_frame(mpClock->DeltaTime());
     mBackground.update();
-
     mLayerist.update();
 }
 
 void FilmScene::onNext() {
-    mTimer = *((FilmTimer*)pKeypoint);
+    mLongestTimer = *((FilmTimer*)pKeypoint);
 
     if (pKeypoint->type().global_type == FilmKeypointChangeType::Layer) {
         mLayerist.registerLayerKeypoint(pKeypoint);
         next();
     }
-    if (pKeypoint->type().specific_type == FilmKeypointBackground::Swap) {
-        centerTexture(((FilmKeypointBgSwap*)(pKeypoint))->to);
+    if (pKeypoint->type().global_type == FilmKeypointChangeType::Background) {
+        mBackground.registerBackgroundKeypoint((FilmKeypointBackground*)pKeypoint);
+        next();
     }
-    if (pKeypoint->type().specific_type == FilmKeypointBackground::TransparentSwap) {
-        auto kp = ((FilmKeypointBgTransparentSwap*)(pKeypoint));
-        if (kp->from != -1) {
-            pTexMgr->GetLockerTexture(kp->from).setAlpha(255);
-            centerTexture(kp->from);
-        }
-        if (kp->to != -1) {
-            pTexMgr->GetLockerTexture(kp->to).setAlpha(0);
-            centerTexture(kp->to);
-        }
-    }
+    
+    auto timer = mLayerist.getLongestWaiting();
+    mLongestTimer.delay = std::max(timer.delay, mLongestTimer.delay);
+    mLongestTimer.frame_delay = std::max(timer.frame_delay, mLongestTimer.frame_delay);
 
-    if (mTimer.is_zero() && !mTimer.need_input)
+    if (mLongestTimer.is_zero() && !mLongestTimer.need_input)
         next();
 
 }

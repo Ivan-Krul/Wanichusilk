@@ -34,7 +34,7 @@ public:
 
     void render();
 
-    inline bool needNext() const { return isGoing() ? mTimer.is_zero() : false; }
+    inline bool needNext() const { return isGoing() ? mLongestTimer.is_zero() : false; }
     inline bool isGoing() const { return mKeypointIndex != -1 && (mKeypointIndex + 1) < maKeypoints.size(); }
 
     void clear();
@@ -57,7 +57,7 @@ private:
     size_t mKeypointIndex = -1;
     Clock* mpClock;
 
-    FilmTimer mTimer;
+    FilmTimer mLongestTimer;
 };
 
 template<typename T>

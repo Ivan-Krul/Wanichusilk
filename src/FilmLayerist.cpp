@@ -13,14 +13,17 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
     case FilmKeypointLayer::InteractPartPos: registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, true);  break;
     case FilmKeypointLayer::InteractAlpha:   registerLayerKeypointInteractAlpha(keypoint, li);                                         break;
     case FilmKeypointLayer::InteractDefaultPos:
-        maLayers[li].rect = Layer::c_ease_use_default;
+        maLayers[li].rect.ease_tracker.setDefault();
         break;
     case FilmKeypointLayer::InteractDefaultPartPos:
-        maLayers[li].part = Layer::c_ease_use_default;
+        maLayers[li].part.ease_tracker.setDefault();
         break;
     case FilmKeypointLayer::InteractTransparentSwap:
-        maLayers[li].texind.set_ease(((FilmKeypointEase*)(keypoint))->ease_func);
-        if(maLayers[li].texind.is_easing()) registerTracker(keypoint, li);
+        maLayers[li].texind.ease_tracker.setEase(((FilmKeypointEase*)keypoint)->ease_func);
+        if (maLayers[li].texind.ease_tracker.isEase()) {
+            maLayers[li].texind.ease_tracker.start(*keypoint);
+            registerTracker(keypoint, li);
+        }
     case FilmKeypointLayer::InteractSwap: _FALLTHROUGH
         maLayers[li].texind.elem_from = maLayers[li].texind.elem_to;
         maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
@@ -54,76 +57,79 @@ FilmTimer FilmLayerist::getLongestWaiting() const {
     FilmTimer longest;
     auto iter = mKeypointPtrLocker.cbegin();
     for (iter; iter != mKeypointPtrLocker.cend(); iter++) {
-        if (iter->timer.delay > longest.delay)
-            longest.delay = iter->timer.delay;
-        if (iter->timer.frame_delay > longest.frame_delay)
-            longest.frame_delay = iter->timer.frame_delay;
+        auto& layer = maLayers[iter->layer_index];
+        longest.delay = std::max(longest.delay, layer.alpha.ease_tracker.getLimiter().delay);
+        longest.delay = std::max(longest.delay, layer.rect.ease_tracker.getLimiter().delay);
+        longest.delay = std::max(longest.delay, layer.part.ease_tracker.getLimiter().delay);
+        longest.delay = std::max(longest.delay, layer.texind.ease_tracker.getLimiter().delay);
+
+        longest.frame_delay = std::max(longest.frame_delay, layer.alpha.ease_tracker.getLimiter().frame_delay);
+        longest.frame_delay = std::max(longest.frame_delay, layer.rect.ease_tracker.getLimiter().frame_delay);
+        longest.frame_delay = std::max(longest.frame_delay, layer.part.ease_tracker.getLimiter().frame_delay);
+        longest.frame_delay = std::max(longest.frame_delay, layer.texind.ease_tracker.getLimiter().frame_delay);
     }
     return longest;
 }
 
 void FilmLayerist::update() {
+    char accu_no_progress;
     for (auto& tracker : mKeypointPtrLocker) { // questionable decision to handle concurrency and/or transfer between states
-        float procent = updateTimeProcenting(tracker);
-
-        SDL_Log("t: %f", procent);
-
-        // transition
-        auto& layer = maLayers[tracker.layer_index];
-        if (procent >= 1.f) { // ye, we reset all the stuff, because the async transition is too far
-            layer.alpha = Layer::c_ease_no_progress;
-            layer.rect = Layer::c_ease_no_progress;
-            layer.part = Layer::c_ease_no_progress;
-            layer.texind = Layer::c_ease_no_progress;
-            layer.texind.elem_from = -1;
-            mKeypointPtrLocker.popFromLocker(tracker.index);
+        accu_no_progress = 4;
+        auto& layer = maLayers[tracker.layer_index]; // transition
+        if (layer.rect.ease_tracker.isProgress()) { 
+            layer.rect.ease_tracker.update();
+            accu_no_progress--;
         }
-        else {
-            if (layer.rect.is_easing()) layer.rect = procent; // transition will happen in render 
-            if (layer.alpha.is_easing()) {
-                layer.alpha = procent;
-                layer.alpha.elem_to = lerp(layer.alpha(procent), 0.f, 255.f);
-            }
-            if (layer.texind.is_easing()) layer.texind = procent; // same with this
-            if (layer.part.is_easing()) layer.part = procent; // and this too
+        if (layer.part.ease_tracker.isProgress()) {
+            layer.part.ease_tracker.update();
+            accu_no_progress--;
         }
+        if (layer.texind.ease_tracker.isProgress()) {
+            layer.texind.ease_tracker.update();
+            accu_no_progress--;
+        }
+        if (layer.alpha.ease_tracker.isProgress()) {
+            layer.alpha.ease_tracker.update();
+            accu_no_progress--;
+        }
+
+        if (!accu_no_progress) mKeypointPtrLocker.popFromLocker(tracker.index);
     }
 }
 
 void FilmLayerist::render() {
     bool tex_from = false;
-    float progress = 0.f;
     SDL_FRect rect = { 0.f };
     SDL_FRect part = { 0.f };
 
     SDL_FRect* res_rect = nullptr;
     SDL_FRect* res_part = nullptr;
 
+    uint8_t alpha = 0;
+
     for (auto& layer : maLayers) {
         tex_from = layer.texind.elem_from != -1;
 
-        res_rect = layer.rect.is_default() ? (layer.rect.is_easing() ? &rect : &layer.rect.elem_to) : nullptr;
-        if (layer.rect.is_easing()) {
-            progress = layer.rect.in_ease();
-            rect = lerpRect(layer.rect.elem_from, layer.rect.elem_to, progress);
-        }
+        res_rect = layer.rect.ease_tracker.isDefault() ? (layer.rect.ease_tracker.isProgress() ? &rect : &layer.rect.elem_to) : nullptr;
+        if (layer.rect.ease_tracker.isProgress())
+            rect = lerpRect(layer.rect.elem_from, layer.rect.elem_to, layer.rect.ease_tracker);
 
-        res_part = layer.part.is_default() ? (layer.part.is_easing() ? &part : &layer.part.elem_to) : nullptr;
-        if (layer.part.is_easing()) {
-            progress = layer.part.in_ease();
-            part = lerpRect(layer.part.elem_from, layer.part.elem_to, progress);
-        }
+        res_part = layer.part.ease_tracker.isDefault() ? (layer.part.ease_tracker.isProgress() ? &part : &layer.part.elem_to) : nullptr;
+        if (layer.part.ease_tracker.isProgress())
+            part = lerpRect(layer.part.elem_from, layer.part.elem_to, layer.part.ease_tracker);
 
-        if (layer.texind.is_easing()) {
-            progress = layer.texind.in_ease();
+        if (layer.alpha.ease_tracker.isProgress())
+            alpha = lerp(layer.alpha.ease_tracker, layer.alpha.elem_from, layer.alpha.elem_to);
+
+        if (layer.texind.ease_tracker.isProgress()) {
             if (tex_from)
-                pTexMgr->GetLockerTexture(layer.texind.elem_from).renderRaw(res_part, res_rect, (1 - progress) * layer.alpha.elem_to);
+                pTexMgr->GetLockerTexture(layer.texind.elem_from).renderRaw(res_part, res_rect, (1 - layer.texind.ease_tracker) * layer.alpha.elem_to);
 
-            pTexMgr->GetLockerTexture(layer.texind).renderRaw(res_part, res_rect, progress * layer.alpha.elem_to);
+            pTexMgr->GetLockerTexture(layer.texind.elem_to).renderRaw(res_part, res_rect, layer.texind.ease_tracker * layer.alpha.elem_to);
         } else if (layer.is_default())
-            pTexMgr->GetLockerTexture(layer.texind).render();
+            pTexMgr->GetLockerTexture(layer.texind.elem_to).render();
         else
-            pTexMgr->GetLockerTexture(layer.texind).renderRaw(res_part, res_rect, layer.alpha.elem_to);
+            pTexMgr->GetLockerTexture(layer.texind.elem_to).renderRaw(res_part, res_rect, layer.alpha.elem_to);
         
     }
 }
@@ -131,8 +137,15 @@ void FilmLayerist::render() {
 void FilmLayerist::registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint) {
     Layer l;
     l.texind.elem_to = keypoint->texind;
-    l.texind = Layer::c_ease_no_progress;
     l.rect.elem_to = pTexMgr->GetLockerTexture(keypoint->texind).getRectRes();
+
+    l.rect.ease_tracker.setClock(pClock);
+    l.part.ease_tracker.setClock(pClock);
+    l.texind.ease_tracker.setClock(pClock);
+    l.alpha.ease_tracker.setClock(pClock);
+
+    l.texind.ease_tracker.reset();
+
     maLayers.push_back(l);
 }
 
@@ -140,21 +153,27 @@ void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteract
     Layer::TransitionableParameter<SDL_FRect>* pos_ptr;
     pos_ptr = is_src ? &(maLayers[li].part) : &(maLayers[li].rect);
 
-    (*pos_ptr) = Layer::c_ease_use_default;
     pos_ptr->shift_elem();
     pos_ptr->elem_to = keypoint->rect;
-    pos_ptr->set_ease(keypoint->ease_func);
-    if (maLayers[li].texind.is_easing()) registerTracker(keypoint, li);
+    pos_ptr->ease_tracker.setEase(keypoint->ease_func);
+
+    if (pos_ptr->ease_tracker.isEase()) {
+        pos_ptr->ease_tracker.start(*keypoint);
+        registerTracker(keypoint, li);
+    }
 }
 
 void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, LayerIndex li) {
     auto kp = (FilmKeypointLayerInteractAlpha*)keypoint;
     maLayers[li].alpha.elem_to = kp->alpha;
-    maLayers[li].alpha = Layer::c_ease_no_progress;
-    maLayers[li].alpha.set_ease(kp->ease_func);
-    if (maLayers[li].alpha.is_easing()) registerTracker(keypoint, li);
+    maLayers[li].alpha.ease_tracker.reset();
+    maLayers[li].alpha.ease_tracker.setEase(kp->ease_func);
+    if (maLayers[li].alpha.ease_tracker.isEase()) {
+        maLayers[li].alpha.ease_tracker.start(*keypoint);
+        registerTracker(keypoint, li);
+    }
 }
-
+/*
 float FilmLayerist::updateTimeProcenting(KeypointTracker& tracker) {
     auto& ttimer = tracker.timer;
     float procent = 0.f;
@@ -169,9 +188,9 @@ float FilmLayerist::updateTimeProcenting(KeypointTracker& tracker) {
     }
     return 1.f - procent;
 }
-
+*/
 void FilmLayerist::registerTracker(FilmKeypoint* keypoint, LayerIndex li) {
-    auto indx = mKeypointPtrLocker.pushInLocker(KeypointTracker{ keypoint, *keypoint, li });
+    auto indx = mKeypointPtrLocker.pushInLocker(KeypointTracker{ keypoint, li });
     mKeypointPtrLocker[indx].index = indx;
 }
 

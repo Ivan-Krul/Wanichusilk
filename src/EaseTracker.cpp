@@ -5,7 +5,7 @@ void EaseTracker<Func>::update() {
     if (!isProgress()) return;
 
     if (mTimerRunner.is_zero()) {
-        mProgress = 1.f;
+        mProgress = c_ease_end;
         return;
     }
 
