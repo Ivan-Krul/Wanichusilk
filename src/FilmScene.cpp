@@ -5,6 +5,9 @@ bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::v
     mTextureIndexes = texture_indexes;
     mScaleOption = scr_res;
     mLayerist.setTextureManager(texmgr);
+    mBackground.setTextureManager(texmgr);
+    mBackground.setScaleOption(&mScaleOption);
+
     return true;
 }
 
@@ -20,6 +23,9 @@ bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::v
         mTextureIndexes.push_back(indx);
     }
     mLayerist.setTextureManager(texmgr);
+    mBackground.setTextureManager(texmgr);
+    mBackground.setScaleOption(&mScaleOption);
+
     return true;
 }
 

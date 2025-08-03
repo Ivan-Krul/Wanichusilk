@@ -14,7 +14,7 @@ class FilmScene {
 public:
     bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<ResourceIndex>& texture_indexes);
     bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths);
-    void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); }
+    void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); mBackground.setClock(clock); }
 
     template<typename T>
     void addKeypoint(const T keypoint);
@@ -36,6 +36,7 @@ public:
 
     inline bool needNext() const { return isGoing() ? mLongestTimer.is_zero() : false; }
     inline bool isGoing() const { return mKeypointIndex != -1 && (mKeypointIndex + 1) < maKeypoints.size(); }
+    inline bool isEnded() const { return (mKeypointIndex + 1) >= maKeypoints.size(); }
 
     void clear();
     ~FilmScene() { clear(); }

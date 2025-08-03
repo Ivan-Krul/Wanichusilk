@@ -18,6 +18,8 @@ public:
     void update();
     void render();
 private:
+    void transformTexture(ResourceIndex texind, FilmKeypointBackground::RenderMode rend_mode);
+    void simplyPutTexture(ResourceIndex texind);
     void centerBlackBordersTexture(ResourceIndex texind);
 
     ResourceIndex mTexPrev;
@@ -26,7 +28,7 @@ private:
     FilmKeypointBackground::RenderMode mRendMode;
     EaseTracker<> mEaseTimer;
 
-    FilmKeypointBackground* pKeypoint;
-    TextureManager* pTexMgr;
-    ScaleOption* pScale;
+    FilmKeypointBackground* pKeypoint = nullptr;
+    TextureManager* pTexMgr = nullptr;
+    ScaleOption* pScale = nullptr;
 };

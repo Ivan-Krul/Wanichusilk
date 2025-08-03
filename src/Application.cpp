@@ -23,10 +23,13 @@ void Application::OnInit() {
 
     FilmKeypointBgTransparentSwap swap;
     swap.need_input = true;
+    swap.rend_mode = swap.simple;
+    swap.ease_func = ease_cubic_out;
     swap.frame_delay = 50;
     swap.from = -1;
     swap.to = 0;
     mScene.addKeypoint(swap);
+    swap.rend_mode = swap.centered_black_borders;
     swap.need_input = false;
     swap.from = 0;
     swap.to = 1;
@@ -118,7 +121,7 @@ void Application::OnUpdate() {
 }
 
 void Application::OnRender() {
-    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), mScene.needNext() * 100+ 100, 100, 200, 255);
+    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), mScene.needNext() * 100 + 100, mScene.isEnded() * 100 + 100, 200, 255);
 
     mScene.render();
 }
