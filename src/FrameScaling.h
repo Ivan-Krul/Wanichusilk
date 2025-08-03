@@ -11,8 +11,9 @@ struct ScaleOption {
     void updateFrameSize() { if (p_wind) SDL_GetWindowSize(p_wind, &actual_res.width, &actual_res.height); }
     FrameSize getFrameSize() const { return p_wind ? actual_res : predef_res; }
 
-    inline explicit ScaleOption(FrameSize screen_resolution) { predef_res = screen_resolution; }
-    inline explicit ScaleOption(SDL_Window* wnd) {
+    ScaleOption() = default;
+    inline ScaleOption(FrameSize screen_resolution) { predef_res = screen_resolution; }
+    inline ScaleOption(SDL_Window* wnd) {
         p_wind = wnd;
         updateFrameSize();
     }
