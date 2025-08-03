@@ -16,6 +16,7 @@ set(CMAKE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 project ("Wanichusilk")
 
@@ -38,21 +39,6 @@ list(REMOVE_DUPLICATES INCLUDE_DIRS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 # Include modules
-#find_package(JPEG REQUIRED)
-#target_link_libraries(${PROJECT_NAME} PRIVATE JPEG::JPEG)
-
-find_package(SDL3 CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
-
-find_package(SDL3_image CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:SDL3_image::SDL3_image-shared>,SDL3_image::SDL3_image-shared,SDL3_image::SDL3_image-static>)
-
-#set(wxWidgets_ROOT_DIR "D:/Applicational Projects/PhotoManager/external/wxWidgets/")
-#set(wxBUILD_SHARED OFF)
-#add_subdirectory(external/wxWidgets)
-#target_link_libraries(${PROJECT_NAME} PRIVATE wx::net wx::core wx::base)
-
-#add_subdirectory(external/libwebp)
-#target_link_libraries(${PROJECT_NAME} PRIVATE webp)
+include(IncludeModules)
 
 #add_subdirectory ("src" "./bin/")
