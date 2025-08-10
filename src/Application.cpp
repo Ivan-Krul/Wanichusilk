@@ -103,6 +103,9 @@ void Application::OpenWindow() {
 }
 
 void Application::PullEvents() {
+    if (mScene.isEnded()) {
+        mNeedQuit = true;
+    }
     while (SDL_PollEvent(&mEvent)) {
         switch (mEvent.type) {
         case SDL_EVENT_QUIT:

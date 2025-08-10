@@ -5,23 +5,17 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
 
     LayerIndex li = (keypoint->type().specific_type != FilmKeypointLayer::Add) ? ((FilmKeypointLayer*)keypoint)->layerindx : -1;
 
-    float(*ease)(float) = nullptr;
-
     switch (keypoint->type().specific_type) { // it's mess now, but I must go further
     case FilmKeypointLayer::Add:             registerLayerKeypointAdd((FilmKeypointLayerAdd*)keypoint);                                break;
     case FilmKeypointLayer::InteractPos:     registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, false); break;
     case FilmKeypointLayer::InteractPartPos: registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, true);  break;
     case FilmKeypointLayer::InteractAlpha:   registerLayerKeypointInteractAlpha(keypoint, li);                                         break;
-    case FilmKeypointLayer::InteractDefaultPos:
-        maLayers[li].rect.ease_tracker.setDefault();
-        break;
-    case FilmKeypointLayer::InteractDefaultPartPos:
-        maLayers[li].part.ease_tracker.setDefault();
-        break;
+    case FilmKeypointLayer::InteractDefaultPos: maLayers[li].rect.ease_tracker.setDefault(); break;
+    case FilmKeypointLayer::InteractDefaultPartPos: maLayers[li].part.ease_tracker.setDefault(); break;
     case FilmKeypointLayer::InteractTransparentSwap:
         maLayers[li].texind.ease_tracker.setEase(((FilmKeypointEase*)keypoint)->ease_func);
         if (maLayers[li].texind.ease_tracker.isEase()) {
-            maLayers[li].texind.ease_tracker.start(*keypoint);
+            maLayers[li].texind.ease_tracker.start(*((FilmTimer*)keypoint));
             registerTracker(keypoint, li);
         }
     case FilmKeypointLayer::InteractSwap: _FALLTHROUGH
@@ -29,17 +23,13 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
         maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
         maLayers[li].rect.elem_to = pTexMgr->GetLockerTexture(maLayers[li].texind.elem_to).getRectRes();
         break;
-    case FilmKeypointLayer::Enable:
-        maActiveLayerIndexes.push_back(li);
-        break;
+    case FilmKeypointLayer::Enable: maActiveLayerIndexes.push_back(li); break;
     case FilmKeypointLayer::Disable:
     {
         auto iter = std::find(maActiveLayerIndexes.begin(), maActiveLayerIndexes.end(), li);
         if(iter != maActiveLayerIndexes.end()) maActiveLayerIndexes.erase(iter);
     }   break;
-    case FilmKeypointLayer::InteractDefault:
-        maLayers[li].set_to_default();
-        break;
+    case FilmKeypointLayer::InteractDefault: maLayers[li].set_to_default(); break;
     case FilmKeypointLayer::Remove:
     {
         maLayers.erase(maLayers.begin() + li);
@@ -72,28 +62,32 @@ FilmTimer FilmLayerist::getLongestWaiting() const {
 }
 
 void FilmLayerist::update() {
-    char accu_no_progress;
-    for (auto& tracker : mKeypointPtrLocker) { // questionable decision to handle concurrency and/or transfer between states
-        accu_no_progress = 4;
+    bool accu_no_progress;
+    auto it = mKeypointPtrLocker.begin();
+    while(it != mKeypointPtrLocker.end()) {
+        auto& tracker = *it;
+        accu_no_progress = false;
         auto& layer = maLayers[tracker.layer_index]; // transition
         if (layer.rect.ease_tracker.isProgress()) { 
             layer.rect.ease_tracker.update();
-            accu_no_progress--;
+            accu_no_progress = true;
         }
         if (layer.part.ease_tracker.isProgress()) {
             layer.part.ease_tracker.update();
-            accu_no_progress--;
+            accu_no_progress = true;
         }
         if (layer.texind.ease_tracker.isProgress()) {
             layer.texind.ease_tracker.update();
-            accu_no_progress--;
+            accu_no_progress = true;
         }
         if (layer.alpha.ease_tracker.isProgress()) {
             layer.alpha.ease_tracker.update();
-            accu_no_progress--;
+            accu_no_progress = true;
         }
 
-        if (!accu_no_progress) mKeypointPtrLocker.popFromLocker(tracker.index);
+        if (!accu_no_progress) {
+            it = mKeypointPtrLocker.popFromLocker(it);
+        } else it++;
     }
 }
 
@@ -107,30 +101,38 @@ void FilmLayerist::render() {
 
     uint8_t alpha = 0;
 
-    for (auto& layer : maLayers) {
+    for (auto& li : maActiveLayerIndexes) {
+        auto& layer = maLayers[li];
         tex_from = layer.texind.elem_from != -1;
 
-        res_rect = layer.rect.ease_tracker.isDefault() ? (layer.rect.ease_tracker.isProgress() ? &rect : &layer.rect.elem_to) : nullptr;
+        if (layer.rect.ease_tracker.isDefault()) {
+            if (layer.rect.ease_tracker.isProgress())
+                res_rect = &rect;
+            else
+                res_rect = &(layer.rect.elem_to);
+        } else res_rect = nullptr;
+
         if (layer.rect.ease_tracker.isProgress())
             rect = lerpRect(layer.rect.elem_from, layer.rect.elem_to, layer.rect.ease_tracker);
 
-        res_part = layer.part.ease_tracker.isDefault() ? (layer.part.ease_tracker.isProgress() ? &part : &layer.part.elem_to) : nullptr;
+        res_part = !(layer.part.ease_tracker.isDefault()) ? (layer.part.ease_tracker.isProgress() ? &part : &layer.part.elem_to) : nullptr;
         if (layer.part.ease_tracker.isProgress())
             part = lerpRect(layer.part.elem_from, layer.part.elem_to, layer.part.ease_tracker);
 
         if (layer.alpha.ease_tracker.isProgress())
             alpha = lerp(layer.alpha.ease_tracker, layer.alpha.elem_from, layer.alpha.elem_to);
+        else alpha = layer.alpha.elem_to;
 
         if (layer.texind.ease_tracker.isProgress()) {
             if (tex_from)
-                pTexMgr->GetLockerTexture(layer.texind.elem_from).renderRaw(res_part, res_rect, (1 - layer.texind.ease_tracker) * layer.alpha.elem_to);
+                pTexMgr->GetLockerTexture(layer.texind.elem_from).renderRaw(res_part, res_rect, (1 - layer.texind.ease_tracker) * layer.alpha.elem_from);
 
             pTexMgr->GetLockerTexture(layer.texind.elem_to).renderRaw(res_part, res_rect, layer.texind.ease_tracker * layer.alpha.elem_to);
-        } else if (layer.is_default())
+        }
+        else if (layer.is_default())
             pTexMgr->GetLockerTexture(layer.texind.elem_to).render();
         else
-            pTexMgr->GetLockerTexture(layer.texind.elem_to).renderRaw(res_part, res_rect, layer.alpha.elem_to);
-        
+            pTexMgr->GetLockerTexture(layer.texind.elem_to).renderRaw(res_part, res_rect, alpha);
     }
 }
 
@@ -158,7 +160,7 @@ void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteract
     pos_ptr->ease_tracker.setEase(keypoint->ease_func);
 
     if (pos_ptr->ease_tracker.isEase()) {
-        pos_ptr->ease_tracker.start(*keypoint);
+        pos_ptr->ease_tracker.start(*((FilmTimer*)keypoint));
         registerTracker(keypoint, li);
     }
 }
@@ -168,10 +170,8 @@ void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, La
     maLayers[li].alpha.elem_to = kp->alpha;
     maLayers[li].alpha.ease_tracker.reset();
     maLayers[li].alpha.ease_tracker.setEase(kp->ease_func);
-    if (maLayers[li].alpha.ease_tracker.isEase()) {
-        maLayers[li].alpha.ease_tracker.start(*keypoint);
-        registerTracker(keypoint, li);
-    }
+    maLayers[li].alpha.ease_tracker.start(*((FilmTimer*)keypoint));
+    registerTracker(keypoint, li);
 }
 /*
 float FilmLayerist::updateTimeProcenting(KeypointTracker& tracker) {

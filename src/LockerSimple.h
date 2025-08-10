@@ -14,7 +14,7 @@ class LockerSimple {
 private:
     std::list<T> maLockArray;
 public:
-    using Iterator = decltype(maLockArray.begin());
+    using Iterator = typename std::list<T>::iterator;
     using ConstIterator = decltype(maLockArray.cbegin());
 
     static_assert(std::is_copy_constructible<T>::value || std::is_move_constructible<T>::value, "copy or move constructor must be");
@@ -23,6 +23,7 @@ public:
     LockerIndex pushInLocker(const T& elem);
     inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
     void popFromLocker(LockerIndex index);
+    inline Iterator popFromLocker(Iterator it);
 
     inline size_t getCapacity() const { return maLockArray.size(); }
     inline size_t getOccuipedLocks() const {
@@ -72,6 +73,18 @@ inline void LockerSimple<T>::popFromLocker(LockerIndex index) {
     maLockArray.erase(mapLockPtr[index]);
     mapLockPtr[index]._Ptr = nullptr;
     mNearestFreeLocker = index;
+}
+
+template<typename T>
+inline typename LockerSimple<T>::Iterator LockerSimple<T>::popFromLocker(Iterator it) {
+    auto indx = std::distance(maLockArray.begin(), it);
+
+    maOccupied.set(indx, false);
+    auto ret_it = maLockArray.erase(it);
+    mapLockPtr[indx]._Ptr = nullptr;
+    mNearestFreeLocker = indx;
+
+    return ret_it;
 }
 
 template<typename T>

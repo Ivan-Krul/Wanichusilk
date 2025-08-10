@@ -27,8 +27,8 @@ public:
         template <typename T>
         struct TransitionableParameter {
             EaseTracker<> ease_tracker;
-            T elem_from;
-            T elem_to;
+            T elem_from = { 0 };
+            T elem_to = { 0 };
 
             //inline operator float() const { return ease_progress; }
             //inline void operator=(float progress) { ease_progress = progress; }
