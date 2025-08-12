@@ -58,10 +58,27 @@ void Application::OnInit() {
         FilmKeypointLayerInteractAlpha lia;
         lia.layerindx = 0;
         lia.alpha = 255;
-        //lia.ease_func = ease_cubic_in_out;
-        //lia.need_time_delay = true;
-        lia.frame_delay = 180;
+        lia.ease_func = ease_cubic_in_out;
+        lia.need_time_delay = true;
+        lia.delay = std::chrono::seconds(3);
         mScene.addKeypoint(lia);
+    }
+    {
+        FilmKeypointLayerInteractPos lip;
+        lip.layerindx = 0;
+        lip.ease_func = ease_cubic_in;
+        lip.frame_delay = 50;
+        lip.rect.x = 50;
+        lip.rect.y = 200;
+        mScene.addKeypoint(lip);
+        lip.ease_func = ease_linear;
+        lip.rect.x = 320;
+        lip.rect.y = 180;
+        mScene.addKeypoint(lip);
+        lip.ease_func = ease_cubic_out;
+        lip.rect.x = 270;
+        lip.rect.y = 40;
+        mScene.addKeypoint(lip);
     }
     swap.from = 0;
     swap.to = 1;

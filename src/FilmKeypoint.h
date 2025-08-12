@@ -80,6 +80,7 @@ struct FilmKeypointLayer : public FilmKeypoint {
     enum Type : short {
         Add = 1,
         InteractPos,
+        InteractRectPos,
         InteractPartPos,
         InteractDefaultPos,
         InteractDefaultPartPos,
@@ -107,6 +108,10 @@ struct FilmKeypointLayerInteractRect : public FilmKeypointLayer, public FilmKeyp
 
 struct FilmKeypointLayerInteractPos : public FilmKeypointLayerInteractRect {
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractPos }; }
+};
+
+struct FilmKeypointLayerInteractRectPos : public FilmKeypointLayerInteractRect {
+    inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractRectPos }; }
 };
 
 struct FilmKeypointLayerInteractPartitionPos : public FilmKeypointLayerInteractRect {

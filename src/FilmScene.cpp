@@ -80,12 +80,13 @@ void FilmScene::clear() {
 
 
 void FilmScene::onUpdate() {
-    if (mLongestTimer.is_zero() && !mLongestTimer.need_input) {
+    mLongestTimer.decrement_time_frame(mpClock->DeltaTime());
+
+    if (mBackground.isWaiting() && mLayerist.isWaiting() && !mLongestTimer.need_input) {
         next();
         return;
     }
 
-    mLongestTimer.decrement_time_frame(mpClock->DeltaTime());
     mBackground.update();
     mLayerist.update();
 }
@@ -101,10 +102,10 @@ void FilmScene::onNext() {
         mBackground.registerBackgroundKeypoint((FilmKeypointBackground*)pKeypoint);
         next();
     }
-    
+
     auto timer = mLayerist.getLongestWaiting();
-    mLongestTimer.delay = std::max(timer.delay, mLongestTimer.delay);
-    mLongestTimer.frame_delay = std::max(timer.frame_delay, mLongestTimer.frame_delay);
+    mLongestTimer.delay = timer.delay;
+    mLongestTimer.frame_delay = timer.frame_delay;
 
     if (mLongestTimer.is_zero() && !mLongestTimer.need_input)
         next();

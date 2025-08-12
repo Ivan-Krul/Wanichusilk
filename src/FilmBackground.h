@@ -14,6 +14,7 @@ public:
     inline void setScaleOption(ScaleOption* scale) { pScale = scale; }
     void setClock(Clock* clock) { mEaseTimer.setClock(clock); }
 
+    inline bool isWaiting() const { return !mEaseTimer.isProgress(); }
     void registerBackgroundKeypoint(FilmKeypointBackground* keypoint);
     void update();
     void render();

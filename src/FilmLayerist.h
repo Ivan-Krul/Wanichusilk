@@ -17,7 +17,13 @@ class FilmLayerist : public ClockHolder {
         FilmKeypoint* keypoint_ptr;
         // timer would track from layer.ease_tracker directly
         LayerIndex layer_index;
-        LockerIndex index;
+        //LockerIndex index;
+    };
+
+    enum RegLayerKpInterAPosEnum {
+        Pos,
+        RectPos,
+        PartPos
     };
 public:
     struct Layer {
@@ -48,6 +54,12 @@ public:
                 && alpha.ease_tracker.isDefault()
                 && texind.ease_tracker.isDefault();
         }
+        inline bool is_progress() {
+            return part.ease_tracker.isProgress()
+                || rect.ease_tracker.isProgress()
+                || alpha.ease_tracker.isProgress()
+                || texind.ease_tracker.isProgress();
+        }
         inline void set_to_default() {
             part.ease_tracker.setDefault();
             rect.ease_tracker.setDefault();
@@ -57,18 +69,16 @@ public:
     };
 
     inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
-
     void registerLayerKeypoint(FilmKeypoint* keypoint);
 
-
+    inline bool isWaiting() const { return mKeypointPtrLocker.cbegin() == mKeypointPtrLocker.cend(); }
     void update();
-
     void render();
 
     FilmTimer getLongestWaiting() const;
 private:
     void registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint);
-    void registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, bool is_src = false);
+    void registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, RegLayerKpInterAPosEnum enum_pos);
     void registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, LayerIndex li);
 
     void registerTracker(FilmKeypoint* keypoint, LayerIndex li);
