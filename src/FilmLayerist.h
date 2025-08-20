@@ -80,6 +80,7 @@ private:
     void registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint);
     void registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, RegLayerKpInterAPosEnum enum_pos);
     void registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, LayerIndex li);
+    void registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, LayerIndex li);
 
     void registerTracker(FilmKeypoint* keypoint, LayerIndex li);
 

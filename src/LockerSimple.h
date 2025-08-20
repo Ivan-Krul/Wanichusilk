@@ -82,7 +82,7 @@ inline typename LockerSimple<T>::Iterator LockerSimple<T>::popFromLocker(Iterato
     maOccupied.set(indx, false);
     auto ret_it = maLockArray.erase(it);
     mapLockPtr[indx]._Ptr = nullptr;
-    mNearestFreeLocker = indx;
+    mNearestFreeLocker = std::min<LockerIndex>(indx, mNearestFreeLocker);
 
     return ret_it;
 }

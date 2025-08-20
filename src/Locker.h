@@ -17,7 +17,7 @@ private:
     std::list<T> maLockArray;
 public:
     using checkFunctionPtr = bool(*)(T&, Cont);
-    using Iterator = decltype(maLockArray.begin());
+    using Iterator = typename std::list<T>::iterator;
     using ConstIterator = decltype(maLockArray.cbegin());
 
     static_assert(std::is_default_constructible<T>::value, "default constructor must be, empty one");
@@ -28,6 +28,7 @@ public:
     LockerIndex pushInLocker(Cont container);
     inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
     void popFromLocker(LockerIndex index);
+    Iterator popFromLocker(Iterator it);
 
     inline size_t getCapacity() const { return maLockArray.size(); }
     inline size_t getOccuipedLocks() const {
@@ -91,6 +92,18 @@ inline void Locker<T, Cont>::popFromLocker(LockerIndex index) {
     maLockArray.erase(mapLockPtr[index]);
     mapLockPtr[index]._Ptr = nullptr;
     mNearestFreeLocker = index;
+}
+
+template<class T, typename Cont>
+inline typename Locker<T, Cont>::Iterator Locker<T, Cont>::popFromLocker(Iterator it) {
+    auto indx = std::distance(maLockArray.begin(), it);
+
+    maOccupied.set(indx, false);
+    auto ret_it = maLockArray.erase(it);
+    mapLockPtr[indx]._Ptr = nullptr;
+    mNearestFreeLocker = std::min(indx, mNearestFreeLocker);
+
+    return ret_it;
 }
 
 template<class T, typename Cont>

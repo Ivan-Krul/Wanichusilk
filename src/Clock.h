@@ -3,6 +3,10 @@
 
 #include <SDL3/SDL.h>
 
+#ifdef NO_CLOCK_TRACKING
+#pragma message("No clock tracking")
+#endif
+
 class Clock {
 public:
     using Duration = std::chrono::duration<float>;
@@ -13,6 +17,10 @@ public:
     inline void FinishMeasure(float targetFps);
     inline Duration DeltaTime() const { return mDeltaTime; }
     inline SteadyClock::time_point Now() const { return mBegin; }
+
+#ifdef NO_CLOCK_TRACKING
+    inline void DStep(Duration delta);
+#endif
 private:
     Duration mDeltaTime;
     SteadyClock::time_point mBegin = SteadyClock::now();
@@ -38,8 +46,16 @@ inline void Clock::FinishMeasure(float targetFps) {
     
 }
 
+#ifdef NO_CLOCK_TRACKING
+inline void Clock::DStep(Duration delta) {
+    mBegin = mNow;
+    mNow += std::chrono::duration_cast<std::chrono::steady_clock::duration>(delta);
+    mDeltaTime = mNow - mBegin;
+}
+#endif
+
 struct ClockHolder {
-    inline void setClock(Clock* clock) { pClock = clock; }
+    inline void setClock(Clock* const clock) { pClock = clock; }
 
 protected:
     Clock* pClock = nullptr;

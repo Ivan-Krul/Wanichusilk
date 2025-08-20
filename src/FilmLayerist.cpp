@@ -171,6 +171,11 @@ void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, La
     maLayers[li].alpha.ease_tracker.start(*((FilmTimer*)keypoint));
     registerTracker(keypoint, li);
 }
+
+void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, LayerIndex li) {
+
+}
+
 /*
 float FilmLayerist::updateTimeProcenting(KeypointTracker& tracker) {
     auto& ttimer = tracker.timer;

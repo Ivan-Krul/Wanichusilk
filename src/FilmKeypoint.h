@@ -132,15 +132,23 @@ struct FilmKeypointLayerInteractAlpha : public FilmKeypointLayer, public FilmKey
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractAlpha }; }
 };
 
-struct FilmKeypointLayerInteractSwap : public FilmKeypointLayer {
+struct FilmKeypointLayerSwap : public FilmKeypointLayer {
     ResourceIndex texindx;
 
+    enum SwapMode {
+        Keep,
+        FitInAspect,
+        NewTransform
+    };
+
+    SwapMode swap = Keep;
+};
+
+struct FilmKeypointLayerInteractSwap : public FilmKeypointLayerSwap {
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractSwap }; }
 };
 
-struct FilmKeypointLayerInteractTransparentSwap : public FilmKeypointLayer, public FilmKeypointEase {
-    ResourceIndex texindx;
-
+struct FilmKeypointLayerInteractTransparentSwap : public FilmKeypointLayerSwap, public FilmKeypointEase {
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractTransparentSwap }; }
 };
 

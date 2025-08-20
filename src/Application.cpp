@@ -15,7 +15,8 @@ void Application::OnInit() {
     std::vector<std::string> vec {
         "./res/Stefan chill emoji.png",
         "./res/Stefan is laying.png",
-        "./res/Stefan wah.png"
+        "./res/Stefan wah.png",
+        "./res/reesasm art.png"
     };
 
     assert(mScene.create(&mTexMgr, ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), vec));
@@ -80,6 +81,14 @@ void Application::OnInit() {
         lip.rect.y = 40;
         mScene.addKeypoint(lip);
     }
+    {
+        FilmKeypointLayerInteractSwap lits;
+        lits.layerindx = 0;
+        lits.texindx = 3;
+        lits.frame_delay = 300;
+        mScene.addKeypoint(lits);
+    }
+
     swap.from = 0;
     swap.to = 1;
     mScene.addKeypoint(swap);

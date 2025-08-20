@@ -22,5 +22,6 @@
 #endif
 
 //#define USE_THIRD_PARTY_MATH
+//#define NO_CLOCK_TRACKING
 
 #endif
