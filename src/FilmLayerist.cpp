@@ -14,15 +14,8 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
     case FilmKeypointLayer::InteractDefaultPos: maLayers[li].rect.ease_tracker.setDefault();                                             break;
     case FilmKeypointLayer::InteractDefaultPartPos: maLayers[li].part.ease_tracker.setDefault();                                         break;
     case FilmKeypointLayer::InteractTransparentSwap:
-        maLayers[li].texind.ease_tracker.setEase(((FilmKeypointEase*)keypoint)->ease_func);
-        if (maLayers[li].texind.ease_tracker.isEase()) {
-            maLayers[li].texind.ease_tracker.start(*((FilmTimer*)keypoint));
-            registerTracker(keypoint, li);
-        }
     case FilmKeypointLayer::InteractSwap: _FALLTHROUGH
-        maLayers[li].texind.elem_from = maLayers[li].texind.elem_to;
-        maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
-        maLayers[li].rect.elem_to = pTexMgr->GetLockerTexture(maLayers[li].texind.elem_to).getRectRes();
+        registerLayerKeypointInteractSwap(keypoint, li);
         break;
     case FilmKeypointLayer::Enable: maActiveLayerIndexes.push_back(li); break;
     case FilmKeypointLayer::Disable:
@@ -173,6 +166,36 @@ void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, La
 }
 
 void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, LayerIndex li) {
+    FilmKeypointLayerSwap::SwapMode swapmode = ((FilmKeypointLayerInteractSwap*)keypoint)->swap;
+
+    switch (swapmode) {
+    default: _FALLTHROUGH
+    case FilmKeypointLayerSwap::Keep:        break;
+    case FilmKeypointLayerSwap::FitInAspect: 
+
+        break;
+    case FilmKeypointLayerSwap::NewTransform:
+
+        break;
+    }
+
+    if (keypoint->type().specific_type == FilmKeypointLayer::InteractTransparentSwap) {
+        auto kpt = (FilmKeypointLayerInteractTransparentSwap*)keypoint;
+
+        maLayers[li].texind.ease_tracker.setEase(kpt->ease_func);
+        if (maLayers[li].texind.ease_tracker.isEase()) {
+            maLayers[li].texind.ease_tracker.start(*((FilmTimer*)keypoint));
+            registerTracker(keypoint, li);
+        }
+    }
+
+    //if (keypoint->type().specific_type == FilmKeypointLayer::InteractSwap) {
+        maLayers[li].texind.elem_from = maLayers[li].texind.elem_to;
+        maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
+        maLayers[li].rect.elem_to = pTexMgr->GetLockerTexture(maLayers[li].texind.elem_to).getRectRes();
+    //}
+
+
 
 }
 
