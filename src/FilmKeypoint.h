@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <chrono>
+#include <memory>
 
 #include "TextureManager.h"
 
@@ -137,11 +138,13 @@ struct FilmKeypointLayerSwap : public FilmKeypointLayer {
 
     enum SwapMode {
         Keep,
-        FitInAspect,
+        SetDefault,
         NewTransform
     };
 
     SwapMode swap = Keep;
+    std::unique_ptr<SDL_FRect> swap_rect_ptr = nullptr;
+    std::unique_ptr<SDL_FRect> swap_part_ptr = nullptr;
 };
 
 struct FilmKeypointLayerInteractSwap : public FilmKeypointLayerSwap {

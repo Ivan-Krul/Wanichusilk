@@ -47,7 +47,7 @@ public:
         TransitionableParameter<SDL_FRect> rect;
         TransitionableParameter<uint8_t> alpha;
         TransitionableParameter<ResourceIndex> texind;
-        
+
         inline bool is_default() { 
             return part.ease_tracker.isDefault() 
                 && rect.ease_tracker.isDefault()
