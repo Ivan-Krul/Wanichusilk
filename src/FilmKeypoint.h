@@ -139,7 +139,8 @@ struct FilmKeypointLayerSwap : public FilmKeypointLayer {
     enum SwapMode {
         Keep,
         SetDefault,
-        NewTransform
+        NewTransform,
+        KeepTransitioning
     };
 
     SwapMode swap = Keep;

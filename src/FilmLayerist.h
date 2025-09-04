@@ -48,6 +48,8 @@ public:
         TransitionableParameter<uint8_t> alpha;
         TransitionableParameter<ResourceIndex> texind;
 
+        LockerIndex trackerind = 0;
+
         inline bool is_default() { 
             return part.ease_tracker.isDefault() 
                 && rect.ease_tracker.isDefault()

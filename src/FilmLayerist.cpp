@@ -72,6 +72,7 @@ void FilmLayerist::update() {
 
 void FilmLayerist::render() {
     bool tex_from = false;
+    bool tex_to = false;
     SDL_FRect rect = { 0.f };
     SDL_FRect part = { 0.f };
 
@@ -83,22 +84,18 @@ void FilmLayerist::render() {
     for (auto& li : maActiveLayerIndexes) {
         auto& layer = maLayers[li];
         tex_from = layer.texind.elem_from != -1;
+        tex_to = layer.texind.elem_to != -1;
 
-        if (!layer.rect.ease_tracker.isDefault()) {
-            if (layer.rect.ease_tracker.isProgress())
+        if (layer.rect.ease_tracker.isDefault()) res_rect = nullptr;
+        else {
+            if (layer.rect.ease_tracker.isProgress()) {
+                rect = lerpRect(layer.rect.elem_from, layer.rect.elem_to, layer.rect.ease_tracker);
                 res_rect = &rect;
-            else
-                res_rect = &(layer.rect.elem_to);
-        } else res_rect = nullptr;
-
-        if (layer.rect.ease_tracker.isProgress())
-            rect = lerpRect(layer.rect.elem_from, layer.rect.elem_to, layer.rect.ease_tracker);
+            } else res_rect = &(layer.rect.elem_to);
+        }
 
         if (!layer.part.ease_tracker.isDefault()) {
-            if (layer.part.ease_tracker.isProgress())
-                res_part = &part;
-            else
-                res_part = &(layer.part.elem_to);
+            res_part = layer.part.ease_tracker.isProgress() ? &part : &(layer.part.elem_to);
         } else res_part = nullptr;
 
         if (layer.part.ease_tracker.isProgress())
@@ -109,10 +106,32 @@ void FilmLayerist::render() {
         else alpha = layer.alpha.elem_to;
 
         if (layer.texind.ease_tracker.isProgress()) {
-            if (tex_from)
-                pTexMgr->GetLockerTexture(layer.texind.elem_from).renderRaw(res_part, res_rect, (1 - layer.texind.ease_tracker) * layer.alpha.elem_from);
+            const auto tracked_kp = (FilmKeypointLayerInteractTransparentSwap*)mKeypointPtrLocker[layer.trackerind].keypoint_ptr;
+            switch (tracked_kp->swap) {
+            default:
+            case FilmKeypointLayerSwap::KeepTransitioning: _FALLTHROUGH
+                if (tex_from) pTexMgr->GetLockerTexture(layer.texind.elem_from).renderRaw(res_part, res_rect, (1 - layer.texind.ease_tracker) * layer.alpha.elem_from);
+                if (tex_to) pTexMgr->GetLockerTexture(layer.texind.elem_to).renderRaw(res_part, res_rect, layer.texind.ease_tracker * layer.alpha.elem_to);
+                break;
+            case FilmKeypointLayerSwap::Keep: {
+                const auto tex = pTexMgr->GetLockerTexture(tracked_kp->texindx);
+                maLayers[li].rect.elem_to = tex.getRectRes();
+                maLayers[li].part.elem_to = tex.getRectPart();
+            }   break;
+            case FilmKeypointLayerSwap::SetDefault:            
+                maLayers[li].rect.ease_tracker.setDefault();
+                maLayers[li].part.ease_tracker.setDefault();
+                break;
+            case FilmKeypointLayerSwap::NewTransform:
+                if (tracked_kp->swap_rect_ptr)
+                    maLayers[li].rect.ease_tracker.setDefault();
+                else maLayers[li].rect.elem_to = *tracked_kp->swap_rect_ptr;
 
-            pTexMgr->GetLockerTexture(layer.texind.elem_to).renderRaw(res_part, res_rect, layer.texind.ease_tracker * layer.alpha.elem_to);
+                if (tracked_kp->swap_part_ptr)
+                    maLayers[li].part.ease_tracker.setDefault();
+                else maLayers[li].part.elem_to = *tracked_kp->swap_part_ptr;
+                break;
+            }
         }
         else if (layer.is_default())
             pTexMgr->GetLockerTexture(layer.texind.elem_to).render();
@@ -169,20 +188,6 @@ void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, Lay
     const auto kpt_swap = (FilmKeypointLayerInteractSwap*)keypoint;
     FilmKeypointLayerSwap::SwapMode swapmode = kpt_swap->swap;
 
-    /*SDL_Rect* from_ptr;
-    SDL_Rect* to_ptr;
-
-    switch (swapmode) {
-    default: _FALLTHROUGH
-    case FilmKeypointLayerSwap::Keep: break;
-    case FilmKeypointLayerSwap::FitInAspect:
-
-        break;
-    case FilmKeypointLayerSwap::NewTransform:
-        // w/ Transition classes
-        break;
-    }*/
-
     if (keypoint->type().specific_type == FilmKeypointLayer::InteractTransparentSwap) {
         auto kpt = (FilmKeypointLayerInteractTransparentSwap*)keypoint;
 
@@ -193,35 +198,34 @@ void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, Lay
         }
     }
     else {
+        maLayers[li].rect.shift_elem();
+        maLayers[li].part.shift_elem();
+
         switch (swapmode) {
-        case FilmKeypointLayerSwap::Keep: {
+        case FilmKeypointLayerSwap::KeepTransitioning:
+        case FilmKeypointLayerSwap::Keep: _FALLTHROUGH {
             const auto tex = pTexMgr->GetLockerTexture(kpt_swap->texindx);
-            maLayers[li].rect.shift_elem();
-            maLayers[li].part.shift_elem();
             maLayers[li].rect.elem_to = tex.getRectRes();
             maLayers[li].part.elem_to = tex.getRectPart();
-        } break;
-        case FilmKeypointLayerSwap::NewTransform: {
-            maLayers[li].rect.shift_elem();
-            maLayers[li].part.shift_elem();
-
+        }   break;
+        case FilmKeypointLayerSwap::SetDefault:
+            maLayers[li].rect.ease_tracker.setDefault();
+            maLayers[li].part.ease_tracker.setDefault();
+            break;
+        case FilmKeypointLayerSwap::NewTransform:
             if (kpt_swap->swap_rect_ptr)
                 maLayers[li].rect.ease_tracker.setDefault();
             else maLayers[li].rect.elem_to = *kpt_swap->swap_rect_ptr;
 
-            if (kpt_swap->swap_rect_ptr)
-                maLayers[li].rect.ease_tracker.setDefault();
-            else maLayers[li].rect.elem_to = *kpt_swap->swap_rect_ptr;
-        } break;
+            if (kpt_swap->swap_part_ptr)
+                maLayers[li].part.ease_tracker.setDefault();
+            else maLayers[li].part.elem_to = *kpt_swap->swap_part_ptr;
+            break;
         }
     }
 
-    //if (keypoint->type().specific_type == FilmKeypointLayer::InteractSwap) {
-        maLayers[li].texind.shift_elem();
-        maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
-    //}
-
-
+    maLayers[li].texind.shift_elem();
+    maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
 
 }
 
@@ -241,9 +245,10 @@ float FilmLayerist::updateTimeProcenting(KeypointTracker& tracker) {
     return 1.f - procent;
 }
 */
+
 void FilmLayerist::registerTracker(FilmKeypoint* keypoint, LayerIndex li) {
     auto indx = mKeypointPtrLocker.pushInLocker(KeypointTracker{ keypoint, li });
-    //mKeypointPtrLocker[indx].index = indx;
+    maLayers[li].trackerind = indx;
 }
 
 SDL_FRect FilmLayerist::lerpRect(const SDL_FRect& from, const SDL_FRect& to, float t) {
