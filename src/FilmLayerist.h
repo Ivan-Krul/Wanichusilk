@@ -84,6 +84,8 @@ private:
     void registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, LayerIndex li);
     void registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, LayerIndex li);
 
+    inline void renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha);
+
     void registerTracker(FilmKeypoint* keypoint, LayerIndex li);
 
     SDL_FRect lerpRect(const SDL_FRect& from, const SDL_FRect& to, float t);

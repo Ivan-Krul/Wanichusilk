@@ -137,13 +137,13 @@ struct FilmKeypointLayerSwap : public FilmKeypointLayer {
     ResourceIndex texindx;
 
     enum SwapMode {
-        Keep,
+        KeepNotDeformed,
         SetDefault,
         NewTransform,
-        KeepTransitioning
+        KeepInAspect
     };
 
-    SwapMode swap = Keep;
+    SwapMode swap = KeepInAspect;
     std::unique_ptr<SDL_FRect> swap_rect_ptr = nullptr;
     std::unique_ptr<SDL_FRect> swap_part_ptr = nullptr;
 };
