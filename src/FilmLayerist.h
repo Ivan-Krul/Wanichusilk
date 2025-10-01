@@ -84,6 +84,7 @@ private:
     void registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, LayerIndex li);
     void registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, LayerIndex li);
 
+    void finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter);
     inline void renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha);
 
     void registerTracker(FilmKeypoint* keypoint, LayerIndex li);

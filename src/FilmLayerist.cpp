@@ -42,15 +42,15 @@ FilmTimer FilmLayerist::getLongestWaiting() const {
     auto iter = mKeypointPtrLocker.cbegin();
     for (iter; iter != mKeypointPtrLocker.cend(); iter++) {
         auto& layer = maLayers[iter->layer_index];
-        longest.delay = std::max(longest.delay, layer.alpha.ease_tracker.getLimiter().delay);
-        longest.delay = std::max(longest.delay, layer.rect.ease_tracker.getLimiter().delay);
-        longest.delay = std::max(longest.delay, layer.part.ease_tracker.getLimiter().delay);
-        longest.delay = std::max(longest.delay, layer.texind.ease_tracker.getLimiter().delay);
+        longest.delay = std::max<FilmTimer::Duration>(longest.delay, layer.alpha.ease_tracker.getLimiter().delay);
+        longest.delay = std::max<FilmTimer::Duration>(longest.delay, layer.rect.ease_tracker.getLimiter().delay);
+        longest.delay = std::max<FilmTimer::Duration>(longest.delay, layer.part.ease_tracker.getLimiter().delay);
+        longest.delay = std::max<FilmTimer::Duration>(longest.delay, layer.texind.ease_tracker.getLimiter().delay);
 
-        longest.frame_delay = std::max(longest.frame_delay, layer.alpha.ease_tracker.getLimiter().frame_delay);
-        longest.frame_delay = std::max(longest.frame_delay, layer.rect.ease_tracker.getLimiter().frame_delay);
-        longest.frame_delay = std::max(longest.frame_delay, layer.part.ease_tracker.getLimiter().frame_delay);
-        longest.frame_delay = std::max(longest.frame_delay, layer.texind.ease_tracker.getLimiter().frame_delay);
+        longest.frame_delay = std::max<int>(longest.frame_delay, layer.alpha.ease_tracker.getLimiter().frame_delay);
+        longest.frame_delay = std::max<int>(longest.frame_delay, layer.rect.ease_tracker.getLimiter().frame_delay);
+        longest.frame_delay = std::max<int>(longest.frame_delay, layer.part.ease_tracker.getLimiter().frame_delay);
+        longest.frame_delay = std::max<int>(longest.frame_delay, layer.texind.ease_tracker.getLimiter().frame_delay);
     }
     return longest;
 }
@@ -65,6 +65,8 @@ void FilmLayerist::update() {
         layer.alpha.ease_tracker.update();
 
         if (!layer.is_progress()) { // handle the swap logic
+            if (layer.texind.ease_tracker.isEnded())
+                finalizeSwap(it);
             it = mKeypointPtrLocker.popFromLocker(it);
         } else it++;
     }
@@ -172,9 +174,6 @@ void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, Lay
         }
     }
     else {
-        maLayers[li].rect.shift_elem();
-        maLayers[li].part.shift_elem();
-
         switch (swapmode) {
         case FilmKeypointLayerSwap::KeepNotDeformed: {
             const auto tex = pTexMgr->GetLockerTexture(kpt_swap->texindx);
@@ -200,6 +199,37 @@ void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, Lay
     maLayers[li].texind.shift_elem();
     maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
 
+}
+
+void FilmLayerist::finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter) {
+    const auto kpt_swap = (FilmKeypointLayerInteractTransparentSwap*)(*iter).keypoint_ptr;
+    const auto li = iter->layer_index;
+    const auto swapmode = kpt_swap->swap;
+
+    maLayers[li].rect.shift_elem();
+    maLayers[li].part.shift_elem();
+
+    switch (swapmode) {
+    case FilmKeypointLayerSwap::KeepNotDeformed:
+    {
+        const auto tex = pTexMgr->GetLockerTexture(kpt_swap->texindx);
+        maLayers[li].rect.elem_to = tex.getRectRes();
+        maLayers[li].part.elem_to = tex.getRectPart();
+    }   break;
+    case FilmKeypointLayerSwap::SetDefault:
+        maLayers[li].rect.ease_tracker.setDefault();
+        maLayers[li].part.ease_tracker.setDefault();
+        break;
+    case FilmKeypointLayerSwap::NewTransform:
+        if (kpt_swap->swap_rect_ptr)
+            maLayers[li].rect.ease_tracker.setDefault();
+        else maLayers[li].rect.elem_to = *kpt_swap->swap_rect_ptr;
+
+        if (kpt_swap->swap_part_ptr)
+            maLayers[li].part.ease_tracker.setDefault();
+        else maLayers[li].part.elem_to = *kpt_swap->swap_part_ptr;
+        break;
+    }
 }
 
 void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha) {

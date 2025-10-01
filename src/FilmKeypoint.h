@@ -179,3 +179,30 @@ struct FilmKeypointOccupyInput : public FilmKeypoint {
 struct FilmKeypointReleaseInput : public FilmKeypoint {
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::None, 2 }; }
 };
+/*
+namespace FilmKP {
+    using KPTypeStruct = FilmKeypointTypeStruct;
+    using KPBackground = FilmKeypointBackground;
+    using KPBgSwap = FilmKeypointBgSwap;
+    using KPEase = FilmKeypointEase;
+    using KPBgTransparentSwap = FilmKeypointBgTransparentSwap;
+    using KPLayer = FilmKeypointLayer;
+    using KPLayerAdd = FilmKeypointLayerAdd;
+    using KPLayerInteractRect = FilmKeypointLayerInteractRect;
+    using KPLayerInteractPos = FilmKeypointLayerInteractPos;
+    using KPLayerInteractRectPos = FilmKeypointLayerInteractRectPos;
+    using KPLayerInteractPartitionPos = FilmKeypointLayerInteractPartitionPos;
+    using KPLayerDefaultInteractPos = FilmKeypointLayerDefaultInteractPos;
+    using KPLayerInteractDefaultPartitionPos = FilmKeypointLayerInteractDefaultPartitionPos;
+    using KPLayerInteractAlpha = FilmKeypointLayerInteractAlpha;
+    using KPLayerSwap = FilmKeypointLayerSwap;
+    using KPLayerInteractSwap = FilmKeypointLayerInteractSwap;
+    using KPLayerInteractTransparentSwap = FilmKeypointLayerInteractTransparentSwap;
+    using KPLayerInteractDefault = FilmKeypointLayerInteractDefault;
+    using KPLayerEnable = FilmKeypointLayerEnable;
+    using KPLayerDisable = FilmKeypointLayerDisable;
+    using KPLayerRemove = FilmKeypointLayerRemove;
+    using KPOccupyInput = FilmKeypointOccupyInput;
+    using KPReleaseInput = FilmKeypointReleaseInput;
+}
+*/
