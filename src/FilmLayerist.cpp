@@ -1,9 +1,10 @@
 #include "FilmLayerist.h"
 
-void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
+void FilmLayerist::registerLayerKeypoint(FilmKeypointLayer* keypoint) {
     assert(keypoint->type().specific_type >= FilmKeypointLayer::Add && keypoint->type().specific_type <= FilmKeypointLayer::Remove);
+    assert(keypoint->layerindx < maLayers.size() || keypoint->type().specific_type == FilmKeypointLayer::Add);
 
-    LayerIndex li = (keypoint->type().specific_type != FilmKeypointLayer::Add) ? ((FilmKeypointLayer*)keypoint)->layerindx : -1;
+    LayerIndex li = (keypoint->type().specific_type != FilmKeypointLayer::Add) ? keypoint->layerindx : -1;
 
     switch (keypoint->type().specific_type) { // it's mess now, but I must go further
     case FilmKeypointLayer::Add:             registerLayerKeypointAdd((FilmKeypointLayerAdd*)keypoint);                                  break;
@@ -31,7 +32,7 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypoint* keypoint) {
         maActiveLayerIndexes.erase(iter);
         mKeypointPtrLocker.popFromLocker(li);
     }   break;
-    case FilmKeypointLayer::Await: assert(false); break;
+    case FilmKeypointLayer::Await: assert(false); break; // useless?
     default: assert(false); break;
     }
 
@@ -151,7 +152,7 @@ void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteract
     }
 }
 
-void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, LayerIndex li) {
+void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoint, LayerIndex li) {
     auto kp = (FilmKeypointLayerInteractAlpha*)keypoint;
     maLayers[li].alpha.elem_to = kp->alpha;
     maLayers[li].alpha.ease_tracker.reset();
@@ -160,7 +161,7 @@ void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, La
     registerTracker(keypoint, li);
 }
 
-void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, LayerIndex li) {
+void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint, LayerIndex li) {
     const auto kpt_swap = (FilmKeypointLayerInteractSwap*)keypoint;
     FilmKeypointLayerSwap::SwapMode swapmode = kpt_swap->swap;
 
@@ -271,7 +272,7 @@ void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL
     }
 }
 
-void FilmLayerist::registerTracker(FilmKeypoint* keypoint, LayerIndex li) {
+void FilmLayerist::registerTracker(FilmKeypointLayer* keypoint, LayerIndex li) {
     auto indx = mKeypointPtrLocker.pushInLocker(KeypointTracker{ keypoint, li });
     maLayers[li].trackerind = indx;
 }

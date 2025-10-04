@@ -80,9 +80,9 @@ void FilmScene::clear() {
 
 
 void FilmScene::onUpdate() {
-    mLongestTimer.decrement_time_frame(mpClock->DeltaTime());
+    mBackupTimer.decrement_time_frame(mpClock->DeltaTime());
 
-    if (mBackground.isWaiting() && mLayerist.isWaiting() && !mLongestTimer.need_input) {
+    if (isWaiting() && !mBackupTimer.need_input) {
         next();
         return;
     }
@@ -92,22 +92,34 @@ void FilmScene::onUpdate() {
 }
 
 void FilmScene::onNext() {
-    mLongestTimer = *((FilmTimer*)pKeypoint);
+    auto timer = *((FilmTimer*)pKeypoint);
 
     if (pKeypoint->type().global_type == FilmKeypointChangeType::Layer) {
-        mLayerist.registerLayerKeypoint(pKeypoint);
-        next();
+        mLayerist.registerLayerKeypoint((FilmKeypointLayer*)pKeypoint);
     }
     if (pKeypoint->type().global_type == FilmKeypointChangeType::Background) {
         mBackground.registerBackgroundKeypoint((FilmKeypointBackground*)pKeypoint);
-        next();
     }
 
-    auto timer = mLayerist.getLongestWaiting();
-    mLongestTimer.delay = timer.delay;
-    mLongestTimer.frame_delay = timer.frame_delay;
+    if(timer.is_zero() && timer.action == timer.Instant) next();
 
-    if (mLongestTimer.is_zero() && !mLongestTimer.need_input)
+    switch (timer.action) {
+    case timer.First:
+    case timer.InInputOrFirst: _FALLTHROUGH
+    case timer.InInputAfterFirst: _FALLTHROUGH
+    case timer.InInput: _FALLTHROUGH 
+
+        break;
+    
+    case timer.Await:
+    case timer.InInputOrAwait: _FALLTHROUGH
+    case timer.InInputAfterAwait: _FALLTHROUGH
+        break;
+    }
+
+    mBackupTimer.action = timer.action;
+
+    if (mBackupTimer.is_zero() && !mBackupTimer.need_input)
         next();
 
 }

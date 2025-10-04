@@ -18,6 +18,8 @@ public:
     void registerBackgroundKeypoint(FilmKeypointBackground* keypoint);
     void update();
     void render();
+
+    inline FilmTimer getLongestWaiting() const noexcept { return mEaseTimer.getLimiter(); }
 private:
     void transformTexture(ResourceIndex texind, FilmKeypointBackground::RenderMode rend_mode);
     void simplyPutTexture(ResourceIndex texind);

@@ -86,7 +86,7 @@ void Application::OnInit() {
         lits.layerindx = 0;
         lits.texindx = 3;
         lits.frame_delay = 300;
-        lits.swap = FilmKeypointLayerInteractSwap::SwapMode::KeepNotDeformed;
+        lits.swap = FilmKeypointLayerInteractSwap::SwapMode::KeepInAspect;
         mScene.addKeypoint(lits);
     }
 

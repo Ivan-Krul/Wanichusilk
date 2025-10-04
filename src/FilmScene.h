@@ -17,7 +17,7 @@ public:
     void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); mBackground.setClock(clock); }
 
     template<typename T>
-    void addKeypoint(const T keypoint);
+    void addKeypoint(T&& keypoint);
     template<typename T>
     T getKeypoint(size_t index) const;
 
@@ -59,15 +59,16 @@ private:
     size_t mKeypointIndex = -1;
     Clock* mpClock;
 
-    FilmTimer mLongestTimer;
+    FilmTimer mBackupTimer;
 };
 
 template<typename T>
-inline void FilmScene::addKeypoint(const T keypoint) {
-    static_assert(std::is_base_of<FilmKeypoint, T>::value, "you should add a derived struct FilmKeypoint");
+inline void FilmScene::addKeypoint(T&& keypoint) {
+    using KeypointType = std::decay_t<T>;
+    static_assert(std::is_base_of<FilmKeypoint, KeypointType>::value, "you should add a derived struct FilmKeypoint");
 
-    auto ptr = std::static_pointer_cast<FilmKeypoint>(std::make_shared<T>(keypoint));
-    maKeypoints.push_back(ptr);
+    auto ptr = std::make_shared<KeypointType>(std::forward<T>(keypoint));
+    maKeypoints.push_back(std::static_pointer_cast<FilmKeypoint>(ptr));
 }
 
 template<typename T>

@@ -14,7 +14,7 @@
         
 class FilmLayerist : public ClockHolder {
     struct KeypointTracker {
-        FilmKeypoint* keypoint_ptr;
+        FilmKeypointLayer* keypoint_ptr;
         // timer would track from layer.ease_tracker directly
         LayerIndex layer_index;
         //LockerIndex index;
@@ -71,7 +71,7 @@ public:
     };
 
     inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
-    void registerLayerKeypoint(FilmKeypoint* keypoint);
+    void registerLayerKeypoint(FilmKeypointLayer* keypoint);
 
     inline bool isWaiting() const { return mKeypointPtrLocker.cbegin() == mKeypointPtrLocker.cend(); }
     void update();
@@ -81,13 +81,13 @@ public:
 private:
     void registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint);
     void registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, RegLayerKpInterAPosEnum enum_pos);
-    void registerLayerKeypointInteractAlpha(FilmKeypoint* keypoint, LayerIndex li);
-    void registerLayerKeypointInteractSwap(FilmKeypoint* keypoint, LayerIndex li);
+    void registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoint, LayerIndex li);
+    void registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint, LayerIndex li);
 
     void finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter);
     inline void renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha);
 
-    void registerTracker(FilmKeypoint* keypoint, LayerIndex li);
+    void registerTracker(FilmKeypointLayer* keypoint, LayerIndex li);
 
     SDL_FRect lerpRect(const SDL_FRect& from, const SDL_FRect& to, float t);
 

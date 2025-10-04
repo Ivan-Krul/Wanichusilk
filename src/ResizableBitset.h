@@ -38,7 +38,7 @@ private:
 template<size_t ChunkByte, size_t ChunkBits>
 void ResizableBitset<ChunkByte, ChunkBits>::resizeIfWants(IndexType target) {
     assert(target <= DEFAULT_RESBITSET_SIZE_LIM);
-    size_t new_size = ((ChunkBits - (target % ChunkBits)) + target) >> ChunkByte;
+    IndexType new_size = ((ChunkBits - (target % ChunkBits)) + target) >> ChunkByte;
     if (mapBitsets) {
         auto new_bitset = std::make_unique<BitsetChunk[]>(new_size);
         for (size_t i = 0; i < mSize; i++) new_bitset[i] = mapBitsets[i];

@@ -21,14 +21,23 @@ struct FilmKeypointTypeStruct {
 struct FilmTimer {
     using Duration = std::chrono::duration<float>;
 
+    enum ActionConcurency : int {
+        Instant = 0,
+        InInput,
+        First,
+        Await,
+        InInputOrAwait,
+        InInputOrFirst,
+        InInputAfterAwait,
+        InInputAfterFirst,
+    };
+
     Duration delay;
     int frame_delay : 28;
     int need_time_delay : 1;
-    int need_input : 1;
-    int need_parallel : 1;
-    int need_await : 1;
+    ActionConcurency action : 3;
 
-    inline FilmTimer() : delay(std::chrono::seconds(0)), frame_delay(0), need_time_delay(0), need_input(0), need_parallel(0), need_await(0) {}
+    inline FilmTimer() : delay(std::chrono::seconds(0)), frame_delay(0), need_time_delay(0), action(Await) {}
 
     inline bool is_zero() const { return delay <= delay.zero() && frame_delay <= 0; }
     inline void set_delay_frame(int frames) { frame_delay = frames; need_time_delay = false; }
@@ -40,7 +49,6 @@ struct FilmTimer {
 
 struct FilmKeypoint : public FilmTimer {
     inline virtual FilmKeypointTypeStruct type() const { return { 0 }; }
-    inline virtual bool has_ease() const { return false; }
 };
 
 struct FilmKeypointBackground : public FilmKeypoint {
@@ -67,8 +75,6 @@ struct FilmKeypointBgSwap : public FilmKeypointBackground {
 
 struct FilmKeypointEase {
     float (*ease_func)(float) = nullptr;
-
-    inline bool has_ease() const { return ease_func != nullptr; }
 };
 
 struct FilmKeypointBgTransparentSwap : public FilmKeypointBackground, public FilmKeypointEase {
@@ -94,7 +100,7 @@ struct FilmKeypointLayer : public FilmKeypoint {
         Await,
         Remove
     };
-    LayerIndex layerindx;
+    LayerIndex layerindx = -1;
 };
 
 struct FilmKeypointLayerAdd : public FilmKeypointLayer {
@@ -134,7 +140,7 @@ struct FilmKeypointLayerInteractAlpha : public FilmKeypointLayer, public FilmKey
 };
 
 struct FilmKeypointLayerSwap : public FilmKeypointLayer {
-    ResourceIndex texindx;
+    ResourceIndex texindx = -1;
 
     enum SwapMode {
         KeepNotDeformed,
@@ -146,6 +152,17 @@ struct FilmKeypointLayerSwap : public FilmKeypointLayer {
     SwapMode swap = KeepInAspect;
     std::unique_ptr<SDL_FRect> swap_rect_ptr = nullptr;
     std::unique_ptr<SDL_FRect> swap_part_ptr = nullptr;
+
+    FilmKeypointLayerSwap() = default;
+    FilmKeypointLayerSwap(const FilmKeypointLayerSwap& other)
+        : FilmKeypointLayer(other),
+        texindx(other.texindx),
+        swap(other.swap),
+        swap_rect_ptr(other.swap_rect_ptr ? std::make_unique<SDL_FRect>(*other.swap_rect_ptr) : nullptr),
+        swap_part_ptr(other.swap_part_ptr ? std::make_unique<SDL_FRect>(*other.swap_part_ptr) : nullptr) {}
+    FilmKeypointLayerSwap& operator=(const FilmKeypointLayerSwap& other);
+    FilmKeypointLayerSwap(FilmKeypointLayerSwap&&) noexcept = default;
+    FilmKeypointLayerSwap& operator=(FilmKeypointLayerSwap&&) noexcept = default;
 };
 
 struct FilmKeypointLayerInteractSwap : public FilmKeypointLayerSwap {
@@ -179,6 +196,26 @@ struct FilmKeypointOccupyInput : public FilmKeypoint {
 struct FilmKeypointReleaseInput : public FilmKeypoint {
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::None, 2 }; }
 };
+
+//inline FilmKeypointLayerSwap::FilmKeypointLayerSwap(const FilmKeypointLayerSwap& other) {
+//    texindx = other.texindx;
+//    swap = other.swap;
+//    if (other.swap_rect_ptr)
+//        swap_rect_ptr = std::make_unique<SDL_FRect>(*other.swap_rect_ptr);
+//    if (other.swap_part_ptr)
+//        swap_part_ptr = std::make_unique<SDL_FRect>(*other.swap_part_ptr);
+//}
+
+inline FilmKeypointLayerSwap& FilmKeypointLayerSwap::operator=(const FilmKeypointLayerSwap& other) {
+    if (this == &other) return *this;
+    FilmKeypointLayer::operator=(other);
+    texindx = other.texindx;
+    swap = other.swap;
+    swap_rect_ptr = other.swap_rect_ptr ? std::make_unique<SDL_FRect>(*other.swap_rect_ptr) : nullptr;
+    swap_part_ptr = other.swap_part_ptr ? std::make_unique<SDL_FRect>(*other.swap_part_ptr) : nullptr;
+    return *this;
+}
+
 /*
 namespace FilmKP {
     using KPTypeStruct = FilmKeypointTypeStruct;

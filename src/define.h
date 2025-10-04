@@ -21,6 +21,14 @@
 #define _FALLTHROUGH
 #endif
 
+#ifdef __cplusplus 
+#define NON_COPYABLE(ClassName)                  \
+    ClassName(const ClassName&) = delete;        \
+    ClassName& operator=(const ClassName&) = delete; \
+    ClassName(ClassName&&) noexcept = default;   \
+    ClassName& operator=(ClassName&&) noexcept = default;
+#endif
+
 //#define USE_THIRD_PARTY_MATH
 //#define NO_CLOCK_TRACKING
 
