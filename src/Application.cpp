@@ -23,7 +23,7 @@ void Application::OnInit() {
     mScene.setClock(&mClock);
 
     FilmKeypointBgTransparentSwap swap;
-    swap.need_input = true;
+    swap.action = FilmTimer::InInputAfterAwait;
     swap.rend_mode = swap.simple;
     swap.ease_func = ease_cubic_out;
     swap.frame_delay = 50;
@@ -31,7 +31,7 @@ void Application::OnInit() {
     swap.to = 0;
     mScene.addKeypoint(swap);
     swap.rend_mode = swap.centered_black_borders;
-    swap.need_input = false;
+    swap.action = FilmTimer::Await;
     swap.from = 0;
     swap.to = 1;
     mScene.addKeypoint(swap);
@@ -41,7 +41,6 @@ void Application::OnInit() {
     {
         FilmKeypointLayerAdd la;
         la.texind = 2;
-        la.need_await = true;
         mScene.addKeypoint(la);
     }
     {
@@ -62,10 +61,12 @@ void Application::OnInit() {
         lia.ease_func = ease_cubic_in_out;
         lia.need_time_delay = true;
         lia.delay = std::chrono::seconds(3);
+        lia.action = FilmTimer::Await;
         mScene.addKeypoint(lia);
     }
     {
         FilmKeypointLayerInteractPos lip;
+        lip.action = FilmTimer::Await;
         lip.layerindx = 0;
         lip.ease_func = ease_cubic_in;
         lip.frame_delay = 50;
@@ -83,6 +84,7 @@ void Application::OnInit() {
     }
     {
         FilmKeypointLayerInteractSwap lits;
+        lits.action = FilmTimer::Await;
         lits.layerindx = 0;
         lits.texindx = 3;
         lits.frame_delay = 300;
@@ -96,7 +98,7 @@ void Application::OnInit() {
     swap.from = -1;
     swap.to = 1;
     mScene.addKeypoint(swap);
-    swap.need_input = true;
+    swap.action = FilmTimer::InInputAfterAwait;
     swap.to = 0;
     mScene.addKeypoint(swap);
     swap.to = 1;
@@ -151,7 +153,7 @@ void Application::OnUpdate() {
 }
 
 void Application::OnRender() {
-    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), mScene.needNext() * 100 + 100, mScene.isEnded() * 100 + 100, 200, 255);
+    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), mScene.canTriggerNext() * 100 + 100, mScene.isEnded() * 100 + 100, 200, 255);
 
     mScene.render();
 }

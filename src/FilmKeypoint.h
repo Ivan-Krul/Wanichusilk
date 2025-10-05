@@ -21,9 +21,8 @@ struct FilmKeypointTypeStruct {
 struct FilmTimer {
     using Duration = std::chrono::duration<float>;
 
-    enum ActionConcurency : int {
+    enum ActionConcurency : unsigned int {
         Instant = 0,
-        InInput,
         First,
         Await,
         InInputOrAwait,
@@ -37,7 +36,7 @@ struct FilmTimer {
     int need_time_delay : 1;
     ActionConcurency action : 3;
 
-    inline FilmTimer() : delay(std::chrono::seconds(0)), frame_delay(0), need_time_delay(0), action(Await) {}
+    inline FilmTimer() : delay(std::chrono::seconds(0)), frame_delay(0), need_time_delay(0), action(Instant) {}
 
     inline bool is_zero() const { return delay <= delay.zero() && frame_delay <= 0; }
     inline void set_delay_frame(int frames) { frame_delay = frames; need_time_delay = false; }
@@ -65,8 +64,8 @@ struct FilmKeypointBackground : public FilmKeypoint {
         //scroll
     };
 
-    ResourceIndex to;
-    RenderMode rend_mode;
+    ResourceIndex to = -1;
+    RenderMode rend_mode = blank;
 };
 
 struct FilmKeypointBgSwap : public FilmKeypointBackground {

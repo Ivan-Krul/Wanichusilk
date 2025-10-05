@@ -46,7 +46,7 @@ void FilmScene::update() {
 }
 
 void FilmScene::next() {
-    if (!needNext()) return; // dangerous
+    if (!canTriggerNext()) return; // dangerous
     mKeypointIndex++;
     pKeypoint = maKeypoints[mKeypointIndex].get();
 
@@ -69,6 +69,12 @@ void FilmScene::render() {
 #endif
 }
 
+inline bool FilmScene::canTriggerNext() const {
+    if (mBackupTimer.action == FilmTimer::InInputOrFirst || mBackupTimer.action == FilmTimer::InInputOrAwait) return true;
+    if (mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait) return mBackupTimer.is_zero();
+    return false;
+}
+
 void FilmScene::clear() {
     while(!mTextureIndexes.empty()) {
         pTexMgr->RequestTextureClean(mTextureIndexes.back());
@@ -82,7 +88,7 @@ void FilmScene::clear() {
 void FilmScene::onUpdate() {
     mBackupTimer.decrement_time_frame(mpClock->DeltaTime());
 
-    if (isWaiting() && !mBackupTimer.need_input) {
+    if (isWaiting()) {
         next();
         return;
     }
@@ -92,7 +98,7 @@ void FilmScene::onUpdate() {
 }
 
 void FilmScene::onNext() {
-    auto timer = *((FilmTimer*)pKeypoint);
+    const auto timer = *((FilmTimer*)pKeypoint);
 
     if (pKeypoint->type().global_type == FilmKeypointChangeType::Layer) {
         mLayerist.registerLayerKeypoint((FilmKeypointLayer*)pKeypoint);
@@ -101,25 +107,45 @@ void FilmScene::onNext() {
         mBackground.registerBackgroundKeypoint((FilmKeypointBackground*)pKeypoint);
     }
 
-    if(timer.is_zero() && timer.action == timer.Instant) next();
+    if (timer.is_zero() && timer.action == timer.Instant) {
+        next();
+        return;
+    }
+
+    const FilmTimer backg_timer = mBackground.getLongestWaiting();
+    const FilmTimer layer_timer = mLayerist.getLongestWaiting();
 
     switch (timer.action) {
     case timer.First:
     case timer.InInputOrFirst: _FALLTHROUGH
     case timer.InInputAfterFirst: _FALLTHROUGH
-    case timer.InInput: _FALLTHROUGH 
-
+        mBackupTimer.frame_delay = std::min<>(backg_timer.frame_delay, layer_timer.frame_delay);
+        mBackupTimer.delay = std::min<>(backg_timer.delay, layer_timer.delay);
+        if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
+        if (!timer.is_zero()) {
+            mBackupTimer.frame_delay = std::min<>(mBackupTimer.frame_delay, timer.frame_delay);
+            if (timer.need_time_delay) {
+                mBackupTimer.delay = std::min<>(mBackupTimer.delay, timer.delay);
+                mBackupTimer.need_time_delay = true;
+            }
+        }
         break;
     
     case timer.Await:
     case timer.InInputOrAwait: _FALLTHROUGH
     case timer.InInputAfterAwait: _FALLTHROUGH
+        if (timer.is_zero()) {
+            mBackupTimer.frame_delay = std::max<>(backg_timer.frame_delay, layer_timer.frame_delay);
+            mBackupTimer.delay = std::max<>(backg_timer.delay, layer_timer.delay);
+            if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
+        }
+        else {
+            mBackupTimer.frame_delay = std::max<>(std::max<>(backg_timer.frame_delay, layer_timer.frame_delay), timer.frame_delay);
+            mBackupTimer.delay = std::max<>(std::max<>(backg_timer.delay, layer_timer.delay), timer.delay);
+            if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
+        }
         break;
     }
 
     mBackupTimer.action = timer.action;
-
-    if (mBackupTimer.is_zero() && !mBackupTimer.need_input)
-        next();
-
 }

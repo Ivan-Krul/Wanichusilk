@@ -34,8 +34,8 @@ public:
 
     void render();
 
-    inline bool isWaiting() const { return mBackground.isWaiting() && mLayerist.isWaiting(); }
-    inline bool needNext() const { return isGoing() ? isWaiting() : false; }
+    inline bool isWaiting() const { return mBackupTimer.is_zero(); }
+    inline bool canTriggerNext() const;
     inline bool isGoing() const { return mKeypointIndex != -1 && (mKeypointIndex + 1) < maKeypoints.size(); }
     inline bool isEnded() const { return (mKeypointIndex + 1) >= maKeypoints.size(); }
 
