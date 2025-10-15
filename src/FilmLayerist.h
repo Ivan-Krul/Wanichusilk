@@ -62,6 +62,12 @@ public:
                 || alpha.ease_tracker.isProgress()
                 || texind.ease_tracker.isProgress();
         }
+        inline bool is_one_progress_ended() {
+            return part.ease_tracker.isEnded()
+                || rect.ease_tracker.isEnded()
+                || alpha.ease_tracker.isEnded()
+                || texind.ease_tracker.isEnded();
+        }
         inline void set_to_default() {
             part.ease_tracker.setDefault();
             rect.ease_tracker.setDefault();

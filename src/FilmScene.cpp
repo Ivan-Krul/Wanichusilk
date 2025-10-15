@@ -147,6 +147,6 @@ void FilmScene::onNext() {
         }
         break;
     }
-
+    FilmKP::SDL_Log_FilmTimer(mBackupTimer);
     mBackupTimer.action = timer.action;
 }

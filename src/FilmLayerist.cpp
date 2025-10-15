@@ -48,7 +48,7 @@ FilmTimer FilmLayerist::getLongestWaiting() const {
         longest = FilmKP::max(longest, layer.texind.ease_tracker.getLimiter());
         longest = FilmKP::max(longest, layer.part.ease_tracker.getLimiter());
     }
-    FilmKP::SDL_Log_FilmTimer(longest);
+    
     return longest;
 }
 
@@ -61,8 +61,8 @@ void FilmLayerist::update() {
         layer.texind.ease_tracker.update();
         layer.alpha.ease_tracker.update();
 
-        if (!layer.is_progress()) { // handle the swap logic
-            if (layer.texind.ease_tracker.isEnded())
+        if (!layer.is_progress()) {
+            if (layer.texind.ease_tracker.isEnded()) // handle the swap logic
                 finalizeSwap(it);
             it = mKeypointPtrLocker.popFromLocker(it);
         } else it++;
@@ -149,7 +149,7 @@ void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteract
 }
 
 void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoint, LayerIndex li) {
-    auto kp = (FilmKeypointLayerInteractAlpha*)keypoint;
+    auto kp = dynamic_cast<FilmKeypointLayerInteractAlpha*>(keypoint);
     maLayers[li].alpha.elem_to = kp->alpha;
     maLayers[li].alpha.ease_tracker.reset();
     maLayers[li].alpha.ease_tracker.setEase(kp->ease_func);
@@ -269,6 +269,7 @@ void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL
 }
 
 void FilmLayerist::registerTracker(FilmKeypointLayer* keypoint, LayerIndex li) {
+    if (keypoint->is_zero()) return;
     auto indx = mKeypointPtrLocker.pushInLocker(KeypointTracker{ keypoint, li });
     maLayers[li].trackerind = indx;
 }

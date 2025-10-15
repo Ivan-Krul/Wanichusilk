@@ -245,6 +245,27 @@ namespace FilmKP {
         case FilmTimer::InInputAfterFirst: SDL_Log("FilmTimer: %fs or %d frames with InInputAfterFirst", other.delay.count(), other.frame_delay); break;   
         }
     }
+
+    inline void SDL_Log_FilmKeypointLayer(const FilmKeypointLayer other) {
+        switch (other.type().specific_type) {
+        case FilmKeypointLayer::Add: SDL_Log("FilmKeypointLayer: %fs or %d frames with Add", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractPos: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractPos", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractRectPos: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractRectPos", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractPartPos: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractPartPos", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractDefaultPos: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractDefaultPos", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractDefaultPartPos: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractDefaultPartPos", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractAlpha: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractAlpha", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractSwap: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractSwap", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractTransparentSwap: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractTransparentSwap", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::InteractDefault: SDL_Log("FilmKeypointLayer: %fs or %d frames with InteractDefault", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::Enable: SDL_Log("FilmKeypointLayer: %fs or %d frames with Enable", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::Disable: SDL_Log("FilmKeypointLayer: %fs or %d frames with Disable", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::Await: SDL_Log("FilmKeypointLayer: %fs or %d frames with Await", other.delay.count(), other.frame_delay); break;
+        case FilmKeypointLayer::Remove:  SDL_Log("FilmKeypointLayer: %fs or %d frames with Remove", other.delay.count(), other.frame_delay); break;
+        default: SDL_Log("it's not a FilmKeypointLayer: %d", other.type().specific_type);
+        }
+
+    }
 #else // inlining nothing should be enough to not generate code for logging in release
     inline void SDL_Log_FilmTimer(const FilmTimer other) {}
 #endif
