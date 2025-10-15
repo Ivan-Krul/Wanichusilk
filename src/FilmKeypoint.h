@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "TextureManager.h"
+#include "define.h"
 
 typedef int LayerIndex;
 
@@ -215,8 +216,41 @@ inline FilmKeypointLayerSwap& FilmKeypointLayerSwap::operator=(const FilmKeypoin
     return *this;
 }
 
-/*
 namespace FilmKP {
+    inline FilmTimer min(const FilmTimer a, const FilmTimer b) {
+        FilmTimer timer;
+        timer.frame_delay = std::min<>(a.frame_delay, b.frame_delay);
+        timer.delay = std::min<>(a.delay, b.delay);
+        if (timer.delay != timer.delay.zero()) timer.need_time_delay = true;
+        return timer;
+    }
+
+    inline FilmTimer max(const FilmTimer a, const FilmTimer b) {
+        FilmTimer timer;
+        timer.frame_delay = std::max<>(a.frame_delay, b.frame_delay);
+        timer.delay = std::max<>(a.delay, b.delay);
+        if (timer.delay != timer.delay.zero()) timer.need_time_delay = true;
+        return timer;
+    }
+
+#ifdef DEBUG
+    inline void SDL_Log_FilmTimer(const FilmTimer other) {
+        switch (other.action) {
+        case FilmTimer::Instant: SDL_Log("FilmTimer: %fs or %d frames with Instant", other.delay.count(), other.frame_delay); break;
+        case FilmTimer::First: SDL_Log("FilmTimer: %fs or %d frames with First", other.delay.count(), other.frame_delay); break;
+        case FilmTimer::Await: SDL_Log("FilmTimer: %fs or %d frames with Await", other.delay.count(), other.frame_delay); break;
+        case FilmTimer::InInputOrAwait: SDL_Log("FilmTimer: %fs or %d frames with InInputOrAwait", other.delay.count(), other.frame_delay); break;
+        case FilmTimer::InInputOrFirst: SDL_Log("FilmTimer: %fs or %d frames with InInputOrFirst", other.delay.count(), other.frame_delay); break;
+        case FilmTimer::InInputAfterAwait: SDL_Log("FilmTimer: %fs or %d frames with InInputAfterAwait", other.delay.count(), other.frame_delay); break;
+        case FilmTimer::InInputAfterFirst: SDL_Log("FilmTimer: %fs or %d frames with InInputAfterFirst", other.delay.count(), other.frame_delay); break;   
+        }
+    }
+#else // inlining nothing should be enough to not generate code for logging in release
+    inline void SDL_Log_FilmTimer(const FilmTimer other) {}
+#endif
+}
+
+/*
     using KPTypeStruct = FilmKeypointTypeStruct;
     using KPBackground = FilmKeypointBackground;
     using KPBgSwap = FilmKeypointBgSwap;

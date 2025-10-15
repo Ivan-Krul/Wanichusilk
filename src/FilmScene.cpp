@@ -47,10 +47,7 @@ void FilmScene::update() {
 
 void FilmScene::next() {
     if (!canTriggerNext()) return; // dangerous
-    mKeypointIndex++;
-    pKeypoint = maKeypoints[mKeypointIndex].get();
-
-    if(mKeypointIndex < maKeypoints.size()) onNext();
+    implicitNext();
 }
 
 void FilmScene::finish() {
@@ -85,11 +82,19 @@ void FilmScene::clear() {
 }
 
 
+inline void FilmScene::implicitNext() {
+    mKeypointIndex++;
+    pKeypoint = maKeypoints[mKeypointIndex].get();
+
+    if (mKeypointIndex < maKeypoints.size()) onNext();
+}
+
 void FilmScene::onUpdate() {
     mBackupTimer.decrement_time_frame(mpClock->DeltaTime());
+    //FilmKP::SDL_Log_FilmTimer(mBackupTimer);
 
-    if (isWaiting()) {
-        next();
+    if (mBackupTimer.is_zero() && !(mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait)) {
+        implicitNext();
         return;
     }
 
@@ -98,13 +103,13 @@ void FilmScene::onUpdate() {
 }
 
 void FilmScene::onNext() {
-    const auto timer = *((FilmTimer*)pKeypoint);
+    const auto timer = *dynamic_cast<FilmTimer*>(pKeypoint);
 
     if (pKeypoint->type().global_type == FilmKeypointChangeType::Layer) {
-        mLayerist.registerLayerKeypoint((FilmKeypointLayer*)pKeypoint);
+        mLayerist.registerLayerKeypoint(dynamic_cast<FilmKeypointLayer*>(pKeypoint));
     }
     if (pKeypoint->type().global_type == FilmKeypointChangeType::Background) {
-        mBackground.registerBackgroundKeypoint((FilmKeypointBackground*)pKeypoint);
+        mBackground.registerBackgroundKeypoint(dynamic_cast<FilmKeypointBackground*>(pKeypoint));
     }
 
     if (timer.is_zero() && timer.action == timer.Instant) {
@@ -119,10 +124,8 @@ void FilmScene::onNext() {
     case timer.First:
     case timer.InInputOrFirst: _FALLTHROUGH
     case timer.InInputAfterFirst: _FALLTHROUGH
-        mBackupTimer.frame_delay = std::min<>(backg_timer.frame_delay, layer_timer.frame_delay);
-        mBackupTimer.delay = std::min<>(backg_timer.delay, layer_timer.delay);
-        if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
-        if (!timer.is_zero()) {
+        mBackupTimer = FilmKP::min(backg_timer, layer_timer);
+        if (!timer.is_zero()) { // precise copying
             mBackupTimer.frame_delay = std::min<>(mBackupTimer.frame_delay, timer.frame_delay);
             if (timer.need_time_delay) {
                 mBackupTimer.delay = std::min<>(mBackupTimer.delay, timer.delay);
@@ -135,11 +138,9 @@ void FilmScene::onNext() {
     case timer.InInputOrAwait: _FALLTHROUGH
     case timer.InInputAfterAwait: _FALLTHROUGH
         if (timer.is_zero()) {
-            mBackupTimer.frame_delay = std::max<>(backg_timer.frame_delay, layer_timer.frame_delay);
-            mBackupTimer.delay = std::max<>(backg_timer.delay, layer_timer.delay);
-            if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
+            mBackupTimer = FilmKP::max(backg_timer, layer_timer);
         }
-        else {
+        else { // whatever
             mBackupTimer.frame_delay = std::max<>(std::max<>(backg_timer.frame_delay, layer_timer.frame_delay), timer.frame_delay);
             mBackupTimer.delay = std::max<>(std::max<>(backg_timer.delay, layer_timer.delay), timer.delay);
             if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;

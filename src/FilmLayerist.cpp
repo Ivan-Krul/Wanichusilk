@@ -7,10 +7,10 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypointLayer* keypoint) {
     LayerIndex li = (keypoint->type().specific_type != FilmKeypointLayer::Add) ? keypoint->layerindx : -1;
 
     switch (keypoint->type().specific_type) { // it's mess now, but I must go further
-    case FilmKeypointLayer::Add:             registerLayerKeypointAdd((FilmKeypointLayerAdd*)keypoint);                                  break;
-    case FilmKeypointLayer::InteractPos:     registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, Pos);     break;
-    case FilmKeypointLayer::InteractRectPos: registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, RectPos); break;
-    case FilmKeypointLayer::InteractPartPos: registerLayerKeypointInteractAnyPos((FilmKeypointLayerInteractRect*)keypoint, li, PartPos); break;
+    case FilmKeypointLayer::Add:             registerLayerKeypointAdd(dynamic_cast<FilmKeypointLayerAdd*>(keypoint));                                  break;
+    case FilmKeypointLayer::InteractPos:     registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, Pos);     break;
+    case FilmKeypointLayer::InteractRectPos: registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, RectPos); break;
+    case FilmKeypointLayer::InteractPartPos: registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, PartPos); break;
     case FilmKeypointLayer::InteractAlpha:   registerLayerKeypointInteractAlpha(keypoint, li);                                           break;
     case FilmKeypointLayer::InteractDefaultPos: maLayers[li].rect.ease_tracker.setDefault();                                             break;
     case FilmKeypointLayer::InteractDefaultPartPos: maLayers[li].part.ease_tracker.setDefault();                                         break;
@@ -42,17 +42,13 @@ FilmTimer FilmLayerist::getLongestWaiting() const {
     FilmTimer longest;
     auto iter = mKeypointPtrLocker.cbegin();
     for (iter; iter != mKeypointPtrLocker.cend(); iter++) {
-        auto& layer = maLayers[iter->layer_index];
-        longest.delay = std::max<FilmTimer::Duration>(longest.delay, layer.alpha.ease_tracker.getLimiter().delay);
-        longest.delay = std::max<FilmTimer::Duration>(longest.delay, layer.rect.ease_tracker.getLimiter().delay);
-        longest.delay = std::max<FilmTimer::Duration>(longest.delay, layer.part.ease_tracker.getLimiter().delay);
-        longest.delay = std::max<FilmTimer::Duration>(longest.delay, layer.texind.ease_tracker.getLimiter().delay);
-
-        longest.frame_delay = std::max<int>(longest.frame_delay, layer.alpha.ease_tracker.getLimiter().frame_delay);
-        longest.frame_delay = std::max<int>(longest.frame_delay, layer.rect.ease_tracker.getLimiter().frame_delay);
-        longest.frame_delay = std::max<int>(longest.frame_delay, layer.part.ease_tracker.getLimiter().frame_delay);
-        longest.frame_delay = std::max<int>(longest.frame_delay, layer.texind.ease_tracker.getLimiter().frame_delay);
+        const auto& layer = maLayers[iter->layer_index];
+        longest = FilmKP::max(longest, layer.alpha.ease_tracker.getLimiter());
+        longest = FilmKP::max(longest, layer.rect.ease_tracker.getLimiter());
+        longest = FilmKP::max(longest, layer.texind.ease_tracker.getLimiter());
+        longest = FilmKP::max(longest, layer.part.ease_tracker.getLimiter());
     }
+    FilmKP::SDL_Log_FilmTimer(longest);
     return longest;
 }
 
@@ -147,7 +143,7 @@ void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteract
     pos_ptr->ease_tracker.setEase(keypoint->ease_func);
 
     if (pos_ptr->ease_tracker.isEase()) {
-        pos_ptr->ease_tracker.start(*((FilmTimer*)keypoint));
+        pos_ptr->ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
         registerTracker(keypoint, li);
     }
 }
@@ -157,7 +153,7 @@ void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoin
     maLayers[li].alpha.elem_to = kp->alpha;
     maLayers[li].alpha.ease_tracker.reset();
     maLayers[li].alpha.ease_tracker.setEase(kp->ease_func);
-    maLayers[li].alpha.ease_tracker.start(*((FilmTimer*)keypoint));
+    maLayers[li].alpha.ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
     registerTracker(keypoint, li);
 }
 
@@ -166,11 +162,11 @@ void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint
     FilmKeypointLayerSwap::SwapMode swapmode = kpt_swap->swap;
 
     if (keypoint->type().specific_type == FilmKeypointLayer::InteractTransparentSwap) {
-        auto kpt = (FilmKeypointLayerInteractTransparentSwap*)keypoint;
+        auto kpt = dynamic_cast<FilmKeypointLayerInteractTransparentSwap*>(keypoint);
 
         maLayers[li].texind.ease_tracker.setEase(kpt->ease_func);
         if (maLayers[li].texind.ease_tracker.isEase()) {
-            maLayers[li].texind.ease_tracker.start(*((FilmTimer*)keypoint));
+            maLayers[li].texind.ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
             registerTracker(keypoint, li);
         }
     }
@@ -198,12 +194,12 @@ void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint
     }
 
     maLayers[li].texind.shift_elem();
-    maLayers[li].texind.elem_to = ((FilmKeypointLayerInteractSwap*)keypoint)->texindx;
+    maLayers[li].texind.elem_to = dynamic_cast<FilmKeypointLayerInteractSwap*>(keypoint)->texindx;
 
 }
 
 void FilmLayerist::finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter) {
-    const auto kpt_swap = (FilmKeypointLayerInteractTransparentSwap*)(*iter).keypoint_ptr;
+    const auto kpt_swap = dynamic_cast<FilmKeypointLayerInteractTransparentSwap*>((*iter).keypoint_ptr);
     const auto li = iter->layer_index;
     const auto swapmode = kpt_swap->swap;
 
@@ -244,7 +240,7 @@ void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL
         return;
     }
 
-    const auto tracked_kp = (FilmKeypointLayerInteractTransparentSwap*)mKeypointPtrLocker[layer.trackerind].keypoint_ptr;
+    const auto tracked_kp = dynamic_cast<FilmKeypointLayerInteractTransparentSwap*>(mKeypointPtrLocker[layer.trackerind].keypoint_ptr);
 
     switch (tracked_kp->swap) {
     default:

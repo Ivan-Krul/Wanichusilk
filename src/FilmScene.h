@@ -42,6 +42,7 @@ public:
     void clear();
     ~FilmScene() { clear(); }
 private:
+    inline void implicitNext();
     void onUpdate();
     void onNext();
 
@@ -75,5 +76,5 @@ template<typename T>
 inline T FilmScene::getKeypoint(size_t index) const {
     static_assert(std::is_base_of<FilmKeypoint, T>::value, "you should add a derived struct FilmKeypoint");
 
-    return *(reinterpret_cast<T*>(maKeypoints[index]));
+    return *dynamic_cast<T*>(maKeypoints[index].get());
 }
