@@ -20,6 +20,7 @@ public:
     static_assert(std::is_copy_constructible<T>::value || std::is_move_constructible<T>::value, "copy or move constructor must be");
     static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "has to be a destructor or a primitive variable");
 
+    LockerIndex pushInLocker(T&& elem);
     LockerIndex pushInLocker(const T& elem);
     inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
     void popFromLocker(LockerIndex index);
@@ -49,6 +50,27 @@ protected:
 };
 
 template<typename T>
+inline LockerIndex LockerSimple<T>::pushInLocker(T&& elem) {
+    if (mNearestFreeLocker == maLockArray.size()) {
+        maLockArray.emplace_back(elem);
+        if (mapLockPtr.size() == mNearestFreeLocker) {
+            mapLockPtr.push_back(--maLockArray.end());
+        } else {
+            mapLockPtr[mNearestFreeLocker] = --maLockArray.end();
+        }
+        maOccupied.set(maOccupied.maxcalledbit(), true);
+        return mNearestFreeLocker++;
+    }
+
+    maLockArray.emplace_back(elem);
+    maOccupied.set(mNearestFreeLocker, true);
+    mapLockPtr[mNearestFreeLocker] = --maLockArray.end();
+    LockerIndex next = mNearestFreeLocker;
+    updateLockerStatus();
+    return next;
+}
+
+template<typename T>
 inline LockerIndex LockerSimple<T>::pushInLocker(const T& elem) {
     if (mNearestFreeLocker == maLockArray.size()) {
         maLockArray.emplace_back(elem);
@@ -56,7 +78,7 @@ inline LockerIndex LockerSimple<T>::pushInLocker(const T& elem) {
             mapLockPtr.push_back(--maLockArray.end());
         }
         else {
-            mapLockPtr[mNearestFreeLocker] = --maLockArray.end();;
+            mapLockPtr[mNearestFreeLocker] = --maLockArray.end();
         }
         maOccupied.set(maOccupied.maxcalledbit(), true);
         return mNearestFreeLocker++;

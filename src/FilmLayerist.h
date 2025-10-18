@@ -2,6 +2,7 @@
 #include <vector>
 #include <list>
 #include <memory>
+#include <deque>
 
 #include "FilmKeypoint.h"
 #include "LockerSimple.h"
@@ -18,22 +19,33 @@ class FilmLayerist : public ClockHolder {
         // timer would track from layer.ease_tracker directly
         LayerIndex layer_index;
         //LockerIndex index;
-        union TrackerAffection {
-            struct TrackerAffectionStruct {
-                char tr_rect : 1;
-                char tr_part : 1;
-                char tr_alpha : 1;
-                char tr_texind : 1;
-                char padding : 4;
-            } values;
-            char mask = 0;
-        } tracker_affect;
+
         enum TrackerAffectionEnum : char {
             TrRect = (1 << 0),
             TrPart = (1 << 1),
             TrAlpha = (1 << 2),
-            TrTexInd = (1 << 3),
+            TrTexInd = (1 << 3)
         };
+
+        EaseTracker<>* ease_rect_tr_ptr   = nullptr;
+        EaseTracker<>* ease_part_tr_ptr   = nullptr;
+        EaseTracker<>* ease_alpha_tr_ptr  = nullptr;
+        EaseTracker<>* ease_texind_tr_ptr = nullptr;
+
+        inline bool is_finished() const {
+            if (ease_rect_tr_ptr && !ease_rect_tr_ptr->isEnded())   return false;
+            if (ease_part_tr_ptr && !ease_part_tr_ptr->isEnded())   return false;
+            if (ease_alpha_tr_ptr && !ease_alpha_tr_ptr->isEnded())  return false;
+            if (ease_texind_tr_ptr && !ease_texind_tr_ptr->isEnded()) return false;
+            return true;
+        }
+
+        inline void update() {
+            if (ease_rect_tr_ptr)   (ease_rect_tr_ptr)   ->update();
+            if (ease_part_tr_ptr)   (ease_part_tr_ptr)   ->update();
+            if (ease_alpha_tr_ptr)  (ease_alpha_tr_ptr)  ->update();
+            if (ease_texind_tr_ptr) (ease_texind_tr_ptr) ->update();
+        }
     };
 
     enum RegLayerKpInterAPosEnum {

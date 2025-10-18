@@ -54,23 +54,12 @@ FilmTimer FilmLayerist::getLongestWaiting() const {
 
 void FilmLayerist::update() {
     auto it = mKeypointPtrLocker.begin();
-    bool finished = true;
     while(it != mKeypointPtrLocker.end()) {
-        auto& layer = maLayers[it->layer_index]; // transition
-        layer.rect.ease_tracker.update();
-        layer.part.ease_tracker.update();
-        layer.texind.ease_tracker.update();
-        layer.alpha.ease_tracker.update();
-        finished = true;
+        auto& layer = maLayers[it->layer_index];
+        it->update();
 
-        if (it->tracker_affect.values.tr_rect && layer.rect.ease_tracker.isProgress())   finished = false;
-        if (it->tracker_affect.values.tr_part && layer.part.ease_tracker.isProgress())   finished = false;
-        if (it->tracker_affect.values.tr_alpha && layer.alpha.ease_tracker.isProgress())  finished = false;
-        if (it->tracker_affect.values.tr_texind && layer.texind.ease_tracker.isProgress()) finished = false;
-
-
-        if (finished) {
-            if (layer.texind.ease_tracker.isEnded()) // handle the swap logic
+        if (it->is_finished()) {
+            if (it->ease_texind_tr_ptr) // handle the swap logic
                 finalizeSwap(it);
             it = mKeypointPtrLocker.popFromLocker(it);
         } else it++;
@@ -278,9 +267,25 @@ void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL
 
 void FilmLayerist::registerTracker(FilmKeypointLayer* keypoint, LayerIndex li, char tracker_affect_mask) {
     if (keypoint->is_zero()) return;
-    auto indx = mKeypointPtrLocker.pushInLocker(KeypointTracker{ keypoint, li });
-    if (indx < 0) abort();
-    mKeypointPtrLocker[indx].tracker_affect.mask = tracker_affect_mask;
+    
+    KeypointTracker tracker;
+    tracker.keypoint_ptr = keypoint;
+    tracker.layer_index = li;
+
+    if (tracker_affect_mask & KeypointTracker::TrRect)
+        tracker.ease_rect_tr_ptr = &maLayers[li].rect.ease_tracker;
+
+    if (tracker_affect_mask & KeypointTracker::TrPart)
+        tracker.ease_part_tr_ptr = &maLayers[li].part.ease_tracker;
+
+    if (tracker_affect_mask & KeypointTracker::TrAlpha)
+        tracker.ease_alpha_tr_ptr = &maLayers[li].alpha.ease_tracker;
+
+    if (tracker_affect_mask & KeypointTracker::TrTexInd)
+        tracker.ease_texind_tr_ptr = &maLayers[li].texind.ease_tracker;
+
+    auto indx = mKeypointPtrLocker.pushInLocker(std::move(tracker));
+    assert(li >= 0 && li < maLayers.size());
     maLayers[li].trackerind = indx;
 }
 

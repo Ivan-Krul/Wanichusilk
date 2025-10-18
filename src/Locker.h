@@ -68,7 +68,10 @@ inline LockerIndex Locker<T, Cont>::pushInLocker(Cont container) {
             maLockArray.pop_back();
             return -1;
         }
-        mapLockPtr.push_back(--maLockArray.end());
+        if(mNearestFreeLocker == mapLockPtr.size())
+            mapLockPtr.push_back(--maLockArray.end());
+        else
+            mapLockPtr[mNearestFreeLocker] = --maLockArray.end();
         maOccupied.set(maOccupied.maxcalledbit(), true);
         return mNearestFreeLocker++;
     }
