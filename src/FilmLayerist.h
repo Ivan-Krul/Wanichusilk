@@ -18,6 +18,22 @@ class FilmLayerist : public ClockHolder {
         // timer would track from layer.ease_tracker directly
         LayerIndex layer_index;
         //LockerIndex index;
+        union TrackerAffection {
+            struct TrackerAffectionStruct {
+                char tr_rect : 1;
+                char tr_part : 1;
+                char tr_alpha : 1;
+                char tr_texind : 1;
+                char padding : 4;
+            } values;
+            char mask = 0;
+        } tracker_affect;
+        enum TrackerAffectionEnum : char {
+            TrRect = (1 << 0),
+            TrPart = (1 << 1),
+            TrAlpha = (1 << 2),
+            TrTexInd = (1 << 3),
+        };
     };
 
     enum RegLayerKpInterAPosEnum {
@@ -93,7 +109,7 @@ private:
     void finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter);
     inline void renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha);
 
-    void registerTracker(FilmKeypointLayer* keypoint, LayerIndex li);
+    void registerTracker(FilmKeypointLayer* keypoint, LayerIndex li, char tracker_affect_mask);
 
     SDL_FRect lerpRect(const SDL_FRect& from, const SDL_FRect& to, float t);
 

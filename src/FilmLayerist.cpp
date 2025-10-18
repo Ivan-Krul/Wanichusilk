@@ -54,14 +54,22 @@ FilmTimer FilmLayerist::getLongestWaiting() const {
 
 void FilmLayerist::update() {
     auto it = mKeypointPtrLocker.begin();
+    bool finished = true;
     while(it != mKeypointPtrLocker.end()) {
         auto& layer = maLayers[it->layer_index]; // transition
         layer.rect.ease_tracker.update();
         layer.part.ease_tracker.update();
         layer.texind.ease_tracker.update();
         layer.alpha.ease_tracker.update();
+        finished = true;
 
-        if (!layer.is_progress()) {
+        if (it->tracker_affect.values.tr_rect && layer.rect.ease_tracker.isProgress())   finished = false;
+        if (it->tracker_affect.values.tr_part && layer.part.ease_tracker.isProgress())   finished = false;
+        if (it->tracker_affect.values.tr_alpha && layer.alpha.ease_tracker.isProgress())  finished = false;
+        if (it->tracker_affect.values.tr_texind && layer.texind.ease_tracker.isProgress()) finished = false;
+
+
+        if (finished) {
             if (layer.texind.ease_tracker.isEnded()) // handle the swap logic
                 finalizeSwap(it);
             it = mKeypointPtrLocker.popFromLocker(it);
@@ -144,7 +152,7 @@ void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteract
 
     if (pos_ptr->ease_tracker.isEase()) {
         pos_ptr->ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
-        registerTracker(keypoint, li);
+        registerTracker(keypoint, li, enum_pos == PartPos ? KeypointTracker::TrPart : KeypointTracker::TrRect);
     }
 }
 
@@ -154,7 +162,7 @@ void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoin
     maLayers[li].alpha.ease_tracker.reset();
     maLayers[li].alpha.ease_tracker.setEase(kp->ease_func);
     maLayers[li].alpha.ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
-    registerTracker(keypoint, li);
+    registerTracker(keypoint, li, KeypointTracker::TrAlpha);
 }
 
 void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint, LayerIndex li) {
@@ -167,7 +175,7 @@ void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint
         maLayers[li].texind.ease_tracker.setEase(kpt->ease_func);
         if (maLayers[li].texind.ease_tracker.isEase()) {
             maLayers[li].texind.ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
-            registerTracker(keypoint, li);
+            registerTracker(keypoint, li, KeypointTracker::TrTexInd);
         }
     }
     else {
@@ -268,9 +276,11 @@ void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL
     }
 }
 
-void FilmLayerist::registerTracker(FilmKeypointLayer* keypoint, LayerIndex li) {
+void FilmLayerist::registerTracker(FilmKeypointLayer* keypoint, LayerIndex li, char tracker_affect_mask) {
     if (keypoint->is_zero()) return;
     auto indx = mKeypointPtrLocker.pushInLocker(KeypointTracker{ keypoint, li });
+    if (indx < 0) abort();
+    mKeypointPtrLocker[indx].tracker_affect.mask = tracker_affect_mask;
     maLayers[li].trackerind = indx;
 }
 

@@ -52,7 +52,12 @@ template<typename T>
 inline LockerIndex LockerSimple<T>::pushInLocker(const T& elem) {
     if (mNearestFreeLocker == maLockArray.size()) {
         maLockArray.emplace_back(elem);
-        mapLockPtr.push_back(--maLockArray.end());
+        if (mapLockPtr.size() == mNearestFreeLocker) {
+            mapLockPtr.push_back(--maLockArray.end());
+        }
+        else {
+            mapLockPtr[mNearestFreeLocker] = --maLockArray.end();;
+        }
         maOccupied.set(maOccupied.maxcalledbit(), true);
         return mNearestFreeLocker++;
     }

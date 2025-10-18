@@ -90,6 +90,9 @@ inline void FilmScene::implicitNext() {
 }
 
 void FilmScene::onUpdate() {
+    mBackground.update();
+    mLayerist.update();
+
     mBackupTimer.decrement_time_frame(mpClock->DeltaTime());
     //FilmKP::SDL_Log_FilmTimer(mBackupTimer);
 
@@ -98,12 +101,13 @@ void FilmScene::onUpdate() {
         return;
     }
 
-    mBackground.update();
-    mLayerist.update();
 }
 
 void FilmScene::onNext() {
     const auto timer = *dynamic_cast<FilmTimer*>(pKeypoint);
+
+    const FilmTimer backg_timer = mBackground.getLongestWaiting();
+    const FilmTimer layer_timer = mLayerist.getLongestWaiting();
 
     if (pKeypoint->type().global_type == FilmKeypointChangeType::Layer) {
         mLayerist.registerLayerKeypoint(dynamic_cast<FilmKeypointLayer*>(pKeypoint));
@@ -116,9 +120,6 @@ void FilmScene::onNext() {
         next();
         return;
     }
-
-    const FilmTimer backg_timer = mBackground.getLongestWaiting();
-    const FilmTimer layer_timer = mLayerist.getLongestWaiting();
 
     switch (timer.action) {
     case timer.First:
