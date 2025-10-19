@@ -55,19 +55,12 @@ class FilmLayerist : public ClockHolder {
     };
 public:
     struct Layer {
-        static constexpr float c_ease_no_progress = -0.f;
-        static constexpr float c_ease_use_default = 2.f;
-
         template <typename T>
         struct TransitionableParameter {
             EaseTracker<> ease_tracker;
             T elem_from = { 0 };
             T elem_to = { 0 };
 
-            //inline operator float() const { return ease_progress; }
-            //inline void operator=(float progress) { ease_progress = progress; }
-
-            //inline float operator()(float f) { return ease_func ? ease_func(f) : ease_progress; }
             inline void shift_elem() { elem_from = elem_to; }
         };
 

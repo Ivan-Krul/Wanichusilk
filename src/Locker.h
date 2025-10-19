@@ -26,9 +26,11 @@ public:
     Locker(checkFunctionPtr check_create);
 
     LockerIndex pushInLocker(Cont container);
-    inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
+    _NODISCARD inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
     void popFromLocker(LockerIndex index);
     Iterator popFromLocker(Iterator it);
+
+    inline bool isEmpty() const noexcept { return maLockArray.empty(); }
 
     inline size_t getCapacity() const { return maLockArray.size(); }
     inline size_t getOccuipedLocks() const {

@@ -21,6 +21,14 @@
 #define _FALLTHROUGH
 #endif
 
+#ifndef _NODISCARD
+#if __cplusplus >= 201103L
+#define _NODISCARD [[nodiscard]]
+#else
+#define _NODISCARD
+#endif
+#endif
+
 #ifdef __cplusplus 
 #define NON_COPYABLE(ClassName)                  \
     ClassName(const ClassName&) = delete;        \
