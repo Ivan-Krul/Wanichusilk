@@ -33,10 +33,10 @@ class FilmLayerist : public ClockHolder {
         EaseTracker<>* ease_texind_tr_ptr = nullptr;
 
         inline bool is_finished() const {
-            if (ease_rect_tr_ptr && !ease_rect_tr_ptr->isEnded())   return false;
-            if (ease_part_tr_ptr && !ease_part_tr_ptr->isEnded())   return false;
-            if (ease_alpha_tr_ptr && !ease_alpha_tr_ptr->isEnded())  return false;
-            if (ease_texind_tr_ptr && !ease_texind_tr_ptr->isEnded()) return false;
+            if (ease_rect_tr_ptr) if(ease_rect_tr_ptr->isProgress())   return false;
+            if (ease_part_tr_ptr) if (ease_part_tr_ptr->isProgress())   return false;
+            if (ease_alpha_tr_ptr) if (ease_alpha_tr_ptr->isProgress())  return false;
+            if (ease_texind_tr_ptr) if (ease_texind_tr_ptr->isProgress()) return false;
             return true;
         }
 
@@ -107,7 +107,7 @@ public:
     inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
     void registerLayerKeypoint(FilmKeypointLayer* keypoint);
 
-    inline bool isWaiting() const { return mKeypointPtrLocker.cbegin() == mKeypointPtrLocker.cend(); }
+    inline bool isWaiting() const { return mKeypointPtrLocker.isEmpty(); }
     void update();
     void render();
 

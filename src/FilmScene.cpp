@@ -96,7 +96,7 @@ void FilmScene::onUpdate() {
     mBackupTimer.decrement_time_frame(mpClock->DeltaTime());
     //FilmKP::SDL_Log_FilmTimer(mBackupTimer);
 
-    if (mBackupTimer.is_zero() && !(mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait)) {
+    if (isWaiting() && !(mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait)) { // DON'T TOUCH IT
         implicitNext();
         return;
     }
@@ -105,6 +105,10 @@ void FilmScene::onUpdate() {
 
 void FilmScene::onNext() {
     const auto timer = *dynamic_cast<FilmTimer*>(pKeypoint);
+
+    if (pKeypoint->type().specific_type == FilmKeypointLayer::InteractAlpha) {
+        SDL_Log("Debug there");
+    }
 
     const FilmTimer backg_timer = mBackground.getLongestWaiting();
     const FilmTimer layer_timer = mLayerist.getLongestWaiting();

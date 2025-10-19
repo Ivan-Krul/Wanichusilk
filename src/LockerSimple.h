@@ -26,6 +26,8 @@ public:
     void popFromLocker(LockerIndex index);
     inline Iterator popFromLocker(Iterator it);
 
+    inline bool isEmpty() const noexcept { return maLockArray.empty(); }
+
     inline size_t getCapacity() const { return maLockArray.size(); }
     inline size_t getOccuipedLocks() const {
         size_t count = 0;
