@@ -9,6 +9,7 @@
 #include "Clock.h"
 #include "easefunc.h"
 #include "EaseTracker.h"
+#include "FilmLayerTexture.h"
 
 // it handles layer stuff, transition between positions, using ease functions, etc...
 

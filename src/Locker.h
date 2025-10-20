@@ -23,7 +23,7 @@ public:
     static_assert(std::is_default_constructible<T>::value, "default constructor must be, empty one");
     static_assert(std::is_destructible<T>::value || std::is_arithmetic<T>::value, "has to be a destructor or a primitive variable");
 
-    Locker(checkFunctionPtr check_create);
+    Locker(checkFunctionPtr check_create) : mfCheckCreateRaw(check_create) {}
 
     LockerIndex pushInLocker(Cont container);
     _NODISCARD inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
@@ -31,6 +31,12 @@ public:
     Iterator popFromLocker(Iterator it);
 
     inline bool isEmpty() const noexcept { return maLockArray.empty(); }
+    inline void clear() noexcept {
+        maLockArray.clear();
+        mapLockPtr.clear();
+        maOccupied.clear();
+        mNearestFreeLocker = 0;
+    }
 
     inline size_t getCapacity() const { return maLockArray.size(); }
     inline size_t getOccuipedLocks() const {
@@ -44,11 +50,12 @@ public:
 
     inline ConstIterator cbegin() const { return maLockArray.cbegin(); }
     inline ConstIterator cend() const { return maLockArray.cend(); }
+
+    virtual ~Locker() = default;
 private:
     void updateLockerStatus();
 
-    checkFunctionPtr mfCheckCreateRaw;
-
+    const checkFunctionPtr mfCheckCreateRaw;
     
     std::vector<Iterator> mapLockPtr;
 protected:
@@ -56,11 +63,6 @@ protected:
 
     LockerIndex mNearestFreeLocker = 0;
 };
-
-template<class T, typename Cont>
-inline Locker<T, Cont>::Locker(checkFunctionPtr check_create) {
-    mfCheckCreateRaw = check_create;
-}
 
 template<class T, typename Cont>
 inline LockerIndex Locker<T, Cont>::pushInLocker(Cont container) {

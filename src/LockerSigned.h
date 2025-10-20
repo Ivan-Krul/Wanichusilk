@@ -10,6 +10,9 @@ public:
     inline LockerIndex getNameIndexed(Hash name);
     inline void popFromLockerSigned(LockerIndex index);
 
+    inline void clearHash();
+
+    virtual ~LockerSigned() = default;
 private:
 
     std::vector<Hash> mNames;

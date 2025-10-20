@@ -13,8 +13,8 @@ public:
 
     virtual void update() = 0;
     virtual void render() const = 0;
-    virtual inline bool isWaiting() const noexcept { return maEases.empty(); }
-    virtual inline void clear() = 0;
+    virtual inline bool isWaiting() const noexcept { return maEases.isEmpty(); }
+    virtual inline void clear() { maEases.clear(); }
 
     virtual ~FilmLayerBase() = default;
 protected:
@@ -28,7 +28,9 @@ protected:
         inline bool is_default()  const { return ease_tracker.isDefault(); }
         inline bool is_progress() const { return ease_tracker.isProgress(); }
         inline bool is_ended()    const { return ease_tracker.isEnded(); }
-        inline bool set_default() { return ease_tracker.setDefault(); }
+        inline void set_default() { ease_tracker.setDefault(); }
+        inline void reset_tracker() { ease_tracker.reset(); }
+        inline void clear() { ease_tracker.setDefault(); elem_from = { 0 }; elem_to = { 0 }; }
     };
 
     struct Tracker {

@@ -27,6 +27,12 @@ public:
     inline Iterator popFromLocker(Iterator it);
 
     inline bool isEmpty() const noexcept { return maLockArray.empty(); }
+    inline void clear() noexcept {
+        maLockArray.clear();
+        mapLockPtr.clear();
+        maOccupied.clear();
+        mNearestFreeLocker = 0;
+    }
 
     inline size_t getCapacity() const { return maLockArray.size(); }
     inline size_t getOccuipedLocks() const {

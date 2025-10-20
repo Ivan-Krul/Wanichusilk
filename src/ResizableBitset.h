@@ -13,6 +13,7 @@ public:
 
     inline size_t size() const { return mSize; }
     inline size_t maxcalledbit() const { return mMaxCalledBit; }
+    inline void clear() { mapBitsets.reset(); mSize = 0; mMaxCalledBit = 0; }
 
     bool get(IndexType index) const {
         if (index >= totalBits()) return false;
