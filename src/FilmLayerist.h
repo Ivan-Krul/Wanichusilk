@@ -10,6 +10,7 @@
 #include "easefunc.h"
 #include "EaseTracker.h"
 #include "FilmLayerTexture.h"
+#include "rect_math.h"
 
 // it handles layer stuff, transition between positions, using ease functions, etc...
 
@@ -108,16 +109,14 @@ public:
     FilmTimer getLongestWaiting() const;
 private:
     void registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint);
-    void registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, RegLayerKpInterAPosEnum enum_pos);
-    void registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoint, LayerIndex li);
-    void registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint, LayerIndex li);
+    _MAYBE_UNUSED void registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, RegLayerKpInterAPosEnum enum_pos);
+    _MAYBE_UNUSED void registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoint, LayerIndex li);
+    _MAYBE_UNUSED void registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint, LayerIndex li);
 
     void finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter);
     inline void renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha);
 
     void registerTracker(FilmKeypointLayer* keypoint, LayerIndex li, char tracker_affect_mask);
-
-    SDL_FRect lerpRect(const SDL_FRect& from, const SDL_FRect& to, float t);
 
 private:
     std::vector<Layer> maLayers;

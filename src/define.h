@@ -29,6 +29,12 @@
 #endif
 #endif
 
+#if __cplusplus >= 201703L
+#define _MAYBE_UNUSED [[maybe_unused]]
+#else
+#define _MAYBE_UNUSED
+#endif
+
 #ifdef __cplusplus 
 #define NON_COPYABLE(ClassName)                  \
     ClassName(const ClassName&) = delete;        \

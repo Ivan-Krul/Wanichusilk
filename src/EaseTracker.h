@@ -3,8 +3,6 @@
 #include "Clock.h"
 #include "FilmKeypoint.h"
 
-#include <functional>
-
 template<typename Func = float(*)(float)>
 class EaseTracker : public ClockHolder {
 public:

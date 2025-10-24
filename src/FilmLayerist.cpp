@@ -85,7 +85,7 @@ void FilmLayerist::render() {
         if (layer.rect.ease_tracker.isDefault()) res_rect = nullptr;
         else {
             if (layer.rect.ease_tracker.isProgress()) {
-                rect = lerpRect(layer.rect.elem_from, layer.rect.elem_to, layer.rect.ease_tracker);
+                rect = lerp_rect(layer.rect.elem_from, layer.rect.elem_to, layer.rect.ease_tracker);
                 res_rect = &rect;
             } else res_rect = &(layer.rect.elem_to);
         }
@@ -95,7 +95,7 @@ void FilmLayerist::render() {
         } else res_part = nullptr;
 
         if (layer.part.ease_tracker.isProgress())
-            part = lerpRect(layer.part.elem_from, layer.part.elem_to, layer.part.ease_tracker);
+            part = lerp_rect(layer.part.elem_from, layer.part.elem_to, layer.part.ease_tracker);
 
         if (layer.alpha.ease_tracker.isProgress())
             alpha = lerp(layer.alpha.ease_tracker, layer.alpha.elem_from, layer.alpha.elem_to);
@@ -126,7 +126,7 @@ void FilmLayerist::registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint) {
     maLayers.push_back(l);
 }
 
-void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, RegLayerKpInterAPosEnum enum_pos) {
+_MAYBE_UNUSED void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, RegLayerKpInterAPosEnum enum_pos) {
     Layer::TransitionableParameter<SDL_FRect>* pos_ptr;
     pos_ptr = enum_pos == PartPos ? &(maLayers[li].part) : &(maLayers[li].rect);
 
@@ -145,7 +145,7 @@ void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteract
     }
 }
 
-void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoint, LayerIndex li) {
+_MAYBE_UNUSED void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoint, LayerIndex li) {
     auto kp = dynamic_cast<FilmKeypointLayerInteractAlpha*>(keypoint);
     maLayers[li].alpha.elem_to = kp->alpha;
     maLayers[li].alpha.ease_tracker.reset();
@@ -154,7 +154,7 @@ void FilmLayerist::registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoin
     registerTracker(keypoint, li, KeypointTracker::TrAlpha);
 }
 
-void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint, LayerIndex li) {
+_MAYBE_UNUSED void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint, LayerIndex li) {
     const auto kpt_swap = (FilmKeypointLayerInteractSwap*)keypoint;
     FilmKeypointLayerSwap::SwapMode swapmode = kpt_swap->swap;
 
@@ -287,14 +287,5 @@ void FilmLayerist::registerTracker(FilmKeypointLayer* keypoint, LayerIndex li, c
     auto indx = mKeypointPtrLocker.pushInLocker(std::move(tracker));
     assert(li >= 0 && li < maLayers.size());
     maLayers[li].trackerind = indx;
-}
-
-SDL_FRect FilmLayerist::lerpRect(const SDL_FRect& from, const SDL_FRect& to, float t) {
-    SDL_FRect rect;
-    rect.x = lerp(t, from.x, to.x);
-    rect.y = lerp(t, from.y, to.y);
-    rect.w = lerp(t, from.w, to.w);
-    rect.h = lerp(t, from.h, to.h);
-    return rect;
 }
 

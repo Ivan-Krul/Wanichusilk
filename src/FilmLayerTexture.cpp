@@ -1,7 +1,29 @@
 #include "FilmLayerTexture.h"
+#include "FilmLayerTexture.h"
+#include "FilmLayerTexture.h"
+
+FilmLayerTexture::FilmLayerTexture(Clock* clock) {
+    setClock(clock);
+    mPart.ease_tracker.setClock(clock);
+    mRect.ease_tracker.setClock(clock);
+    mAlpha.ease_tracker.setClock(clock);
+    mTexInd.ease_tracker.setClock(clock);
+}
 
 void FilmLayerTexture::update() {
+    mPart.ease_tracker.update();
+    mRect.ease_tracker.update();
+    mAlpha.ease_tracker.update();
+    mTexInd.ease_tracker.update();
 
+    auto it = maEases.begin();
+    while (it != maEases.end()) {
+        if (it->ease->isEnded()) {
+            if (it->ease == &(mTexInd.ease_tracker)) // handle the swap logic
+                finalizeSwap(it);
+            it = maEases.popFromLocker(it);
+        } else it++;
+    }
 }
 
 void FilmLayerTexture::render() const {
@@ -13,6 +35,13 @@ inline void FilmLayerTexture::clear() {
     mRect.clear();
     mAlpha.clear();
     mTexInd.clear();
+}
+
+inline FilmTimer FilmLayerTexture::getLongestWaiting() const noexcept {
+    FilmTimer longest = FilmKP::max(mPart.ease_tracker.getLimiter(), mRect.ease_tracker.getLimiter());
+    longest = FilmKP::max(mAlpha.ease_tracker.getLimiter(), longest);
+    longest = FilmKP::max(mTexInd.ease_tracker.getLimiter(), longest);
+    return longest;
 }
 
 void FilmLayerTexture::pushPosSetter(const FilmKeypointLayerInteractRect* keypoint, PosChangeEnum change) {
@@ -47,15 +76,23 @@ void FilmLayerTexture::pushTexIndSetter(FilmKeypointLayerInteractSwap* keypoint)
     mPart.shift_elem();
 
     switch (swapmode) {
-    case FilmKeypointLayerSwap::KeepNotDeformed:
-        setRectPartFromKeypointSwap(); // from texture
-        break;
     case FilmKeypointLayerSwap::SetDefault:
         mRect.set_default();
         mPart.set_default();
         break;
-    case FilmKeypointLayerSwap::NewTransform:
-        setRectPartFromKeypointSwap();
+    case FilmKeypointLayerSwap::KeepNotDeformed:
+    case FilmKeypointLayerSwap::NewTransform: _FALLTHROUGH
+        if (!keypoint->swap_rect_ptr) {
+            mRect.elem_to = *keypoint->swap_rect_ptr;
+            mRect.reset_tracker();
+        } else
+            mRect.set_default();
+
+        if (keypoint->swap_part_ptr) {
+            mPart.elem_to = *keypoint->swap_part_ptr;
+            mPart.reset_tracker();
+        } else
+            mPart.set_default();
         break;
     }
 
@@ -131,4 +168,29 @@ bool FilmLayerTexture::onPushTracker(LockerIndex ease_indx) {
     }
 
     return false;
+}
+
+void FilmLayerTexture::finalizeSwap(LockerSimple<FilmLayerBase::Tracker>::Iterator iter) {
+    const auto keypoint = dynamic_cast<FilmKeypointLayerInteractTransparentSwap*>(iter->keypoint);
+    const auto swapmode = kpt_swap->swap;
+
+    mRect.shift_elem();
+    mPart.shift_elem();
+
+    switch (swapmode) {
+    case FilmKeypointLayerSwap::SetDefault:
+        mRect.set_default();
+        mPart.set_default();
+        break;
+    case FilmKeypointLayerSwap::KeepNotDeformed:
+    case FilmKeypointLayerSwap::NewTransform: _FALLTHROUGH
+        if (keypoint->swap_rect_ptr)
+            mRect.set_default();
+        else mRect.elem_to = *keypoint->swap_rect_ptr;
+
+        if (keypoint->swap_part_ptr)
+             mPart.set_default();
+        else mPart.elem_to = *keypoint->swap_part_ptr;
+        break;
+    }
 }

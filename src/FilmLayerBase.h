@@ -14,6 +14,7 @@ public:
     virtual void update() = 0;
     virtual void render() const = 0;
     virtual inline bool isWaiting() const noexcept { return maEases.isEmpty(); }
+    virtual inline FilmTimer getLongestWaiting() const noexcept { return FilmTimer(); }
     virtual inline void clear() { maEases.clear(); }
 
     virtual ~FilmLayerBase() = default;
