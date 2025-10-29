@@ -6,31 +6,35 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypointLayer* keypoint) {
 
     LayerIndex li = (keypoint->type().specific_type != FilmKeypointLayer::Add) ? keypoint->layerindx : -1;
 
+    if (keypoint->type().specific_type >= FilmKeypointLayer::InteractPos && keypoint->type().specific_type <= FilmKeypointLayer::InteractDefault) {
+        registerKeypointInteraction(li, keypoint);
+    }
+
     switch (keypoint->type().specific_type) { // it's mess now, but I must go further
     case FilmKeypointLayer::Add:             registerLayerKeypointAdd(dynamic_cast<FilmKeypointLayerAdd*>(keypoint));                                  break;
-    case FilmKeypointLayer::InteractPos:     registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, Pos);     break;
-    case FilmKeypointLayer::InteractRectPos: registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, RectPos); break;
-    case FilmKeypointLayer::InteractPartPos: registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, PartPos); break;
-    case FilmKeypointLayer::InteractAlpha:   registerLayerKeypointInteractAlpha(keypoint, li);                                           break;
-    case FilmKeypointLayer::InteractDefaultPos: maLayers[li].rect.ease_tracker.setDefault();                                             break;
-    case FilmKeypointLayer::InteractDefaultPartPos: maLayers[li].part.ease_tracker.setDefault();                                         break;
-    case FilmKeypointLayer::InteractTransparentSwap:
-    case FilmKeypointLayer::InteractSwap: _FALLTHROUGH
-        registerLayerKeypointInteractSwap(keypoint, li);
-        break;
-    case FilmKeypointLayer::Enable: maActiveLayerIndexes.push_back(li); break;
+    //case FilmKeypointLayer::InteractPos:     registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, Pos);     break;
+    //case FilmKeypointLayer::InteractRectPos: registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, RectPos); break;
+    //case FilmKeypointLayer::InteractPartPos: registerLayerKeypointInteractAnyPos(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), li, PartPos); break;
+    //case FilmKeypointLayer::InteractAlpha:   registerLayerKeypointInteractAlpha(keypoint, li);                                           break;
+    //case FilmKeypointLayer::InteractDefaultPos: maLayers[li].rect.ease_tracker.setDefault();                                             break;
+    //case FilmKeypointLayer::InteractDefaultPartPos: maLayers[li].part.ease_tracker.setDefault();                                         break;
+    //case FilmKeypointLayer::InteractTransparentSwap:
+    //case FilmKeypointLayer::InteractSwap: _FALLTHROUGH
+    //    registerLayerKeypointInteractSwap(keypoint, li);
+    //    break;
+    //case FilmKeypointLayer::InteractDefault: maLayers[li].set_to_default(); break;
+    case FilmKeypointLayer::Enable: maActiveLayerIndexes.push_back(maLayers.begin() + li); break;
     case FilmKeypointLayer::Disable:
     {
         auto iter = std::find(maActiveLayerIndexes.begin(), maActiveLayerIndexes.end(), li);
         if(iter != maActiveLayerIndexes.end()) maActiveLayerIndexes.erase(iter);
     }   break;
-    case FilmKeypointLayer::InteractDefault: maLayers[li].set_to_default(); break;
     case FilmKeypointLayer::Remove:
     {
-        maLayers.erase(maLayers.begin() + li);
         auto iter = std::find(maActiveLayerIndexes.begin(), maActiveLayerIndexes.end(), li);
-        maActiveLayerIndexes.erase(iter);
-        mKeypointPtrLocker.popFromLocker(li);
+        if (iter != maActiveLayerIndexes.end()) maActiveLayerIndexes.erase(iter);
+        maLayers.erase(maLayers.begin() + li);
+        //mKeypointPtrLocker.popFromLocker(li);
     }   break;
     case FilmKeypointLayer::Await: assert(false); break; // useless?
     default: assert(false); break;
@@ -111,6 +115,14 @@ void FilmLayerist::render() {
 }
 
 void FilmLayerist::registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint) {
+    switch (keypoint->layertype()) {
+    case FilmKeypointLayerAdd::Texture:
+        maLayers.emplace_back<FilmLayerTexture>(pClock, pTexMgr);
+        break;
+    default:
+        break;
+    }
+    /*
     Layer l;
     l.texind.elem_to = keypoint->texind;
     l.rect.elem_to = pTexMgr->GetLockerTexture(keypoint->texind).getRectRes();
@@ -124,6 +136,26 @@ void FilmLayerist::registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint) {
     l.rect.ease_tracker.reset();
 
     maLayers.push_back(l);
+    */
+}
+
+void FilmLayerist::registerKeypointInteraction(LayerIndex li, FilmKeypointLayer* keypoint) {
+    auto iter = maLayers.begin() + li;
+
+    if (keypoint->has_ease()) {
+        iter->pushSetter(keypoint);
+        return;
+    }
+
+    switch (keypoint->type().specific_type) {
+    case FilmKeypointLayer::InteractPos:             iter->pushTracker(dynamic_cast<FilmKeypointLayerInteractPos*>(keypoint)); break;
+    case FilmKeypointLayer::InteractRectPos:         iter->pushTracker(dynamic_cast<FilmKeypointLayerInteractRectPos*>(keypoint)); break;
+    case FilmKeypointLayer::InteractPartPos:         iter->pushTracker(dynamic_cast<FilmKeypointLayerInteractPartitionPos*>(keypoint)); break;
+    case FilmKeypointLayer::InteractDefaultPos:      iter->pushTracker(dynamic_cast<FilmKeypointLayerInteractDefaultPos*>(keypoint)); break;
+    case FilmKeypointLayer::InteractDefaultPartPos:  iter->pushTracker(dynamic_cast<FilmKeypointLayerInteractDefaultPartitionPos*>(keypoint)); break;
+    case FilmKeypointLayer::InteractAlpha:           iter->pushTracker(dynamic_cast<FilmKeypointLayerInteractAlpha*>(keypoint)); break;
+    case FilmKeypointLayer::InteractTransparentSwap: iter->pushTracker(dynamic_cast<FilmKeypointLayerInteractTransparentSwap*>(keypoint)); break;
+    }
 }
 
 _MAYBE_UNUSED void FilmLayerist::registerLayerKeypointInteractAnyPos(FilmKeypointLayerInteractRect* keypoint, LayerIndex li, RegLayerKpInterAPosEnum enum_pos) {
@@ -195,7 +227,7 @@ _MAYBE_UNUSED void FilmLayerist::registerLayerKeypointInteractSwap(FilmKeypointL
 
 }
 
-void FilmLayerist::finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter) {
+_MAYBE_UNUSED void FilmLayerist::finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter) {
     const auto kpt_swap = dynamic_cast<FilmKeypointLayerInteractTransparentSwap*>((*iter).keypoint_ptr);
     const auto li = iter->layer_index;
     const auto swapmode = kpt_swap->swap;
@@ -226,7 +258,7 @@ void FilmLayerist::finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Ite
     }
 }
 
-void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha) {
+_MAYBE_UNUSED void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha) {
     auto& layer = maLayers[li];
 
     const auto tex_from = layer.texind.elem_from != -1;
@@ -265,7 +297,7 @@ void FilmLayerist::renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL
     }
 }
 
-void FilmLayerist::registerTracker(FilmKeypointLayer* keypoint, LayerIndex li, char tracker_affect_mask) {
+_MAYBE_UNUSED void FilmLayerist::registerTracker(FilmKeypointLayer* keypoint, LayerIndex li, char tracker_affect_mask) {
     if (keypoint->is_zero()) return;
     
     KeypointTracker tracker;

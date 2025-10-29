@@ -27,6 +27,7 @@ public:
 
     LockerIndex pushInLocker(Cont container);
     _NODISCARD inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
+    _NODISCARD inline const T& at(LockerIndex index) const { return *(mapLockPtr.at(index)); }
     void popFromLocker(LockerIndex index);
     Iterator popFromLocker(Iterator it);
 

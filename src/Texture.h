@@ -25,7 +25,7 @@ public:
     inline SDL_FRect     getRectPart() const noexcept { return mRectPart; }
     inline SDL_FRect     getRectRes()    const noexcept { return mRectRes; }
 
-    void renderRaw(SDL_FRect* src, SDL_FRect* rect, uint8_t alpha = 255) const;
+    void renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8_t alpha = 255) const;
     void render() const;
 
     void   clear();

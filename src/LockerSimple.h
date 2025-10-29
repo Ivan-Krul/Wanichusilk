@@ -23,6 +23,7 @@ public:
     LockerIndex pushInLocker(T&& elem);
     LockerIndex pushInLocker(const T& elem);
     _NODISCARD inline T& operator[] (LockerIndex index) { return *(mapLockPtr[index]); }
+    _NODISCARD inline const T& at(LockerIndex index) const { return *(mapLockPtr.at(index)); }
     void popFromLocker(LockerIndex index);
     inline Iterator popFromLocker(Iterator it);
 

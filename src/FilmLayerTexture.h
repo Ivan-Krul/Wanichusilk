@@ -20,17 +20,16 @@ private:
     };
 private:
 
-    inline void pushPosSetter(FilmKeypointLayerInteractRect* keypoint, PosChangeEnum change);
-    inline void setRectPartFromKeypointSwapSetter(FilmKeypointLayerInteractRect* keypoint);
+    inline void pushPosSetter(const FilmKeypointLayerInteractRect* keypoint, PosChangeEnum change);
     inline void pushTexIndSetter(FilmKeypointLayerInteractSwap* keypoint);
 
-    bool onPushSetter(const FilmKeypointLayer* keypoint) override;
+    bool onPushSetter(FilmKeypointLayer* keypoint) override;
 
     inline void pushPosTracker(const LockerIndex ease_indx, PosChangeEnum change);
 
     bool onPushTracker(const LockerIndex ease_indx) override;
 
-    void renderSwap(SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t max_alpha);
+    void renderSwap(const SDL_FRect* res_rect, const SDL_FRect* res_part, uint8_t max_alpha) const;
     void finalizeSwap(LockerSimple<FilmLayerBase::Tracker>::Iterator iter);
 
     inline bool areAllTransitParamDefault() const noexcept { return mPart.is_default() && mRect.is_default() && mAlpha.is_default() && mTexInd.is_default(); }

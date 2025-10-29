@@ -6,8 +6,6 @@
 
 class FilmLayerBase : public ClockHolder {
 public:
-    using EaseTrack = EaseTracker<>;
-public:
     template<typename T>
     inline bool pushSetter(const T* keypoint);
     template<typename T>
@@ -23,7 +21,7 @@ public:
 protected:
     template <typename T>
     struct TransitParam {
-        EaseTrack ease_tracker;
+        EaseTracker<> ease_tracker;
         T elem_from = { 0 };
         T elem_to = { 0 };
         size_t unused_padding;
@@ -38,12 +36,12 @@ protected:
     };
 
     struct Tracker {
-        EaseTrack* ease = nullptr;
+        EaseTracker<>* ease = nullptr;
         FilmKeypointLayer* keypoint;
     };
 
 protected:
-    virtual bool onPushSetter(const FilmKeypointLayer* keypoint) = 0;
+    virtual bool onPushSetter(FilmKeypointLayer* keypoint) = 0;
     virtual bool onPushTracker(const LockerIndex ease_indx) = 0;
 
     LockerSimple<Tracker> maEases;
@@ -51,15 +49,18 @@ protected:
 
 template<typename T>
 inline bool FilmLayerBase::pushSetter(const T* keypoint) {
-    static_assert(std::is_base_of<FilmKeypointLayer, T>::value, "Tracker is FilmKeypointLayer");
-    static_assert(!std::is_base_of<FilmKeypointEase, T>::value, "Tracker refuses to be derived from FilmKeypointEase object, the push function is wrong");
+    static_assert(std::is_base_of<FilmKeypointLayer, T>::value, "Tracker is based of FilmKeypointLayer");
+    //static_assert(!std::is_base_of<FilmKeypointEase, T>::value, "Tracker refuses to be derived from FilmKeypointEase object, the push function is wrong");
     return onPushSetter(keypoint);
 }
 
 template<typename T>
 inline bool FilmLayerBase::pushTracker(const T* keypoint) {
-    static_assert(std::is_base_of<FilmKeypointLayer, T>::value, "Tracker is FilmKeypointLayer");
+    static_assert(std::is_base_of<FilmKeypointLayer, T>::value, "Tracker is based of FilmKeypointLayer");
+    static_assert(!std::is_same<FilmKeypointLayer, T>::value, "Tracker is not a FilmKeypointLayer");
     static_assert(std::is_base_of<FilmKeypointEase, T>::value, "Tracker requires derived from FilmKeypointEase object, the push function is wrong");
+
+    if (!dynamic_cast<FilmKeypointEase*>(keypoint)->ease_func || dynamic_cast<FilmTimer*>(keypoint)->is_zero()) return onPushSetter(keypoint);
 
     Tracker tracker;
     tracker.keypoint = keypoint;
