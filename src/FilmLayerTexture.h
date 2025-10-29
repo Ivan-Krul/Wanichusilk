@@ -33,7 +33,7 @@ private:
     void renderSwap(SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t max_alpha);
     void finalizeSwap(LockerSimple<FilmLayerBase::Tracker>::Iterator iter);
 
-    inline bool areAllTransitParamDefault() { return mPart.is_default() && mRect.is_default() && mAlpha.is_default() && mTexInd.is_default(); }
+    inline bool areAllTransitParamDefault() const noexcept { return mPart.is_default() && mRect.is_default() && mAlpha.is_default() && mTexInd.is_default(); }
 
     TextureManager* pTexMgr;
 

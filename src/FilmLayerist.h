@@ -113,13 +113,14 @@ private:
     _MAYBE_UNUSED void registerLayerKeypointInteractAlpha(FilmKeypointLayer* keypoint, LayerIndex li);
     _MAYBE_UNUSED void registerLayerKeypointInteractSwap(FilmKeypointLayer* keypoint, LayerIndex li);
 
-    void finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter);
-    inline void renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha);
+    _MAYBE_UNUSED void finalizeSwap(LockerSimple<FilmLayerist::KeypointTracker>::Iterator iter);
+    _MAYBE_UNUSED inline void renderSwapProgression(LayerIndex li, SDL_FRect* res_rect, SDL_FRect* res_part, uint8_t alpha);
 
     void registerTracker(FilmKeypointLayer* keypoint, LayerIndex li, char tracker_affect_mask);
 
 private:
-    std::vector<Layer> maLayers;
+    std::vector<FilmLayerBase*> maLayers;
+    //std::vector<Layer> maLayers;
     std::vector<LayerIndex> maActiveLayerIndexes;
 
     LockerSimple<KeypointTracker> mKeypointPtrLocker;
