@@ -12,13 +12,13 @@ bool Texture::create(const char* src, SDL_Renderer* renderer) {
     return true;
 }
 
-void Texture::renderRaw(SDL_FRect* src, SDL_FRect* rect, uint8_t alpha) {
+void Texture::renderRaw(SDL_FRect* src, SDL_FRect* rect, uint8_t alpha) const {
     SDL_SetTextureAlphaMod(mpTexture, alpha);
     SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
     SDL_SetTextureAlphaMod(mpTexture, mAlpha);
 }
 
-void Texture::render() {
+void Texture::render() const {
     if (mpTexture)
         SDL_RenderTexture(mpRendererOrigin, mpTexture, mUseRectPart ? &mRectPart : NULL, &mRectRes);
     else

@@ -6,6 +6,8 @@
 
 class FilmLayerBase : public ClockHolder {
 public:
+    using EaseTrack = EaseTracker<>;
+public:
     template<typename T>
     inline bool pushSetter(const T* keypoint);
     template<typename T>
@@ -21,9 +23,10 @@ public:
 protected:
     template <typename T>
     struct TransitParam {
-        EaseTracker<> ease_tracker;
+        EaseTrack ease_tracker;
         T elem_from = { 0 };
         T elem_to = { 0 };
+        size_t unused_padding;
 
         inline void shift_elem() { elem_from = elem_to; }
         inline bool is_default()  const { return ease_tracker.isDefault(); }
@@ -35,7 +38,7 @@ protected:
     };
 
     struct Tracker {
-        EaseTracker<>* ease = nullptr;
+        EaseTrack* ease = nullptr;
         FilmKeypointLayer* keypoint;
     };
 
