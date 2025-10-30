@@ -21,6 +21,12 @@ public:
         return mapBitsets[index >> ChunkByte][index % ChunkBits];
     }
 
+    void set_lastcalled(bool val) {
+        if (mMaxCalledBit >= totalBits()) resizeIfWants(mMaxCalledBit);
+        mMaxCalledBit = mMaxCalledBit + 1;
+
+        mapBitsets[mMaxCalledBit >> ChunkByte][mMaxCalledBit % ChunkBits] = val;
+    }
     void set(IndexType index, bool val) {
         if (index >= totalBits()) resizeIfWants(index);
         mMaxCalledBit = std::max(mMaxCalledBit, index + 1);

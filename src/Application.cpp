@@ -16,7 +16,7 @@ void Application::OnInit() {
         "./res/Stefan chill emoji.png",
         "./res/Stefan is laying.png",
         "./res/Stefan wah.png",
-        "./res/reesasm art.png"
+        "./res/B.png"
     };
 
     assert(mScene.create(&mTexMgr, ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), vec));
@@ -39,7 +39,7 @@ void Application::OnInit() {
     swap.to = 0;
     mScene.addKeypoint(swap);
     {
-        FilmKeypointLayerAdd la;
+        FilmKeypointLayerAddTexture la;
         la.texind = 2;
         mScene.addKeypoint(la);
     }
@@ -56,12 +56,12 @@ void Application::OnInit() {
     }
     {
         FilmKeypointLayerInteractAlpha lia;
+        lia.action = FilmTimer::Await;
         lia.layerindx = 0;
         lia.alpha = 255;
-        lia.ease_func = ease_cubic_in_out;
         lia.need_time_delay = true;
         lia.delay = std::chrono::seconds(3);
-        lia.action = FilmTimer::Await;
+        lia.ease_func = ease_cubic_in_out;
         mScene.addKeypoint(lia);
     }
     {
@@ -83,11 +83,12 @@ void Application::OnInit() {
         mScene.addKeypoint(lip);
     }
     {
-        FilmKeypointLayerInteractSwap lits;
+        FilmKeypointLayerInteractTransparentSwap lits;
         lits.action = FilmTimer::Await;
         lits.layerindx = 0;
         lits.texindx = 3;
-        lits.frame_delay = 300;
+        lits.frame_delay = 50;
+        lits.ease_func = ease_sine_in_out;
         lits.swap = FilmKeypointLayerInteractSwap::SwapMode::KeepInAspect;
         mScene.addKeypoint(lits);
     }
@@ -98,6 +99,16 @@ void Application::OnInit() {
     swap.from = -1;
     swap.to = 1;
     mScene.addKeypoint(swap);
+    {
+        FilmKeypointLayerInteractTransparentSwap lits;
+        lits.action = FilmTimer::Await;
+        lits.layerindx = 0;
+        lits.texindx = -1;
+        lits.frame_delay = 30;
+        lits.ease_func = ease_sine_in_out;
+        lits.swap = FilmKeypointLayerInteractSwap::SwapMode::KeepInAspect;
+        mScene.addKeypoint(lits);
+    }
     swap.action = FilmTimer::InInputAfterAwait;
     swap.to = 0;
     mScene.addKeypoint(swap);

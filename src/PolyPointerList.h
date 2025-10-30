@@ -158,7 +158,7 @@ inline typename std::enable_if<std::is_base_of<TBase, T>::value>::type PolyPoint
 
 template<typename TBase>
 template<typename T>
-inline typename std::enable_if<std::is_base_of<TBase, T>::value, PolyPointerList<TBase>::Iterator>::type PolyPointerList<TBase>::insert(Iterator pos, const T& value) {
+inline typename std::enable_if<std::is_base_of<TBase, T>::value, typename PolyPointerList<TBase>::Iterator>::type PolyPointerList<TBase>::insert(Iterator pos, const T& value) {
 	void* raw = ::operator new(sizeof(Node) + sizeof(T)); // we knot the variety by size values in node near the memory to not mess with calls
 
 	Node* temp = new (raw) Node();
@@ -189,7 +189,7 @@ inline typename std::enable_if<std::is_base_of<TBase, T>::value, PolyPointerList
 }
 
 template<typename TBase>
-inline PolyPointerList<TBase>::Iterator PolyPointerList<TBase>::erase(Iterator pos) {
+inline typename PolyPointerList<TBase>::Iterator PolyPointerList<TBase>::erase(Iterator pos) {
 	Node* ptr_beg = pos.ptr->prev;
 	Node* ptr_end = pos.ptr->next;
 

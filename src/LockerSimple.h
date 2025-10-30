@@ -89,7 +89,7 @@ inline LockerIndex LockerSimple<T>::pushInLocker(const T& elem) {
         else {
             mapLockPtr[mNearestFreeLocker] = --maLockArray.end();
         }
-        maOccupied.set(maOccupied.maxcalledbit(), true);
+        maOccupied.set_lastcalled(true);
         return mNearestFreeLocker++;
     }
 

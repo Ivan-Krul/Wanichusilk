@@ -7,9 +7,9 @@
 class FilmLayerBase : public ClockHolder {
 public:
     template<typename T>
-    inline bool pushSetter(const T* keypoint);
+    inline bool pushSetter(T* keypoint);
     template<typename T>
-    inline bool pushTracker(const T* keypoint);
+    inline bool pushTracker(T* keypoint);
 
     virtual void update() = 0;
     virtual void render() const = 0;
@@ -48,14 +48,14 @@ protected:
 };
 
 template<typename T>
-inline bool FilmLayerBase::pushSetter(const T* keypoint) {
+inline bool FilmLayerBase::pushSetter(T* keypoint) {
     static_assert(std::is_base_of<FilmKeypointLayer, T>::value, "Tracker is based of FilmKeypointLayer");
     //static_assert(!std::is_base_of<FilmKeypointEase, T>::value, "Tracker refuses to be derived from FilmKeypointEase object, the push function is wrong");
-    return onPushSetter(keypoint);
+    return onPushSetter(dynamic_cast<FilmKeypointLayer*>(keypoint));
 }
 
 template<typename T>
-inline bool FilmLayerBase::pushTracker(const T* keypoint) {
+inline bool FilmLayerBase::pushTracker(T* keypoint) {
     static_assert(std::is_base_of<FilmKeypointLayer, T>::value, "Tracker is based of FilmKeypointLayer");
     static_assert(!std::is_same<FilmKeypointLayer, T>::value, "Tracker is not a FilmKeypointLayer");
     static_assert(std::is_base_of<FilmKeypointEase, T>::value, "Tracker requires derived from FilmKeypointEase object, the push function is wrong");

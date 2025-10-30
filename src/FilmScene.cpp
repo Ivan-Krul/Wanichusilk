@@ -68,7 +68,7 @@ void FilmScene::render() {
 
 inline bool FilmScene::canTriggerNext() const {
     if (mBackupTimer.action == FilmTimer::InInputOrFirst || mBackupTimer.action == FilmTimer::InInputOrAwait) return true;
-    if (mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait) return mBackupTimer.is_zero();
+    if (mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait) return mBackupTimer.is_zero() || isWaiting();
     return false;
 }
 

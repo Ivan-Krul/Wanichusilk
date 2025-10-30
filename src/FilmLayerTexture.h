@@ -5,10 +5,11 @@
 
 class FilmLayerTexture : public FilmLayerBase {
 public:
-    FilmLayerTexture(Clock* clock, TextureManager* texmgr);
+    FilmLayerTexture(Clock* clock, TextureManager* texmgr, LockerIndex texind);
     void update() override;
     void render() const override;
     inline void clear() override;
+    inline bool isWaiting() const noexcept override;
     inline FilmTimer getLongestWaiting() const noexcept override;
 
     virtual ~FilmLayerTexture() { clear(); }

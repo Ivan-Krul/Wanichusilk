@@ -22,7 +22,7 @@ public:
     inline void SetRenderer(SDL_Renderer* renderer) { mpRenderer = renderer; }
     inline SDL_Renderer* GetRenderer() const { return mpRenderer; }
 
-    Texture& GetLockerTexture(ResourceIndex index) { return mTextureLocker[index]; }
+    Texture& GetLockerTexture(ResourceIndex index) { assert(index != -1);  return mTextureLocker[index]; }
     ResourceIndex RequestTextureLoad(const char* path) {
         TextureArgContainer cont;
         cont.path = path;

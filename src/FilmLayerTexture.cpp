@@ -1,15 +1,23 @@
 #include "FilmLayerTexture.h"
 
-FilmLayerTexture::FilmLayerTexture(Clock* clock, TextureManager* texmgr) {
+FilmLayerTexture::FilmLayerTexture(Clock* clock, TextureManager* texmgr, LockerIndex texind) {
     pTexMgr = texmgr;
     setClock(clock);
+
+    mTexInd.elem_to = texind;
+    mRect.elem_to = pTexMgr->GetLockerTexture(texind).getRectRes();
+
     mPart.ease_tracker.setClock(clock);
     mRect.ease_tracker.setClock(clock);
     mAlpha.ease_tracker.setClock(clock);
     mTexInd.ease_tracker.setClock(clock);
+
+    mRect.reset_tracker();
+    mTexInd.reset_tracker();
 }
 
 void FilmLayerTexture::update() {
+    if (maEases.isEmpty()) return;
     mPart.ease_tracker.update();
     mRect.ease_tracker.update();
     mAlpha.ease_tracker.update();
@@ -50,21 +58,13 @@ void FilmLayerTexture::render() const {
         } else res_part = &(mPart.elem_to);
     }
 
-    //if (!mPart.is_default()) {
-    //    if (mPart.is_progress()) res_part = &part;
-    //    else res_part = &(mPart.elem_to);
-    //    //res_part = mPart.is_progress() ? &part : &(mPart.elem_to);
-    //} else res_part = nullptr;
-    //
-    //if (mPart.is_progress())
-    //    part = lerp_rect(mPart.elem_from, mPart.elem_to, mPart.ease_tracker);
-
     if (mAlpha.is_progress())
         alpha = lerp(mAlpha.ease_tracker, mAlpha.elem_from, mAlpha.elem_to);
     else alpha = mAlpha.elem_to;
 
     if (mTexInd.is_progress())
         renderSwap(res_rect, res_part, alpha);
+    else if (mTexInd.elem_to == -1) return;
     else if (areAllTransitParamDefault())
         pTexMgr->GetLockerTexture(mTexInd.elem_to).render();
     else
@@ -77,6 +77,10 @@ inline void FilmLayerTexture::clear() {
     mRect.clear();
     mAlpha.clear();
     mTexInd.clear();
+}
+
+inline bool FilmLayerTexture::isWaiting() const noexcept {
+    return maEases.isEmpty();
 }
 
 inline FilmTimer FilmLayerTexture::getLongestWaiting() const noexcept {
@@ -103,6 +107,10 @@ void FilmLayerTexture::pushTexIndSetter(FilmKeypointLayerInteractSwap* keypoint)
     mRect.shift_elem();
     mPart.shift_elem();
 
+    mTexInd.reset_tracker();
+    mTexInd.shift_elem();
+    mTexInd.elem_to = keypoint->texindx;
+
     switch (swapmode) {
     case FilmKeypointLayerSwap::KeepNotDeformed:
     {
@@ -128,10 +136,6 @@ void FilmLayerTexture::pushTexIndSetter(FilmKeypointLayerInteractSwap* keypoint)
             mPart.set_default();
         break;
     }
-
-    mTexInd.ease_tracker.reset();
-    mTexInd.shift_elem();
-    mTexInd.elem_to = keypoint->texindx;
 }
 
 bool FilmLayerTexture::onPushSetter(FilmKeypointLayer* keypoint) {
@@ -140,11 +144,12 @@ bool FilmLayerTexture::onPushSetter(FilmKeypointLayer* keypoint) {
     case FilmKeypointLayer::InteractRectPos: pushPosSetter(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), RectPos); break;
     case FilmKeypointLayer::InteractPartPos: pushPosSetter(dynamic_cast<FilmKeypointLayerInteractRect*>(keypoint), PartPos); break;
     case FilmKeypointLayer::InteractAlpha:
+    {
         const auto kp_alpha = dynamic_cast<FilmKeypointLayerInteractAlpha*>(keypoint);
         mAlpha.shift_elem();
         mAlpha.ease_tracker.reset();
         mAlpha.elem_to = kp_alpha->alpha;
-        break;
+    }   break;
     case FilmKeypointLayer::InteractDefaultPos:     mRect.set_default(); break;
     case FilmKeypointLayer::InteractDefaultPartPos: mPart.set_default(); break;
     case FilmKeypointLayer::InteractSwap:
@@ -180,15 +185,17 @@ bool FilmLayerTexture::onPushTracker(LockerIndex ease_indx) {
     case FilmKeypointLayer::InteractPos:     pushPosTracker(ease_indx, Pos);     break;
     case FilmKeypointLayer::InteractRectPos: pushPosTracker(ease_indx, RectPos); break;
     case FilmKeypointLayer::InteractPartPos: pushPosTracker(ease_indx, PartPos); break;
-    case FilmKeypointLayer::InteractAlpha: 
+    case FilmKeypointLayer::InteractAlpha:
+    {
         const auto kp_alpha = dynamic_cast<FilmKeypointLayerInteractAlpha*>(keypoint);
         mAlpha.shift_elem();
         mAlpha.ease_tracker.setEase(kp_alpha->ease_func);
         mAlpha.ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
         mAlpha.elem_to = kp_alpha->alpha;
         tracker.ease = &(mAlpha.ease_tracker);
-        break;
+    }   break;
     case FilmKeypointLayer::InteractTransparentSwap:
+    {
         const auto kp_swap = dynamic_cast<FilmKeypointLayerInteractTransparentSwap*>(keypoint);
         mTexInd.shift_elem();
         mTexInd.ease_tracker.setEase(kp_swap->ease_func);
@@ -196,7 +203,7 @@ bool FilmLayerTexture::onPushTracker(LockerIndex ease_indx) {
         mTexInd.elem_to = kp_swap->texindx;
         mTexInd.unused_padding = ease_indx;
         tracker.ease = &(mTexInd.ease_tracker);
-        break;
+    }   break;
     default:
         return true;
     }
@@ -224,21 +231,6 @@ void FilmLayerTexture::renderSwap(const SDL_FRect* res_rect, const SDL_FRect* re
         tex_to.renderRaw(nullptr, nullptr, max_alpha * progress);
         break;
     case FilmKeypointLayerSwap::NewTransform:
-        /*
-        if (!keypoint->swap_rect_ptr) {
-            mRect.elem_to = *keypoint->swap_rect_ptr;
-            mRect.reset_tracker();
-        } else
-            mRect.set_default();
-
-        if (keypoint->swap_part_ptr) {
-            mPart.elem_to = *keypoint->swap_part_ptr;
-            mPart.reset_tracker();
-        } else
-            mPart.set_default();
-        break;
-        */
-
         tex_to.renderRaw(tracked_kp->swap_part_ptr.get(), tracked_kp->swap_rect_ptr.get(), max_alpha * progress);
         break;
     }
