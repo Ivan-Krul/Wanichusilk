@@ -9,13 +9,18 @@ bool Texture::create(const char* src, SDL_Renderer* renderer) {
     mRectRes.w = mpTexture->w;
     mRectRes.h = mpTexture->h;
 
+    mHasAlpha = SDL_ISPIXELFORMAT_ALPHA(mpTexture->format);
+
     return true;
 }
 
 void Texture::renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8_t alpha) const {
-    SDL_SetTextureAlphaMod(mpTexture, alpha);
-    SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
-    SDL_SetTextureAlphaMod(mpTexture, mAlpha);
+    if (mHasAlpha) {
+        SDL_SetTextureAlphaMod(mpTexture, alpha);
+        SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
+        SDL_SetTextureAlphaMod(mpTexture, mAlpha);
+    }
+    else SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
 }
 
 void Texture::render() const {

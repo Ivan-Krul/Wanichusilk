@@ -11,7 +11,7 @@ public:
     inline Texture(const char* src, SDL_Renderer* renderer) { create(src, renderer); }
     bool   create(const char* src, SDL_Renderer* renderer);
 
-    inline void setAlpha(uint8_t alpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); }
+    inline void setAlpha(uint8_t alpha) { if (mHasAlpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); } else { SDL_Log("Warning: the texture doesn't have alpha channel"); } }
     inline void setWidth(float w) { mRectRes.w = w; }
     inline void setHeight(float h) { mRectRes.h = h; }
     inline void setResolution(float w, float h) { mRectRes.w = w; mRectRes.h = h; }
@@ -21,9 +21,10 @@ public:
     inline void setPartialRenderingResolution(float x = 0, float y = 0, float w = 0, float h = 0) { mRectPart.x = x; mRectPart.y = y; mRectPart.w = w; mRectPart.h = h; }
     inline void setPartialRenderingUsage(bool use) { mUseRectPart = use; }
 
-    inline SDL_Texture*  getTexture()       noexcept { return mpTexture; }
+    inline SDL_Texture*  getTexture()        noexcept { return mpTexture; }
     inline SDL_FRect     getRectPart() const noexcept { return mRectPart; }
-    inline SDL_FRect     getRectRes()    const noexcept { return mRectRes; }
+    inline SDL_FRect     getRectRes()  const noexcept { return mRectRes;  }
+    inline bool          hasAlpha()    const noexcept { return mHasAlpha; }
 
     void renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8_t alpha = 255) const;
     void render() const;
@@ -40,5 +41,6 @@ protected:
 
     uint8_t mAlpha = 255;
     bool mUseRectPart = false;
+    bool mHasAlpha = true;
 
 };
