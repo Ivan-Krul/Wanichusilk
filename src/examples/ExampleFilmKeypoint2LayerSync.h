@@ -44,12 +44,76 @@ void PushExampleFilmKeypoint2LayerSync(FilmScene& scene) {
     laph.layerindx = 1;
     scene.addKeypoint(laph);
 
+    // action
     FilmKeypoint fk;
     fk.action = FilmKeypoint::Exact;
-    fk.frame_delay = 500;
+    fk.frame_delay = 50;
     scene.addKeypoint(fk);
 
     fk.action = FilmKeypoint::InInputAfterFirst;
     scene.addKeypoint(fk);
 
+    for (auto i = 0; i < 3; i++) {
+        FilmKeypointLayerInteractPos lpos;
+        lpos.layerindx = 0;
+        lpos.action = FilmKeypoint::Instant;
+        lpos.rect.x = DEFAULT_SCR_RES_X / 2 - 100;
+        lpos.rect.y = DEFAULT_SCR_RES_Y / 2 - 50;
+        lpos.ease_func = ease_quad_in;
+        lpos.frame_delay = 50;
+        scene.addKeypoint(lpos);
+
+        lpos.layerindx = 1;
+        lpos.action = FilmKeypoint::Await;
+        lpos.rect.x = DEFAULT_SCR_RES_X / 2;
+        lpos.rect.y = DEFAULT_SCR_RES_Y / 2 - 50;
+        lpos.ease_func = ease_quad_in;
+        scene.addKeypoint(lpos);
+
+        lpos.layerindx = 0;
+        lpos.action = FilmKeypoint::Instant;
+        lpos.rect.x = 0;
+        lpos.rect.y = 0;
+        lpos.ease_func = ease_quad_out;
+        scene.addKeypoint(lpos);
+
+        lpos.layerindx = 1;
+        lpos.action = FilmKeypoint::Await;
+        lpos.rect.x = DEFAULT_SCR_RES_X - 100;
+        lpos.rect.y = DEFAULT_SCR_RES_Y - 100;
+        lpos.ease_func = ease_quad_out;
+        scene.addKeypoint(lpos);
+
+
+        lpos.layerindx = 0;
+        lpos.action = FilmKeypoint::Instant;
+        lpos.rect.x = DEFAULT_SCR_RES_X / 2 - 100;
+        lpos.rect.y = DEFAULT_SCR_RES_Y / 2 - 50;
+        lpos.ease_func = ease_quad_in;
+        scene.addKeypoint(lpos);
+
+        lpos.layerindx = 1;
+        lpos.action = FilmKeypoint::Await;
+        lpos.rect.x = DEFAULT_SCR_RES_X / 2;
+        lpos.rect.y = DEFAULT_SCR_RES_Y / 2 - 50;
+        lpos.ease_func = ease_quad_in;
+        scene.addKeypoint(lpos);
+
+        lpos.layerindx = 0;
+        lpos.action = FilmKeypoint::Instant;
+        lpos.rect.x = 0;
+        lpos.rect.y = DEFAULT_SCR_RES_Y - 100;
+        lpos.ease_func = ease_quad_out;
+        scene.addKeypoint(lpos);
+
+        lpos.layerindx = 1;
+        lpos.action = FilmKeypoint::Await;
+        lpos.rect.x = DEFAULT_SCR_RES_X - 100;
+        lpos.rect.y = 0;
+        lpos.ease_func = ease_quad_out;
+        scene.addKeypoint(lpos);
+
+        fk.action = FilmKeypoint::InInputAfterFirst;
+        scene.addKeypoint(fk);
+    }
 }
