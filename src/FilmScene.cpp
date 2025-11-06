@@ -55,7 +55,7 @@ void FilmScene::finish() {
 }
 
 void FilmScene::render() {
-    if (!isGoing() || pKeypoint->type().global_type == FilmKeypointChangeType::None) return;
+    if (!isGoing()) return;
 
     mBackground.render();
     mLayerist.render();
@@ -68,7 +68,10 @@ void FilmScene::render() {
 
 inline bool FilmScene::canTriggerNext() const {
     if (mBackupTimer.action == FilmTimer::InInputOrFirst || mBackupTimer.action == FilmTimer::InInputOrAwait) return true;
-    if (mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait) return mBackupTimer.is_zero() || isWaiting();
+    if (mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait) {
+        if(pKeypoint->type().global_type == FilmKeypointChangeType::None || pKeypoint->action == FilmTimer::Exact) return mBackupTimer.is_zero(); // if explicit delay
+        else return mBackupTimer.is_zero() || isWaiting();
+    }
     return false;
 }
 
@@ -84,9 +87,11 @@ void FilmScene::clear() {
 
 inline void FilmScene::implicitNext() {
     mKeypointIndex++;
-    pKeypoint = maKeypoints[mKeypointIndex].get();
 
-    if (mKeypointIndex < maKeypoints.size()) onNext();
+    if (mKeypointIndex < maKeypoints.size()) {
+        pKeypoint = maKeypoints[mKeypointIndex].get();
+        onNext();
+    }
 }
 
 void FilmScene::onUpdate() {
@@ -95,6 +100,12 @@ void FilmScene::onUpdate() {
 
     mBackupTimer.decrement_time_frame(mpClock->DeltaTime());
     //FilmKP::SDL_Log_FilmTimer(mBackupTimer);
+
+    if (mBackupTimer.action == FilmTimer::Exact) {
+        if (mBackupTimer.is_zero())
+            implicitNext();
+        return;
+    }
 
     if ((isWaiting() || mBackupTimer.is_zero()) && !(mBackupTimer.action == FilmTimer::InInputAfterFirst || mBackupTimer.action == FilmTimer::InInputAfterAwait)) { // DON'T TOUCH IT FOR THE SAKE OF NOT SPENDING ANOTHER 4 DAYS FIXING IT
         implicitNext();
@@ -147,7 +158,12 @@ void FilmScene::onNext() {
             if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
         }
         break;
+    case timer.Exact:
+        mBackupTimer.frame_delay = timer.frame_delay;
+        mBackupTimer.delay = timer.delay;
+        if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
+        break;
     }
-    FilmKP::SDL_Log_FilmTimer(mBackupTimer);
     mBackupTimer.action = timer.action;
+    FilmKP::SDL_Log_FilmTimer(mBackupTimer);
 }

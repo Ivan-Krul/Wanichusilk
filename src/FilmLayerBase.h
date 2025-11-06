@@ -1,4 +1,6 @@
 #pragma once
+#include <limits>
+
 #include "Clock.h"
 #include "LockerSimple.h"
 #include "FilmKeypoint.h"
@@ -24,7 +26,7 @@ protected:
         EaseTracker<> ease_tracker;
         T elem_from = { 0 };
         T elem_to = { 0 };
-        size_t unused_padding;
+        size_t unused_padding = std::numeric_limits<size_t>::max();
 
         inline void shift_elem() { elem_from = elem_to; }
         inline bool is_default()  const { return ease_tracker.isDefault(); }

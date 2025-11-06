@@ -8,6 +8,7 @@ void FilmBackground::registerBackgroundKeypoint(FilmKeypointBackground* keypoint
         mTexPrev = mTex;
         mTex = pKeypoint->to;
         mRendMode = pKeypoint->rend_mode;
+        transformTexture(mTex, mRendMode);
         break;
     case FilmKeypointBackground::TransparentSwap:
         mEaseTimer.setEase(dynamic_cast<FilmKeypointBgTransparentSwap*>(keypoint)->ease_func);

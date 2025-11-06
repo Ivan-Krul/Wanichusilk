@@ -7,9 +7,6 @@
 
 class FilmBackground {
 public:
-    static constexpr float c_ease_no_progress = -0.f;
-    static constexpr float c_ease_use_default = 2.f;
-
     inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
     inline void setScaleOption(ScaleOption* scale) { pScale = scale; }
     void setClock(Clock* clock) { mEaseTimer.setClock(clock); }

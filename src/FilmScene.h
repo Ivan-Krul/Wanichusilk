@@ -36,8 +36,8 @@ public:
 
     inline bool isWaiting() const { return mLayerist.isWaiting() && mBackground.isWaiting(); }
     inline bool canTriggerNext() const;
-    inline bool isGoing() const { return mKeypointIndex != -1 && (mKeypointIndex + 1) < maKeypoints.size(); }
-    inline bool isEnded() const { return (mKeypointIndex + 1) >= maKeypoints.size(); }
+    inline bool isGoing() const { return mKeypointIndex != -1 && mKeypointIndex < maKeypoints.size(); }
+    inline bool isEnded() const { return mKeypointIndex >= maKeypoints.size(); }
 
     void clear();
     ~FilmScene() { clear(); }

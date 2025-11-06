@@ -30,6 +30,7 @@ struct FilmTimer {
         InInputOrFirst,
         InInputAfterAwait,
         InInputAfterFirst,
+        Exact
     };
 
     Duration delay;
@@ -48,7 +49,7 @@ struct FilmTimer {
 };
 
 struct FilmKeypoint : public FilmTimer {
-    inline virtual FilmKeypointTypeStruct type() const { return { 0 }; }
+    inline virtual FilmKeypointTypeStruct type() const { return { 0, 0 }; }
     inline virtual bool has_ease() { return false; }
 };
 
@@ -117,8 +118,8 @@ struct FilmKeypointLayerAdd : public FilmKeypointLayer {
 };
 
 struct FilmKeypointLayerAddTexture : public FilmKeypointLayerAdd {
-    ResourceIndex texind;
-    inline virtual LayerBuildType layertype() const { return { Texture }; }
+    ResourceIndex texind = -1;
+    inline virtual LayerBuildType layertype() const { return Texture; }
 };
 
 struct FilmKeypointLayerInteractRect : public FilmKeypointLayer, public FilmKeypointEase {
@@ -151,7 +152,7 @@ struct FilmKeypointLayerInteractDefaultPartitionPos : public FilmKeypointLayerIn
 };
 
 struct FilmKeypointLayerInteractAlpha : public FilmKeypointLayer, public FilmKeypointEase {
-    uint8_t alpha;
+    uint8_t alpha = 255;
 
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractAlpha }; }
     inline bool has_ease() override { return true; }
@@ -262,6 +263,7 @@ namespace FilmKP {
         case FilmTimer::InInputOrFirst: SDL_Log("FilmTimer: %fs or %d frames with InInputOrFirst", other.delay.count(), other.frame_delay); break;
         case FilmTimer::InInputAfterAwait: SDL_Log("FilmTimer: %fs or %d frames with InInputAfterAwait", other.delay.count(), other.frame_delay); break;
         case FilmTimer::InInputAfterFirst: SDL_Log("FilmTimer: %fs or %d frames with InInputAfterFirst", other.delay.count(), other.frame_delay); break;   
+        case FilmTimer::Exact: SDL_Log("FilmTimer: %fs or %d frames with Exact", other.delay.count(), other.frame_delay); break;
         }
     }
 #else // inlining nothing should be enough to not generate code for logging in release
