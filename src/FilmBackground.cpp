@@ -18,7 +18,7 @@ void FilmBackground::registerBackgroundKeypoint(FilmKeypointBackground* keypoint
         mRendMode = pKeypoint->rend_mode;
         transformTexture(mTexPrev, mRendModePrev);
         transformTexture(mTex, mRendMode);
-        mEaseTimer.start(*dynamic_cast<FilmTimer*>(keypoint));
+        mEaseTimer.start(*dynamic_cast<TimerStep*>(keypoint));
         break;
     }
 }

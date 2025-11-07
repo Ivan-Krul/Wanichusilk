@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "TextureManager.h"
+#include "Clock.h"
 #include "define.h"
 
 typedef int LayerIndex;
@@ -19,36 +20,7 @@ struct FilmKeypointTypeStruct {
     short specific_type : 13;
 };
 
-struct FilmTimer {
-    using Duration = std::chrono::duration<float>;
-
-    enum ActionConcurency : unsigned int {
-        Instant = 0,
-        First,
-        Await,
-        InInputOrAwait,
-        InInputOrFirst,
-        InInputAfterAwait,
-        InInputAfterFirst,
-        Exact
-    };
-
-    Duration delay;
-    int frame_delay : 28;
-    int need_time_delay : 1;
-    ActionConcurency action : 3;
-
-    inline FilmTimer() : delay(std::chrono::seconds(0)), frame_delay(0), need_time_delay(0), action(Instant) {}
-
-    inline bool is_zero() const { return delay <= delay.zero() && frame_delay <= 0; }
-    inline void set_delay_frame(int frames) { frame_delay = frames; need_time_delay = false; }
-    inline void set_delay_time(Duration dur) { delay = dur; need_time_delay = true; }
-    inline void decrement_frame(int diff_frame) { frame_delay--; }
-    inline void decrement_time(Duration diff) { delay -= diff; }
-    inline void decrement_time_frame(Duration diff) { need_time_delay ? (delay -= diff, frame_delay--) : (frame_delay--); }
-};
-
-struct FilmKeypoint : public FilmTimer {
+struct FilmKeypoint : public TimerStep {
     inline virtual FilmKeypointTypeStruct type() const { return { 0, 0 }; }
     inline virtual bool has_ease() { return false; }
 };
@@ -234,41 +206,6 @@ inline FilmKeypointLayerSwap& FilmKeypointLayerSwap::operator=(const FilmKeypoin
     swap_rect_ptr = other.swap_rect_ptr ? std::make_unique<SDL_FRect>(*other.swap_rect_ptr) : nullptr;
     swap_part_ptr = other.swap_part_ptr ? std::make_unique<SDL_FRect>(*other.swap_part_ptr) : nullptr;
     return *this;
-}
-
-namespace FilmKP {
-    inline FilmTimer min(const FilmTimer a, const FilmTimer b) {
-        FilmTimer timer;
-        timer.frame_delay = std::min<>(a.frame_delay, b.frame_delay);
-        timer.delay = std::min<>(a.delay, b.delay);
-        if (timer.delay != timer.delay.zero()) timer.need_time_delay = true;
-        return timer;
-    }
-
-    inline FilmTimer max(const FilmTimer a, const FilmTimer b) {
-        FilmTimer timer;
-        timer.frame_delay = std::max<>(a.frame_delay, b.frame_delay);
-        timer.delay = std::max<>(a.delay, b.delay);
-        if (timer.delay != timer.delay.zero()) timer.need_time_delay = true;
-        return timer;
-    }
-
-#ifdef DEBUG
-    inline void SDL_Log_FilmTimer(const FilmTimer other) {
-        switch (other.action) {
-        case FilmTimer::Instant: SDL_Log("FilmTimer: %fs or %d frames with Instant", other.delay.count(), other.frame_delay); break;
-        case FilmTimer::First: SDL_Log("FilmTimer: %fs or %d frames with First", other.delay.count(), other.frame_delay); break;
-        case FilmTimer::Await: SDL_Log("FilmTimer: %fs or %d frames with Await", other.delay.count(), other.frame_delay); break;
-        case FilmTimer::InInputOrAwait: SDL_Log("FilmTimer: %fs or %d frames with InInputOrAwait", other.delay.count(), other.frame_delay); break;
-        case FilmTimer::InInputOrFirst: SDL_Log("FilmTimer: %fs or %d frames with InInputOrFirst", other.delay.count(), other.frame_delay); break;
-        case FilmTimer::InInputAfterAwait: SDL_Log("FilmTimer: %fs or %d frames with InInputAfterAwait", other.delay.count(), other.frame_delay); break;
-        case FilmTimer::InInputAfterFirst: SDL_Log("FilmTimer: %fs or %d frames with InInputAfterFirst", other.delay.count(), other.frame_delay); break;   
-        case FilmTimer::Exact: SDL_Log("FilmTimer: %fs or %d frames with Exact", other.delay.count(), other.frame_delay); break;
-        }
-    }
-#else // inlining nothing should be enough to not generate code for logging in release
-    inline void SDL_Log_FilmTimer(const FilmTimer other) {}
-#endif
 }
 
 /*

@@ -10,7 +10,7 @@ public:
     void render() const override;
     inline void clear() override;
     inline bool isWaiting() const noexcept override;
-    inline FilmTimer getLongestWaiting() const noexcept override;
+    inline TimerStep getLongestWaiting() const noexcept override;
 
     virtual ~FilmLayerTexture() { clear(); }
 private:

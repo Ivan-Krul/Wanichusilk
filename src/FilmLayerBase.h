@@ -16,7 +16,7 @@ public:
     virtual void update() = 0;
     virtual void render() const = 0;
     virtual inline bool isWaiting() const noexcept { return maEases.isEmpty(); }
-    virtual inline FilmTimer getLongestWaiting() const noexcept { return FilmTimer(); }
+    virtual inline TimerStep getLongestWaiting() const noexcept { return TimerStep(); }
     virtual inline void clear() { maEases.clear(); }
 
     virtual ~FilmLayerBase() = default;
@@ -62,7 +62,7 @@ inline bool FilmLayerBase::pushTracker(T* keypoint) {
     static_assert(!std::is_same<FilmKeypointLayer, T>::value, "Tracker is not a FilmKeypointLayer");
     static_assert(std::is_base_of<FilmKeypointEase, T>::value, "Tracker requires derived from FilmKeypointEase object, the push function is wrong");
 
-    if (!dynamic_cast<FilmKeypointEase*>(keypoint)->ease_func || dynamic_cast<FilmTimer*>(keypoint)->is_zero()) return onPushSetter(keypoint);
+    if (!dynamic_cast<FilmKeypointEase*>(keypoint)->ease_func || dynamic_cast<TimerStep*>(keypoint)->is_zero()) return onPushSetter(keypoint);
 
     Tracker tracker;
     tracker.keypoint = keypoint;

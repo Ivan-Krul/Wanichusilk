@@ -24,7 +24,7 @@ public:
     void update();
     void render();
 
-    FilmTimer getLongestWaiting() const;
+    TimerStep getLongestWaiting() const;
 private:
     void registerLayerKeypointAdd(FilmKeypointLayerAdd* keypoint);
     void registerKeypointInteraction(LayerIndex li, FilmKeypointLayer* keypoint);

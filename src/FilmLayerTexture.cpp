@@ -83,10 +83,10 @@ inline bool FilmLayerTexture::isWaiting() const noexcept {
     return maEases.isEmpty();
 }
 
-inline FilmTimer FilmLayerTexture::getLongestWaiting() const noexcept {
-    FilmTimer longest = FilmKP::max(mPart.ease_tracker.getLimiter(), mRect.ease_tracker.getLimiter());
-    longest = FilmKP::max(mAlpha.ease_tracker.getLimiter(), longest);
-    longest = FilmKP::max(mTexInd.ease_tracker.getLimiter(), longest);
+inline TimerStep FilmLayerTexture::getLongestWaiting() const noexcept {
+    TimerStep longest = ClockFunc::max(mPart.ease_tracker.getLimiter(), mRect.ease_tracker.getLimiter());
+    longest = ClockFunc::max(mAlpha.ease_tracker.getLimiter(), longest);
+    longest = ClockFunc::max(mTexInd.ease_tracker.getLimiter(), longest);
     return longest;
 }
 
@@ -168,7 +168,7 @@ void FilmLayerTexture::pushPosTracker(const LockerIndex ease_indx, PosChangeEnum
     TransitParam<SDL_FRect>* pos_ptr = change == PartPos ? &mPart : &mRect;
     pos_ptr->shift_elem();
     pos_ptr->ease_tracker.setEase(keypoint->ease_func);
-    pos_ptr->ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
+    pos_ptr->ease_tracker.start(*dynamic_cast<TimerStep*>(keypoint));
 
     if (change == Pos) {
         pos_ptr->elem_to.x = keypoint->rect.x;
@@ -190,7 +190,7 @@ bool FilmLayerTexture::onPushTracker(LockerIndex ease_indx) {
         const auto kp_alpha = dynamic_cast<FilmKeypointLayerInteractAlpha*>(keypoint);
         mAlpha.shift_elem();
         mAlpha.ease_tracker.setEase(kp_alpha->ease_func);
-        mAlpha.ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
+        mAlpha.ease_tracker.start(*dynamic_cast<TimerStep*>(keypoint));
         mAlpha.elem_to = kp_alpha->alpha;
         tracker.ease = &(mAlpha.ease_tracker);
     }   break;
@@ -199,7 +199,7 @@ bool FilmLayerTexture::onPushTracker(LockerIndex ease_indx) {
         const auto kp_swap = dynamic_cast<FilmKeypointLayerInteractTransparentSwap*>(keypoint);
         mTexInd.shift_elem();
         mTexInd.ease_tracker.setEase(kp_swap->ease_func);
-        mTexInd.ease_tracker.start(*dynamic_cast<FilmTimer*>(keypoint));
+        mTexInd.ease_tracker.start(*dynamic_cast<TimerStep*>(keypoint));
         mTexInd.elem_to = kp_swap->texindx;
         mTexInd.unused_padding = ease_indx;
         tracker.ease = &(mTexInd.ease_tracker);

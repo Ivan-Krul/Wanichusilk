@@ -60,7 +60,7 @@ private:
     size_t mKeypointIndex = -1;
     Clock* mpClock;
 
-    FilmTimer mBackupTimer;
+    TimerStep mBackupTimer;
 };
 
 template<typename T>

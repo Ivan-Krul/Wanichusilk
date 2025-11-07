@@ -31,11 +31,11 @@ void FilmLayerist::registerLayerKeypoint(FilmKeypointLayer* keypoint) {
 
 }
 
-FilmTimer FilmLayerist::getLongestWaiting() const {
-    FilmTimer longest;
+TimerStep FilmLayerist::getLongestWaiting() const {
+    TimerStep longest;
     auto iter = maLayers.cbegin();
     for (iter; iter != maLayers.cend(); iter++) {
-        longest = FilmKP::max(longest, iter->getLongestWaiting());
+        longest = ClockFunc::max(longest, iter->getLongestWaiting());
     }
     
     return longest;

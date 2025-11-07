@@ -17,7 +17,7 @@ public:
 
     inline void reset() { mProgress = c_ease_no_progress; }
 
-    inline void start(FilmTimer timer) { setTimer(timer); mProgress = 0.f; }
+    inline void start(TimerStep timer) { setTimer(timer); mProgress = 0.f; }
     inline void start(int frames) { setTimer(frames); mProgress = 0.f; }
     inline void start(Clock::Duration duration) { setTimer(duration); mProgress = 0.f; }
     inline void start() { mProgress = 0.f; }
@@ -30,18 +30,18 @@ public:
     inline bool isEnded() const { return mProgress == c_ease_end; }
     inline float getProgress() const { return mProgress; }
 
-    inline FilmTimer getLimiter() const { return mTimerLimiter; }
+    inline TimerStep getLimiter() const { return mTimerLimiter; }
 
     inline operator float() const { return fEaseFunction ? fEaseFunction(mProgress) : mProgress; }
 
 private:
-    void setTimer(FilmTimer timer);
+    void setTimer(TimerStep timer);
     void setTimer(int frames);
     void setTimer(Clock::Duration duration);
         
     Func fEaseFunction = nullptr;
-    FilmTimer mTimerLimiter;
-    FilmTimer mTimerRunner;
+    TimerStep mTimerLimiter;
+    TimerStep mTimerRunner;
 
     float mProgress = c_ease_use_default;
 };
@@ -67,7 +67,7 @@ void EaseTracker<Func>::update() {
 }
 
 template<typename Func>
-inline void EaseTracker<Func>::setTimer(FilmTimer timer) {
+inline void EaseTracker<Func>::setTimer(TimerStep timer) {
     mTimerLimiter = timer;
     mTimerRunner = timer;
 }
