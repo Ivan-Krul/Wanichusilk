@@ -69,6 +69,9 @@ struct FilmKeypointLayer : public FilmKeypoint {
         InteractAlpha,
         InteractSwap,
         InteractTransparentSwap,
+        InteractAnimateSwap,
+        InteractAnimateSwapLoop,
+        InteractLoop,
         InteractDefault,
         Enable,
         Disable,
@@ -162,6 +165,24 @@ struct FilmKeypointLayerInteractSwap : public FilmKeypointLayerSwap {
 
 struct FilmKeypointLayerInteractTransparentSwap : public FilmKeypointLayerSwap, public FilmKeypointEase {
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractTransparentSwap }; }
+    inline bool has_ease() override { return true; }
+};
+
+struct FilmKeypointLayerInteractAnimateSwap : public FilmKeypointLayer {
+    struct Flip {
+        int duration_ms;
+        LockerIndex new_tex_ind;
+    };
+    
+    std::vector<Flip> flips;
+
+    LockerIndex delay_after_frame;
+
+    inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractAnimateSwap }; }
+};
+
+struct FilmKeypointLayerInteractAnimateSwapLoop : public FilmKeypointLayerInteractAnimateSwap {
+    inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Layer, InteractAnimateSwapLoop }; }
     inline bool has_ease() override { return true; }
 };
 

@@ -2,17 +2,6 @@
 #include <type_traits>
 #include <list>
 
-namespace test_list {
-	struct A {
-		int a;
-		int b;
-	};
-
-	struct C : public A {
-		int d;
-	};
-}
-
 // structure, that let store huge variety of huge objects in heap
 
 template<typename TBase>

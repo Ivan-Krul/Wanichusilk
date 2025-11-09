@@ -15,6 +15,9 @@
 #define DEFAULT_RESBITSET_SIZE_LIM 0x2000
 #define DEFAULT_RESBITSET_INDEX_TYPE int
 
+#define DEFAULT_ANIM_SLOT_USE_THRESHOLD 100 * 100 * 10
+#define DEFAULT_ANIM_SLOT_SIZE 4
+
 #if __cplusplus >= 201703L
 #define _FALLTHROUGH [[fallthrough]]
 #else
@@ -45,5 +48,6 @@
 
 //#define USE_THIRD_PARTY_MATH
 //#define NO_CLOCK_TRACKING
+#define PLACE_ANIMATION_AS_IMAGE
 
 #endif
