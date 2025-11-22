@@ -30,7 +30,7 @@ public:
     void render() const;
 
     void   clear();
-    inline ~Texture() { clear(); }
+    inline ~Texture() { if (mpTexture) SDL_DestroyTexture(mpTexture); }
 protected:
     SDL_Texture* mpTexture = NULL;
 

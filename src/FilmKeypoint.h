@@ -21,7 +21,7 @@ struct FilmKeypointTypeStruct {
 };
 
 struct FilmKeypoint : public TimerStep {
-    inline virtual FilmKeypointTypeStruct type() const { return { 0, 0 }; }
+    inline virtual FilmKeypointTypeStruct type() const { return { FilmKeypointChangeType::None, 0 }; }
     inline virtual bool has_ease() { return false; }
 };
 

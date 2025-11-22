@@ -155,7 +155,7 @@ inline typename std::enable_if<std::is_base_of<TBase, T>::value, typename PolyPo
 	temp->size = sizeof(T);
 
 	// we need to mess with 2 level pointers
-	new (temp->object_ptr()) T(std::forward<Args>(args)...);
+	new (temp->object_ptr()) T(value);
 
 	mSize++;
 	Node* ptr_beg = pos.ptr;

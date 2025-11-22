@@ -9,6 +9,8 @@
 #include "define.h"
 #include "ResizableBitset.h"
 
+typedef int LockerIndex;
+
 template<typename T>
 class LockerSimple {
 private:
@@ -107,7 +109,7 @@ inline void LockerSimple<T>::popFromLocker(LockerIndex index) {
 
     maOccupied.set(index, false);
     maLockArray.erase(mapLockPtr[index]);
-    mapLockPtr[index]._Ptr = nullptr;
+    mapLockPtr[index] = maLockArray.end();
     mNearestFreeLocker = index;
 }
 
@@ -117,7 +119,7 @@ inline typename LockerSimple<T>::Iterator LockerSimple<T>::popFromLocker(Iterato
 
     maOccupied.set(indx, false);
     auto ret_it = maLockArray.erase(it);
-    mapLockPtr[indx]._Ptr = nullptr;
+    mapLockPtr[indx] = maLockArray.end();
     mNearestFreeLocker = std::min<LockerIndex>(indx, mNearestFreeLocker);
 
     return ret_it;

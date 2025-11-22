@@ -3,31 +3,23 @@
 
 #include <SDL3_image/SDL_image.h>
 
-#include "Locker.h"
+#include "LockerSimple.h"
 #include "Texture.h"
 
 typedef int ResourceIndex;
 
 class TextureManager {
-    struct TextureArgContainer {
-        const char* path;
-        SDL_Renderer* renderer;
-    };
-
 public:
-    TextureManager() : mTextureLocker(
-        [](Texture& tex, TextureArgContainer cont) -> bool { return tex.create(cont.path, cont.renderer);  }) {
-    }
-
     inline void SetRenderer(SDL_Renderer* renderer) { mpRenderer = renderer; }
     inline SDL_Renderer* GetRenderer() const { return mpRenderer; }
 
     Texture& GetLockerTexture(ResourceIndex index) { assert(index != -1);  return mTextureLocker[index]; }
     ResourceIndex RequestTextureLoad(const char* path) {
-        TextureArgContainer cont;
-        cont.path = path;
-        cont.renderer = mpRenderer;
-        return mTextureLocker.pushInLocker(cont);
+        Texture tex;
+        bool ret = tex.create(path, mpRenderer);
+        if (!ret) return false;
+        mTextureLocker.pushInLocker(std::move(tex));
+        return true;
     }
 
     void RequestTextureClean(ResourceIndex index) {
@@ -35,8 +27,7 @@ public:
     }
 
 private:
-    
-    Locker<Texture, TextureArgContainer> mTextureLocker;
+    LockerSimple<Texture> mTextureLocker;
 
     SDL_Renderer* mpRenderer = nullptr;
 };
