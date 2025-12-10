@@ -20,12 +20,6 @@ bool Animation::create(const char* path, SDL_Renderer* renderer) {
     //SDL_CreateSurface(mpAnimation->w, mpAnimation->h, SDL_PIXELFORMAT_RGBA32);
 }
 
-void Animation::start(float time_mult) {
-    if (!mpAnimation) return;
-    mFrameIndex = 0;
-    mTimeMult = time_mult;
-}
-
 void Animation::finish() {
     mFrameIndex = -1;
 }

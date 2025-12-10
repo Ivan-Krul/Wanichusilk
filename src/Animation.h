@@ -10,6 +10,8 @@
 
 class Animation : public ClockHolder {
 public:
+    friend class SmallAnimation;
+public:
     inline Animation() = default;
     inline Animation(const char* path, SDL_Renderer* renderer) { create(path, renderer); }
     bool   create(const char* path, SDL_Renderer* renderer);
@@ -20,9 +22,10 @@ public:
     inline Clock::Duration getSumFrameDuration()  const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelaySum)) : Clock::Duration(0); }
     inline SDL_FRect       getRectRes()           const noexcept { return mRect; }
     inline bool            isGoing()              const noexcept { return mFrameIndex != 1; }
+    inline virtual bool    isBig()                const noexcept { return mpAnimation ? (DEFAULT_ANIM_SLOT_USE_THRESHOLD < mpAnimation->count * mpAnimation->w * mpAnimation->h) : false; }
 
-    void start(float time_mult = 1.f);
-    void render();
+    virtual void start(float time_mult = 1.f) = 0;
+    virtual void render() = 0;
     void finish();
 
     inline void setFrameMult(float time_mult = 1.f) noexcept { mTimeMult = time_mult; }
@@ -30,10 +33,9 @@ public:
     
 
     void   clear();
-    inline ~Animation() { if (mpAnimation) IMG_FreeAnimation(mpAnimation); }
-private:
-    inline bool isBig() { return mpAnimation ? (DEFAULT_ANIM_SLOT_USE_THRESHOLD < mpAnimation->count * mpAnimation->w * mpAnimation->h) : false; }
+    inline virtual ~Animation() { if (mpAnimation) IMG_FreeAnimation(mpAnimation); }
 
+protected:
     IMG_Animation* mpAnimation = NULL;
     SDL_Renderer* mpRendererOrigin = NULL;
 
@@ -42,4 +44,6 @@ private:
     uint16_t mDelaySum;
     short mFrameIndex = -1;
     float mTimeMult = 1.f;
+
+    Clock::Duration mCurrentDelay;
 };
