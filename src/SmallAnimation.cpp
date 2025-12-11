@@ -1,6 +1,4 @@
 #include "SmallAnimation.h"
-#include "SmallAnimation.h"
-#include "SmallAnimation.h"
 
 bool SmallAnimation::create(Animation&& instance) {
     mpRendererOrigin = instance.mpRendererOrigin;
@@ -21,27 +19,47 @@ void SmallAnimation::start(float time_mult) {
     mFrameIndex = 0;
     mTimeMult = time_mult;
 
-    packAnimationInRendTexture();
+    if (!packAnimationInRendTexture()) {
+        SDL_Log("error: %s\n", SDL_GetError());
+        return;
+    }
 
     mCurrentDelay = std::chrono::milliseconds(mDelays_ms[0]);
 }
 
 void SmallAnimation::render() {
     if (mFrameIndex >= mDelays_ms.size()) return;
-    auto dt = pClock->DeltaTime();
+    mCurrentDelay -= pClock->DeltaTime();
 
-    mCurrentDelay -= dt;
+    SDL_Log("time: %f", mCurrentDelay.count());
 
     while (mCurrentDelay.count() < 0.f) {
         mFrameIndex++;
-        if (mFrameIndex >= mDelays_ms.size()) return;
+        if (mFrameIndex >= mDelays_ms.size() && !mIsLoop) return;
+        mFrameIndex %= mDelays_ms.size();
         mCurrentDelay += std::chrono::milliseconds(mDelays_ms[mFrameIndex]);
     }
+    //while (mCurrentDelay > std::chrono::milliseconds(mDelays_ms[mFrameIndex])) {
+    //    
+    //    if (mFrameIndex >= mDelays_ms.size() && !mIsLoop) return;
+    //    
+    //    mCurrentDelay -= std::chrono::milliseconds(mDelays_ms[mFrameIndex]);
+    //}
 
     // render here
+    SDL_FRect src;
+    src.w = mpAnimation->w;
+    src.h = mpAnimation->h;
+    src.x = (mFrameIndex % mRenderTexTileWidth) * src.w;
+    src.y = (mFrameIndex / mRenderTexTileWidth) * src.h;
 
-    mRenderTexTileWidth;
-    mRenderTexTileHeight;
+    SDL_RenderTexture(mpRendererOrigin, mpRenderTextureTile, &src, &mRect);
+}
+
+void SmallAnimation::setAlpha(uint8_t alpha) noexcept {
+    mAlpha = alpha;
+    if (mpRenderTextureTile)
+        SDL_SetTextureAlphaMod(mpRenderTextureTile, mAlpha);
 }
 
 bool SmallAnimation::packAnimationInRendTexture() {
@@ -56,36 +74,39 @@ bool SmallAnimation::packAnimationInRendTexture() {
     char tx = 0;
     char ty = 0;
 
-    Uint8* r = nullptr;
-    Uint8* g = nullptr;
-    Uint8* b = nullptr;
-    Uint8* a = nullptr;
+    Uint8 r = 0;
+    Uint8 g = 0;
+    Uint8 b = 0;
+    Uint8 a = 0;
 
     for (int f = 0; f < mDelays_ms.size(); f++) {
         tx = f % mRenderTexTileWidth;
-        ty = f / mRenderTexTileHeight;
+        ty = f / mRenderTexTileWidth;
         for (int x = 0; x < ox; x++) {
             for (int y = 0; y < oy; y++) {
-                if (!SDL_ReadSurfacePixel(mpAnimation->frames[f], x, y, r, g, b, a))
+                if (!SDL_ReadSurfacePixel((mpAnimation->frames)[f], x, y, &r, &g, &b, &a))
                     return false;
 
-                if (!SDL_WriteSurfacePixel(surf, tx * ox + x, ty * oy + y, r == NULL ? 0 : *r, g == NULL ? 0 : *g, b == NULL ? 0 : *b, a == NULL ? 255 : *a))
+                if (!SDL_WriteSurfacePixel(surf, tx * ox + x, ty * oy + y, r, g, b, a))
                     return false;
             }
         }
     }
-    return true;
+
+    mpRenderTextureTile = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
+    SDL_DestroySurface(surf);
+    return mpRenderTextureTile;
 }
 
 void SmallAnimation::findTileResolution() {
     char side = 2;
     while (side < mDelays_ms.size()) {
-        float res = (float)side / (float)mDelays_ms.size();
+        float res = (float)mDelays_ms.size() / (float)side;
         if (res - (int)res > 0.f) {
             side++;
         }
         else {
-            mRenderTexTileWidth = side / mDelays_ms.size();
+            mRenderTexTileWidth = mDelays_ms.size() / side;
             mRenderTexTileHeight = side;
             return;
         }

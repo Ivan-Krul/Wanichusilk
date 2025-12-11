@@ -114,7 +114,7 @@ void FilmLayerTexture::pushTexIndSetter(FilmKeypointLayerInteractSwap* keypoint)
     switch (swapmode) {
     case FilmKeypointLayerSwap::KeepNotDeformed:
     {
-        const auto tex = pTexMgr->GetLockerTexture(mTexInd.elem_to);
+        const auto& tex = pTexMgr->GetLockerTexture(mTexInd.elem_to);
         mRect.elem_to = tex.getRectRes();
         mPart.elem_to = tex.getRectPart();
     }   break;
@@ -246,7 +246,7 @@ void FilmLayerTexture::finalizeSwap(LockerSimple<FilmLayerBase::Tracker>::Iterat
     switch (swapmode) {
     case FilmKeypointLayerSwap::KeepNotDeformed:
     {
-        const auto tex = pTexMgr->GetLockerTexture(mTexInd.elem_to);
+        const auto& tex = pTexMgr->GetLockerTexture(mTexInd.elem_to);
         mRect.elem_to = tex.getRectRes();
         mPart.elem_to = tex.getRectPart();
     }   break;

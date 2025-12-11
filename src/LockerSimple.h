@@ -4,8 +4,6 @@
 #include <bitset>
 #include <functional>
 
-#include "TextureManager.h"
-
 #include "define.h"
 #include "ResizableBitset.h"
 
@@ -63,7 +61,7 @@ protected:
 template<typename T>
 inline LockerIndex LockerSimple<T>::pushInLocker(T&& elem) {
     if (mNearestFreeLocker == maLockArray.size()) {
-        maLockArray.emplace_back(elem);
+        maLockArray.emplace_back(std::move(elem));
         if (mapLockPtr.size() == mNearestFreeLocker) {
             mapLockPtr.push_back(--maLockArray.end());
         } else {
@@ -73,7 +71,7 @@ inline LockerIndex LockerSimple<T>::pushInLocker(T&& elem) {
         return mNearestFreeLocker++;
     }
 
-    maLockArray.emplace_back(elem);
+    maLockArray.emplace_back(std::move(elem));
     maOccupied.set(mNearestFreeLocker, true);
     mapLockPtr[mNearestFreeLocker] = --maLockArray.end();
     LockerIndex next = mNearestFreeLocker;

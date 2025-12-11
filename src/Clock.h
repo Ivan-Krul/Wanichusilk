@@ -22,7 +22,7 @@ public:
     inline void DStep(Duration delta);
 #endif
 private:
-    Duration mDeltaTime;
+    Duration mDeltaTime = Duration::zero();
     SteadyClock::time_point mBegin = SteadyClock::now();
     SteadyClock::time_point mNow = SteadyClock::now();
 };

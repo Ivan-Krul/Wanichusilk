@@ -8,6 +8,7 @@
 class Texture {
 public:
     inline Texture() = default;
+    Texture(Texture&& tex) noexcept;
     inline Texture(const char* src, SDL_Renderer* renderer) { create(src, renderer); }
     bool   create(const char* src, SDL_Renderer* renderer);
 

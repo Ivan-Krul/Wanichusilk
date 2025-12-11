@@ -21,8 +21,10 @@ public:
     inline Clock::Duration getNextFrameDuration() const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelays_ms[mFrameIndex])) : Clock::Duration(0); }
     inline Clock::Duration getSumFrameDuration()  const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelaySum)) : Clock::Duration(0); }
     inline SDL_FRect       getRectRes()           const noexcept { return mRect; }
+    inline uint8_t         getAlpha()             const noexcept { return mAlpha; }
     inline bool            isGoing()              const noexcept { return mFrameIndex != 1; }
     inline virtual bool    isBig()                const noexcept { return mpAnimation ? (DEFAULT_ANIM_SLOT_USE_THRESHOLD < mpAnimation->count * mpAnimation->w * mpAnimation->h) : false; }
+    inline bool            isLoop()               const noexcept { return mIsLoop; }
 
     virtual void start(float time_mult = 1.f) = 0;
     virtual void render() = 0;
@@ -30,6 +32,8 @@ public:
 
     inline void setFrameMult(float time_mult = 1.f) noexcept { mTimeMult = time_mult; }
     inline void setRectRes(SDL_FRect rect)          noexcept { mRect = rect; }
+    inline void setLooping(bool need_loop)          noexcept { mIsLoop = need_loop; }
+    inline virtual void setAlpha(uint8_t alpha)     noexcept = 0;
     
 
     void   clear();
@@ -39,11 +43,14 @@ protected:
     IMG_Animation* mpAnimation = NULL;
     SDL_Renderer* mpRendererOrigin = NULL;
 
-    SDL_FRect mRect;
+    SDL_FRect mRect = { 0.f };
     std::vector<uint16_t> mDelays_ms;
     uint16_t mDelaySum;
     short mFrameIndex = -1;
     float mTimeMult = 1.f;
+
+    uint8_t mAlpha = 255;
+    bool mIsLoop = false;
 
     Clock::Duration mCurrentDelay;
 };

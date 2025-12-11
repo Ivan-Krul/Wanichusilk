@@ -6,6 +6,7 @@
 #include "FilmScene.h"
 #include "Clock.h"
 #include "define.h"
+#include "SmallAnimation.h"
 
 class Application {
 public:
@@ -27,6 +28,7 @@ private:
 
     TextureManager mTexMgr;
     FilmScene mScene;
+    SmallAnimation mAnim;
     Clock mClock;
 
     size_t mCount = 0;

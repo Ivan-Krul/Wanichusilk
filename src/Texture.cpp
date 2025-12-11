@@ -1,5 +1,18 @@
 #include "Texture.h"
 
+Texture::Texture(Texture&& tex) noexcept {
+    mpTexture = tex.mpTexture;
+
+    mRectPart = tex.mRectPart;
+    mRectRes = tex.mRectRes;
+    mpRendererOrigin = tex.mpRendererOrigin;
+    mAlpha = tex.mAlpha;
+    mUseRectPart = tex.mUseRectPart;
+    mHasAlpha = tex.mHasAlpha;
+
+    tex.mpTexture = nullptr;
+}
+
 bool Texture::create(const char* src, SDL_Renderer* renderer) {
     if (mpTexture) return false;
     mpRendererOrigin = renderer;

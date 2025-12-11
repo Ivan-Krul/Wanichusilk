@@ -11,21 +11,26 @@ void Application::OnInit() {
     OpenWindow();
     SDL_SetRenderVSync(mMainWindow.getWindowRenderer(), false);
 
-    mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
+    //mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
 
-    std::vector<std::string> vec {
-        "./res/Stefan chill emoji.png",
-        "./res/Stefan is laying.png",
-        "./res/Stefan wah.png",
-        "./res/B.png"
-    };
+    //std::vector<std::string> vec {
+    //    "./res/Stefan chill emoji.png",
+    //    "./res/Stefan is laying.png",
+    //    "./res/Stefan wah.png",
+    //    "./res/B.png"
+    //};
+    //
+    //assert(mScene.create(&mTexMgr, ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), vec));
+    //mScene.setClock(&mClock);
+    //
+    //PushExampleFilmKeypoint2LayerSync(mScene);
+    //
+    //mScene.start();
 
-    assert(mScene.create(&mTexMgr, ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), vec));
-    mScene.setClock(&mClock);
-
-    PushExampleFilmKeypoint2LayerSync(mScene);
-
-    mScene.start();
+    assert(mAnim.create("./res/IMG_1079.gif", mMainWindow.getWindowRenderer()));
+    mAnim.setClock(&mClock);
+    mAnim.setLooping(true);
+    mAnim.start();
 }
 
 void Application::OnLoop() {
@@ -51,16 +56,16 @@ void Application::OpenWindow() {
 }
 
 void Application::PullEvents() {
-    if (mScene.isEnded()) {
-        mNeedQuit = true;
-    }
+    //if (mScene.isEnded()) {
+    //    mNeedQuit = true;
+    //}
     while (SDL_PollEvent(&mEvent)) {
         switch (mEvent.type) {
         case SDL_EVENT_QUIT:
             mNeedQuit = true;
             break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            mScene.next();
+            mNeedQuit = true;
         default:
             break;
         }
@@ -68,11 +73,12 @@ void Application::PullEvents() {
 }
 
 void Application::OnUpdate() {
-    mScene.update();
+    //mScene.update();
 }
 
 void Application::OnRender() {
-    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), mScene.canTriggerNext() * 100 + 100, mScene.isEnded() * 100 + 100, 200, 255);
+    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100 + 100, 200, 255);
+    mAnim.render();
 
-    mScene.render();
+    //mScene.render();
 }
