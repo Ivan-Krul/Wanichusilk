@@ -10,10 +10,10 @@
 
 class Animation : public ClockHolder {
 public:
-    friend class SmallAnimation;
-public:
     inline Animation() = default;
+    inline Animation(Animation&& instance) noexcept { create(std::move(instance)); }
     inline Animation(const char* path, SDL_Renderer* renderer) { create(path, renderer); }
+    bool   create(Animation&& instance) noexcept;
     bool   create(const char* path, SDL_Renderer* renderer);
     
     inline short           getFrameCount()        const noexcept { return mDelays_ms.size(); }
@@ -23,7 +23,7 @@ public:
     inline SDL_FRect       getRectRes()           const noexcept { return mRect; }
     inline uint8_t         getAlpha()             const noexcept { return mAlpha; }
     inline bool            isGoing()              const noexcept { return mFrameIndex != 1; }
-    inline virtual bool    isBig()                const noexcept { return mpAnimation ? (DEFAULT_ANIM_SLOT_USE_THRESHOLD < mpAnimation->count * mpAnimation->w * mpAnimation->h) : false; }
+    inline virtual bool    isBig()                const noexcept { return DEFAULT_ANIM_SLOT_USE_THRESHOLD < (mpAnimation ? (mpAnimation->count * mpAnimation->w * mpAnimation->h) : 0); }
     inline bool            isLoop()               const noexcept { return mIsLoop; }
 
     virtual void start(float time_mult = 1.f) = 0;
@@ -40,6 +40,12 @@ public:
     inline virtual ~Animation() { if (mpAnimation) IMG_FreeAnimation(mpAnimation); }
 
 protected:
+    bool preRender();
+
+protected:
+    static const SDL_PixelFormat cPixelFormat = SDL_PIXELFORMAT_RGBA32;
+
+protected:
     IMG_Animation* mpAnimation = NULL;
     SDL_Renderer* mpRendererOrigin = NULL;
 
@@ -53,4 +59,6 @@ protected:
     bool mIsLoop = false;
 
     Clock::Duration mCurrentDelay;
+
+
 };

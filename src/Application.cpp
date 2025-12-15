@@ -27,9 +27,11 @@ void Application::OnInit() {
     //
     //mScene.start();
 
-    assert(mAnim.create("./res/IMG_1079.gif", mMainWindow.getWindowRenderer()));
+    SCOPED_STOPWATCH("anim load");
+    assert(mAnim.create("./res/received_1095637438226501.gif", mMainWindow.getWindowRenderer()));
     mAnim.setClock(&mClock);
     mAnim.setLooping(true);
+    mAnim.setAlpha(128);
     mAnim.start();
 }
 

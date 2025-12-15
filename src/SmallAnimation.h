@@ -3,11 +3,6 @@
 
 class SmallAnimation : public Animation {
 public:
-    //bool create(const char* path, SDL_Renderer* renderer);
-    using Animation::create;
-
-    bool create(Animation&& instance);
-
     inline bool    isBig() const noexcept override { return false; }
 
     void start(float time_mult = 1.f) override;
@@ -20,6 +15,7 @@ private:
     inline void findTileResolution();
 
     SDL_Texture* mpRenderTextureTile = nullptr;
+    SDL_FRect mSrcRect = { 0.f };
     char mRenderTexTileWidth;
     char mRenderTexTileHeight;
 };
