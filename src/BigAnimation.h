@@ -10,6 +10,12 @@ public:
 
     void setAlpha(uint8_t alpha) noexcept override;
 
+    ~BigAnimation() {
+        for (auto frame : mapTextures)
+            SDL_DestroyTexture(frame);
+    }
 private:
+    void childClean() override;
+
     std::vector<SDL_Texture*> mapTextures;
 };

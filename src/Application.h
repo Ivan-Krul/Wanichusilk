@@ -30,7 +30,7 @@ private:
 
     TextureManager mTexMgr;
     FilmScene mScene;
-    BigAnimation mAnim;
+    SmallAnimation mAnim;
     Clock mClock;
 
     size_t mCount = 0;

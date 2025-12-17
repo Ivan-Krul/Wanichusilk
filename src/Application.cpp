@@ -33,6 +33,9 @@ void Application::OnInit() {
     mAnim.setLooping(true);
     mAnim.setAlpha(128);
     mAnim.start();
+    mAnim.lockChange();
+    auto res = mAnim.getRectRes();
+    mAnim.setRectRes(lerp_rect(res, SDL_FRect{ 0.f }, 0.5f));
 }
 
 void Application::OnLoop() {
@@ -44,6 +47,11 @@ void Application::OnLoop() {
     SDL_RenderClear(mMainWindow.getWindowRenderer());
     OnRender();
     SDL_RenderPresent(mMainWindow.getWindowRenderer());
+
+    auto res = mAnim.getRectRes();
+    res.x += .2f;
+    res.y += .1f;
+    mAnim.setRectRes(res);
 
     mClock.FinishMeasure(50);
 

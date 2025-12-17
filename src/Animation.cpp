@@ -1,52 +1,62 @@
 #include "Animation.h"
 
 bool Animation::create(const char* path, SDL_Renderer* renderer) {
-    if (mpAnimation) return false;
+    if (mHasHead && muHandle.anim) return false;
     mpRendererOrigin = renderer;
-    mpAnimation = IMG_LoadAnimation(path);
-    if (mpAnimation == NULL) return false;
+    muHandle.anim = IMG_LoadAnimation(path);
+    if (muHandle.anim == NULL) return false;
+    mHasHead = true;
 
-    mRect.w = mpAnimation->w;
-    mRect.h = mpAnimation->h;
+    mRect.w = muHandle.anim->w;
+    mRect.h = muHandle.anim->h;
 
     mDelaySum = 0;
-    mDelays_ms.resize(mpAnimation->count);
-    for (int i = 0; i < mpAnimation->count; i++) {
-        mDelays_ms[i] = mpAnimation->delays[i];
+    mDelays_ms.resize(muHandle.anim->count);
+    for (int i = 0; i < muHandle.anim->count; i++) {
+        mDelays_ms[i] = muHandle.anim->delays[i];
         mDelaySum += mDelays_ms[i];
     }
 
-    return mpAnimation;
-    //SDL_CreateSurface(mpAnimation->w, mpAnimation->h, SDL_PIXELFORMAT_RGBA32);
+    return muHandle.anim;
 }
 
 bool Animation::create(Animation&& instance) noexcept {
     mpRendererOrigin = instance.mpRendererOrigin;
-    mpAnimation = instance.mpAnimation;
+    muHandle = instance.muHandle;
     mDelaySum = instance.mDelaySum;
     mDelays_ms = instance.mDelays_ms;
     mRect = instance.mRect;
     mFrameIndex = instance.mFrameIndex;
     mTimeMult = instance.mTimeMult;
     mIsLoop = instance.mIsLoop;
+    mHasHead = instance.mHasHead;
     if(!pClock) pClock = instance.pClock;
 
     instance.mpRendererOrigin = nullptr;
-    instance.mpAnimation = nullptr;
-    return mpAnimation;
+    instance.muHandle.anim = nullptr;
+    return muHandle.anim;
 }
 
 void Animation::finish() {
     mFrameIndex = -1;
 }
 
+void Animation::lockChange() {
+    if (muHandle.anim && mHasHead)
+        IMG_FreeAnimation(muHandle.anim);
+    mHasHead = false;
+}
+
 void Animation::clear() {
-    if (mpAnimation)
-        IMG_FreeAnimation(mpAnimation);
+    if (muHandle.anim && mHasHead)
+        IMG_FreeAnimation(muHandle.anim);
 
     mDelays_ms.clear();
 
-    mpAnimation = NULL;
+    mHasHead = true;
+    muHandle.anim = NULL;
+
+    childClean();
 }
 
 bool Animation::preRender() {

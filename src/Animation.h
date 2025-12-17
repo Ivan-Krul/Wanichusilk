@@ -16,14 +16,16 @@ public:
     bool   create(Animation&& instance) noexcept;
     bool   create(const char* path, SDL_Renderer* renderer);
     
+    inline IMG_Animation*  getAnimationPtr()      const noexcept { return mHasHead ? muHandle.anim : nullptr; }
     inline short           getFrameCount()        const noexcept { return mDelays_ms.size(); }
     inline float           getTimeMult()          const noexcept { return mTimeMult; }
     inline Clock::Duration getNextFrameDuration() const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelays_ms[mFrameIndex])) : Clock::Duration(0); }
     inline Clock::Duration getSumFrameDuration()  const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelaySum)) : Clock::Duration(0); }
+    inline SDL_FRect       getRectSize()          const noexcept { return SDL_FRect{ 0, 0, (float)(getSizeWidth()), (float)(getSizeHeight()) }; }
     inline SDL_FRect       getRectRes()           const noexcept { return mRect; }
     inline uint8_t         getAlpha()             const noexcept { return mAlpha; }
     inline bool            isGoing()              const noexcept { return mFrameIndex != 1; }
-    inline virtual bool    isBig()                const noexcept { return DEFAULT_ANIM_SLOT_USE_THRESHOLD < (mpAnimation ? (mpAnimation->count * mpAnimation->w * mpAnimation->h) : 0); }
+    inline virtual bool    isBig()                const noexcept { return DEFAULT_ANIM_SLOT_USE_THRESHOLD < (muHandle.anim ? (mDelays_ms.size() * getSizeWidth() * getSizeHeight()) : 0); }
     inline bool            isLoop()               const noexcept { return mIsLoop; }
 
     virtual void start(float time_mult = 1.f) = 0;
@@ -34,19 +36,32 @@ public:
     inline void setRectRes(SDL_FRect rect)          noexcept { mRect = rect; }
     inline void setLooping(bool need_loop)          noexcept { mIsLoop = need_loop; }
     inline virtual void setAlpha(uint8_t alpha)     noexcept = 0;
-    
+
+    void lockChange();
 
     void   clear();
-    inline virtual ~Animation() { if (mpAnimation) IMG_FreeAnimation(mpAnimation); }
+    inline virtual ~Animation() { if (muHandle.anim && mHasHead) IMG_FreeAnimation(muHandle.anim); }
 
 protected:
+    inline short getSizeWidth() const noexcept { return mHasHead ? muHandle.anim->w : muHandle.size.width; }
+    inline short getSizeHeight() const noexcept { return mHasHead ? muHandle.anim->h : muHandle.size.height; }
+
     bool preRender();
+
+    inline virtual void childClean() {};
 
 protected:
     static const SDL_PixelFormat cPixelFormat = SDL_PIXELFORMAT_RGBA32;
 
 protected:
-    IMG_Animation* mpAnimation = NULL;
+    union {
+        IMG_Animation* anim = NULL;
+        struct {
+            short width;
+            short height;
+        } size;
+    } muHandle;
+    //IMG_Animation* mpAnimation = NULL;
     SDL_Renderer* mpRendererOrigin = NULL;
 
     SDL_FRect mRect = { 0.f };
@@ -57,6 +72,7 @@ protected:
 
     uint8_t mAlpha = 255;
     bool mIsLoop = false;
+    bool mHasHead = true;
 
     Clock::Duration mCurrentDelay;
 

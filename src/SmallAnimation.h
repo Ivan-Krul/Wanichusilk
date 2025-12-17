@@ -10,7 +10,12 @@ public:
 
     void setAlpha(uint8_t alpha) noexcept override;
 
+    ~SmallAnimation() {
+        SDL_DestroyTexture(mpRenderTextureTile);
+    }
+
 private:
+    void childClean() override;
     bool packAnimationInRendTexture();
     inline void findTileResolution();
 

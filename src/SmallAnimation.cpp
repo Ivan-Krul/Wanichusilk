@@ -1,7 +1,7 @@
 #include "SmallAnimation.h"
 
 void SmallAnimation::start(float time_mult) {
-    if (!mpAnimation) return;
+    if (!muHandle.anim || !mHasHead) return;
     mFrameIndex = 0;
     mTimeMult = time_mult;
 
@@ -10,13 +10,14 @@ void SmallAnimation::start(float time_mult) {
         return;
     }
 
-    mSrcRect.w = mpAnimation->w;
-    mSrcRect.h = mpAnimation->h;
+    mSrcRect.w = muHandle.anim->w;
+    mSrcRect.h = muHandle.anim->h;
     mCurrentDelay = std::chrono::milliseconds(mDelays_ms[0]);
 }
 
 void SmallAnimation::render() {
     if (preRender()) return;
+    if (mpRenderTextureTile == nullptr) return;
 
     // render here
     mSrcRect.x = (mFrameIndex % mRenderTexTileWidth) * mSrcRect.w;
@@ -31,14 +32,18 @@ void SmallAnimation::setAlpha(uint8_t alpha) noexcept {
         SDL_SetTextureAlphaMod(mpRenderTextureTile, mAlpha);
 }
 
+void SmallAnimation::childClean() {
+    SDL_DestroyTexture(mpRenderTextureTile);
+}
+
 bool SmallAnimation::packAnimationInRendTexture() {
     findTileResolution();
-    SDL_Surface* surf = SDL_CreateSurface(mpAnimation->w * mRenderTexTileWidth, mpAnimation->h * mRenderTexTileHeight, cPixelFormat);
+    SDL_Surface* surf = SDL_CreateSurface(muHandle.anim->w * mRenderTexTileWidth, muHandle.anim->h * mRenderTexTileHeight, cPixelFormat);
     if (!surf)
         return false;
 
-    const auto ox = mpAnimation->w;
-    const auto oy = mpAnimation->h;
+    const auto ox = muHandle.anim->w;
+    const auto oy = muHandle.anim->h;
 
     char tx = 0;
     char ty = 0;
@@ -53,7 +58,7 @@ bool SmallAnimation::packAnimationInRendTexture() {
         ty = f / mRenderTexTileWidth;
         for (int x = 0; x < ox; x++) {
             for (int y = 0; y < oy; y++) {
-                if (!SDL_ReadSurfacePixel((mpAnimation->frames)[f], x, y, &r, &g, &b, &a))
+                if (!SDL_ReadSurfacePixel((muHandle.anim->frames)[f], x, y, &r, &g, &b, &a))
                     return false;
 
                 if (!SDL_WriteSurfacePixel(surf, tx * ox + x, ty * oy + y, r, g, b, a))

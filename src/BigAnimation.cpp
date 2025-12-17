@@ -1,7 +1,7 @@
 #include "BigAnimation.h"
 
 void BigAnimation::start(float time_mult) {
-    if (!mpAnimation) return;
+    if (!muHandle.anim || !mHasHead) return;
     mFrameIndex = 0;
     mTimeMult = time_mult;
 
@@ -9,7 +9,7 @@ void BigAnimation::start(float time_mult) {
 
     mapTextures.resize(mDelays_ms.size());
     for (auto f = 0; f < mapTextures.size(); f++) {
-        surf = SDL_ConvertSurface(mpAnimation->frames[f], cPixelFormat);
+        surf = SDL_ConvertSurface(muHandle.anim->frames[f], cPixelFormat);
         mapTextures[f] = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
 
         if (mapTextures[f] && mAlpha != 255)
@@ -29,6 +29,13 @@ void BigAnimation::render() {
 
 void BigAnimation::setAlpha(uint8_t alpha) noexcept {
     mAlpha = alpha;
-    for (auto frames : mapTextures)
-        SDL_SetTextureAlphaMod(frames, mAlpha);
+    for (auto frame : mapTextures)
+        SDL_SetTextureAlphaMod(frame, mAlpha);
+}
+
+void BigAnimation::childClean() {
+    for (auto frame : mapTextures)
+        SDL_DestroyTexture(frame);
+
+    mapTextures.clear();
 }
