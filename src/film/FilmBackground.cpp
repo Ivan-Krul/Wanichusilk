@@ -1,17 +1,17 @@
 #include "FilmBackground.h"
 
-void FilmBackground::registerBackgroundKeypoint(FilmKeypointBackground* keypoint) {
+void film::Background::registerBackgroundKeypoint(KeypointBackground* keypoint) {
     pKeypoint = keypoint;
 
     switch (pKeypoint->type().specific_type) {
-    case FilmKeypointBackground::Swap:
+    case KeypointBackground::Swap:
         mTexPrev = mTex;
         mTex = pKeypoint->to;
         mRendMode = pKeypoint->rend_mode;
         transformTexture(mTex, mRendMode);
         break;
-    case FilmKeypointBackground::TransparentSwap:
-        mEaseTimer.setEase(dynamic_cast<FilmKeypointBgTransparentSwap*>(keypoint)->ease_func);
+    case KeypointBackground::TransparentSwap:
+        mEaseTimer.setEase(dynamic_cast<KeypointBgTransparentSwap*>(keypoint)->ease_func);
         mTexPrev = mTex;
         mTex = pKeypoint->to;
         mRendModePrev = mRendMode;
@@ -23,20 +23,20 @@ void FilmBackground::registerBackgroundKeypoint(FilmKeypointBackground* keypoint
     }
 }
 
-void FilmBackground::update() {
+void film::Background::update() {
     mEaseTimer.update();
 
-    if (pKeypoint->type().specific_type == FilmKeypointBackground::TransparentSwap) {
-        const auto kp = dynamic_cast<FilmKeypointBgTransparentSwap*>(pKeypoint);
+    if (pKeypoint->type().specific_type == KeypointBackground::TransparentSwap) {
+        const auto kp = dynamic_cast<KeypointBgTransparentSwap*>(pKeypoint);
 
         if (kp->from != -1) pTexMgr->GetLockerTexture(kp->from).setAlpha(SDL_clamp((1.f - mEaseTimer) * 255, 0, 255));
         if (kp->to != -1) pTexMgr->GetLockerTexture(kp->to).setAlpha(SDL_clamp(mEaseTimer * 255, 0, 255));
     }
 }
 
-void FilmBackground::render() {
-    if (pKeypoint->type().specific_type == FilmKeypointBackground::Swap) {
-        const auto swapkp = *dynamic_cast<FilmKeypointBgSwap*>(pKeypoint);
+void film::Background::render() {
+    if (pKeypoint->type().specific_type == KeypointBackground::Swap) {
+        const auto swapkp = *dynamic_cast<KeypointBgSwap*>(pKeypoint);
         const auto target = swapkp.to;
 
         if (target != -1) {
@@ -44,8 +44,8 @@ void FilmBackground::render() {
         }
     }
 
-    if (pKeypoint->type().specific_type == FilmKeypointBackground::TransparentSwap) {
-        const auto swapkp = *dynamic_cast<FilmKeypointBgTransparentSwap*>(pKeypoint);
+    if (pKeypoint->type().specific_type == KeypointBackground::TransparentSwap) {
+        const auto swapkp = *dynamic_cast<KeypointBgTransparentSwap*>(pKeypoint);
         if (swapkp.from != -1) {
             pTexMgr->GetLockerTexture(swapkp.from).render();
         }
@@ -55,16 +55,16 @@ void FilmBackground::render() {
     }
 }
 
-void FilmBackground::transformTexture(TextureIndex texind, FilmKeypointBackground::RenderMode rend_mode) {
+void film::Background::transformTexture(TextureIndex texind, KeypointBackground::RenderMode rend_mode) {
     if (texind == -1) return;
 
     switch (rend_mode) {
-    case FilmKeypointBackground::simple: simplyPutTexture(texind); break;
-    case FilmKeypointBackground::centered_black_borders: centerBlackBordersTexture(texind); break;
+    case KeypointBackground::simple: simplyPutTexture(texind); break;
+    case KeypointBackground::centered_black_borders: centerBlackBordersTexture(texind); break;
     }
 }
 
-void FilmBackground::simplyPutTexture(TextureIndex texind) {
+void film::Background::simplyPutTexture(TextureIndex texind) {
     auto& tex = pTexMgr->GetLockerTexture(texind);
 
     tex.setPartialRenderingResolution();
@@ -73,7 +73,7 @@ void FilmBackground::simplyPutTexture(TextureIndex texind) {
     tex.setHeight(tex.getTexture()->h);
 }
 
-void FilmBackground::centerBlackBordersTexture(TextureIndex texind) {
+void film::Background::centerBlackBordersTexture(TextureIndex texind) {
     auto& tex = pTexMgr->GetLockerTexture(texind);
     assert(pScale != nullptr);
 

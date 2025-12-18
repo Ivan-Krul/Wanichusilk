@@ -1,12 +1,16 @@
 #pragma once
 #include <limits>
 
-#include "FilmKeypoint.h"
+#include "FilmKeypointLayer.h"
 #include "../Clock.h"
 #include "../LockerSimple.h"
 #include "../EaseTracker.h"
 
-class FilmLayerBase : public ClockHolder {
+namespace film {
+    class LayerBase;
+}
+
+class film::LayerBase : public ClockHolder {
 public:
     template<typename T>
     inline bool pushSetter(T* keypoint);
@@ -19,7 +23,7 @@ public:
     virtual inline TimerStep getLongestWaiting() const noexcept { return TimerStep(); }
     virtual inline void clear() { maEases.clear(); }
 
-    virtual ~FilmLayerBase() = default;
+    virtual ~LayerBase() = default;
 protected:
     template <typename T>
     struct TransitParam {
@@ -39,30 +43,30 @@ protected:
 
     struct Tracker {
         EaseTracker<>* ease = nullptr;
-        FilmKeypointLayer* keypoint;
+        KeypointLayer* keypoint;
     };
 
 protected:
-    virtual bool onPushSetter(FilmKeypointLayer* keypoint) = 0;
+    virtual bool onPushSetter(KeypointLayer* keypoint) = 0;
     virtual bool onPushTracker(const LockerIndex ease_indx) = 0;
 
     LockerSimple<Tracker> maEases;
 };
 
 template<typename T>
-inline bool FilmLayerBase::pushSetter(T* keypoint) {
-    static_assert(std::is_base_of<FilmKeypointLayer, T>::value, "Tracker is based of FilmKeypointLayer");
-    //static_assert(!std::is_base_of<FilmKeypointEase, T>::value, "Tracker refuses to be derived from FilmKeypointEase object, the push function is wrong");
-    return onPushSetter(dynamic_cast<FilmKeypointLayer*>(keypoint));
+inline bool film::LayerBase::pushSetter(T* keypoint) {
+    static_assert(std::is_base_of<KeypointLayer, T>::value, "Tracker is based of KeypointLayer");
+    //static_assert(!std::is_base_of<KeypointEase, T>::value, "Tracker refuses to be derived from KeypointEase object, the push function is wrong");
+    return onPushSetter(dynamic_cast<KeypointLayer*>(keypoint));
 }
 
 template<typename T>
-inline bool FilmLayerBase::pushTracker(T* keypoint) {
-    static_assert(std::is_base_of<FilmKeypointLayer, T>::value, "Tracker is based of FilmKeypointLayer");
-    static_assert(!std::is_same<FilmKeypointLayer, T>::value, "Tracker is not a FilmKeypointLayer");
-    static_assert(std::is_base_of<FilmKeypointEase, T>::value, "Tracker requires derived from FilmKeypointEase object, the push function is wrong");
+inline bool film::LayerBase::pushTracker(T* keypoint) {
+    static_assert(std::is_base_of<KeypointLayer, T>::value, "Tracker is based of KeypointLayer");
+    static_assert(!std::is_same<KeypointLayer, T>::value, "Tracker is not a KeypointLayer");
+    static_assert(std::is_base_of<KeypointEase, T>::value, "Tracker requires derived from KeypointEase object, the push function is wrong");
 
-    if (!dynamic_cast<FilmKeypointEase*>(keypoint)->ease_func || dynamic_cast<TimerStep*>(keypoint)->is_zero()) return onPushSetter(keypoint);
+    if (!dynamic_cast<KeypointEase*>(keypoint)->ease_func || dynamic_cast<TimerStep*>(keypoint)->is_zero()) return onPushSetter(keypoint);
 
     Tracker tracker;
     tracker.keypoint = keypoint;

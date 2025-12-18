@@ -92,7 +92,7 @@ struct TimerStep {
 
 };
 
-namespace ClockFunc {
+namespace clockfunc {
     inline TimerStep min(const TimerStep a, const TimerStep b) {
         TimerStep timer;
         timer.frame_delay = std::min<>(a.frame_delay, b.frame_delay);

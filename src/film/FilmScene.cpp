@@ -1,6 +1,6 @@
 #include "FilmScene.h"
 
-bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes) {
+bool film::Scene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes) {
     pTexMgr = texmgr;
     mTextureIndexes = texture_indexes;
     mScaleOption = scr_res;
@@ -11,7 +11,7 @@ bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::v
     return true;
 }
 
-bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths) {
+bool film::Scene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths) {
     pTexMgr = texmgr;
     mScaleOption = scr_res;
     mTextureIndexes.reserve(texture_paths.size());
@@ -29,13 +29,13 @@ bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::v
     return true;
 }
 
-void FilmScene::start() {
+void film::Scene::start() {
     mKeypointIndex = 0;
     pKeypoint = (*maKeypoints.begin()).get();
     onNext();
 }
 
-void FilmScene::update() {
+void film::Scene::update() {
     if (!isGoing()) return;
 
     onUpdate();
@@ -45,16 +45,16 @@ void FilmScene::update() {
     //target->next_condition.delay;
 }
 
-void FilmScene::next() {
+void film::Scene::next() {
     if (!canTriggerNext()) return; // dangerous
     implicitNext();
 }
 
-void FilmScene::finish() {
+void film::Scene::finish() {
     mKeypointIndex = -1;
 }
 
-void FilmScene::render() {
+void film::Scene::render() {
     if (!isGoing()) return;
 
     mBackground.render();
@@ -66,16 +66,16 @@ void FilmScene::render() {
 #endif
 }
 
-inline bool FilmScene::canTriggerNext() const {
+inline bool film::Scene::canTriggerNext() const {
     if (mBackupTimer.action == TimerStep::InInputOrFirst || mBackupTimer.action == TimerStep::InInputOrAwait) return true;
     if (mBackupTimer.action == TimerStep::InInputAfterFirst || mBackupTimer.action == TimerStep::InInputAfterAwait) {
-        if(pKeypoint->type().global_type == FilmKeypointChangeType::None || pKeypoint->action == TimerStep::Exact) return mBackupTimer.is_zero(); // if explicit delay
+        if(pKeypoint->type().global_type == KeypointChangeType::None || pKeypoint->action == TimerStep::Exact) return mBackupTimer.is_zero(); // if explicit delay
         else return mBackupTimer.is_zero() || isWaiting();
     }
     return false;
 }
 
-void FilmScene::clear() {
+void film::Scene::clear() {
     while(!mTextureIndexes.empty()) {
         pTexMgr->RequestTextureClean(mTextureIndexes.back());
         mTextureIndexes.pop_back();
@@ -85,7 +85,7 @@ void FilmScene::clear() {
 }
 
 
-inline void FilmScene::implicitNext() {
+inline void film::Scene::implicitNext() {
     mKeypointIndex++;
 
     if (mKeypointIndex < maKeypoints.size()) {
@@ -94,7 +94,7 @@ inline void FilmScene::implicitNext() {
     }
 }
 
-void FilmScene::onUpdate() {
+void film::Scene::onUpdate() {
     mBackground.update();
     mLayerist.update();
 
@@ -114,17 +114,17 @@ void FilmScene::onUpdate() {
 
 }
 
-void FilmScene::onNext() {
+void film::Scene::onNext() {
     const auto timer = *dynamic_cast<TimerStep*>(pKeypoint);
 
     const TimerStep backg_timer = mBackground.getLongestWaiting();
     const TimerStep layer_timer = mLayerist.getLongestWaiting();
 
-    if (pKeypoint->type().global_type == FilmKeypointChangeType::Layer) {
-        mLayerist.registerLayerKeypoint(dynamic_cast<FilmKeypointLayer*>(pKeypoint));
+    if (pKeypoint->type().global_type == KeypointChangeType::Layer) {
+        mLayerist.registerLayerKeypoint(dynamic_cast<KeypointLayer*>(pKeypoint));
     }
-    if (pKeypoint->type().global_type == FilmKeypointChangeType::Background) {
-        mBackground.registerBackgroundKeypoint(dynamic_cast<FilmKeypointBackground*>(pKeypoint));
+    if (pKeypoint->type().global_type == KeypointChangeType::Background) {
+        mBackground.registerBackgroundKeypoint(dynamic_cast<KeypointBackground*>(pKeypoint));
     }
 
     if (timer.is_zero() && timer.action == timer.Instant) {
@@ -136,7 +136,7 @@ void FilmScene::onNext() {
     case timer.First:
     case timer.InInputOrFirst: _FALLTHROUGH
     case timer.InInputAfterFirst: _FALLTHROUGH
-        mBackupTimer = ClockFunc::min(backg_timer, layer_timer);
+        mBackupTimer = clockfunc::min(backg_timer, layer_timer);
         if (!timer.is_zero()) { // precise copying
             mBackupTimer.frame_delay = std::min<>(mBackupTimer.frame_delay, timer.frame_delay);
             if (timer.need_time_delay) {
@@ -149,7 +149,7 @@ void FilmScene::onNext() {
     case timer.InInputOrAwait: _FALLTHROUGH
     case timer.InInputAfterAwait: _FALLTHROUGH
         if (timer.is_zero()) {
-            mBackupTimer = ClockFunc::max(backg_timer, layer_timer);
+            mBackupTimer = clockfunc::max(backg_timer, layer_timer);
         }
         else { // whatever
             mBackupTimer.frame_delay = std::max<>(std::max<>(backg_timer.frame_delay, layer_timer.frame_delay), timer.frame_delay);
@@ -164,5 +164,5 @@ void FilmScene::onNext() {
     if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
 
     mBackupTimer.action = timer.action;
-    ClockFunc::SDL_Log_FilmTimer(mBackupTimer);
+    clockfunc::SDL_Log_FilmTimer(mBackupTimer);
 }

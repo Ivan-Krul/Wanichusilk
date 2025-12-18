@@ -2,8 +2,10 @@
 #include "FilmScene.h"
 
 inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
-    FilmKeypointBgTransparentSwap swap;
-    swap.action = FilmTimer::InInputAfterAwait;
+    using namespace film;
+
+    KeypointBgTransparentSwap swap;
+    swap.action = TimerStep::InInputAfterAwait;
     swap.rend_mode = swap.simple;
     swap.ease_func = ease_cubic_out;
     swap.frame_delay = 50;
@@ -11,7 +13,7 @@ inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
     swap.to = 0;
     scene.addKeypoint(swap);
     swap.rend_mode = swap.centered_black_borders;
-    swap.action = FilmTimer::Await;
+    swap.action = TimerStep::Await;
     swap.from = 0;
     swap.to = 1;
     scene.addKeypoint(swap);
@@ -19,24 +21,24 @@ inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
     swap.to = 0;
     scene.addKeypoint(swap);
     {
-        FilmKeypointLayerAddTexture la;
+        KeypointLayerAddTexture la;
         la.texind = 2;
         scene.addKeypoint(la);
     }
     {
-        FilmKeypointLayerInteractAlpha lia;
+        KeypointLayerInteractAlpha lia;
         lia.layerindx = 0;
         lia.alpha = 0;
         scene.addKeypoint(lia);
     }
     {
-        FilmKeypointLayerEnable le;
+        KeypointLayerEnable le;
         le.layerindx = 0;
         scene.addKeypoint(le);
     }
     {
-        FilmKeypointLayerInteractAlpha lia;
-        lia.action = FilmTimer::Await;
+        KeypointLayerInteractAlpha lia;
+        lia.action = TimerStep::Await;
         lia.layerindx = 0;
         lia.alpha = 255;
         lia.need_time_delay = true;
@@ -45,8 +47,8 @@ inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
         scene.addKeypoint(lia);
     }
     {
-        FilmKeypointLayerInteractPos lip;
-        lip.action = FilmTimer::Await;
+        KeypointLayerInteractPos lip;
+        lip.action = TimerStep::Await;
         lip.layerindx = 0;
         lip.ease_func = ease_cubic_in;
         lip.frame_delay = 50;
@@ -63,13 +65,13 @@ inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
         scene.addKeypoint(lip);
     }
     {
-        FilmKeypointLayerInteractTransparentSwap lits;
-        lits.action = FilmTimer::Await;
+        KeypointLayerInteractTransparentSwap lits;
+        lits.action = TimerStep::Await;
         lits.layerindx = 0;
         lits.texindx = 3;
         lits.frame_delay = 50;
         lits.ease_func = ease_sine_in_out;
-        lits.swap = FilmKeypointLayerInteractSwap::SwapMode::KeepInAspect;
+        lits.swap = KeypointLayerInteractSwap::SwapMode::KeepInAspect;
         scene.addKeypoint(lits);
     }
 
@@ -80,16 +82,16 @@ inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
     swap.to = 1;
     scene.addKeypoint(swap);
     {
-        FilmKeypointLayerInteractTransparentSwap lits;
-        lits.action = FilmTimer::Await;
+        KeypointLayerInteractTransparentSwap lits;
+        lits.action = TimerStep::Await;
         lits.layerindx = 0;
         lits.texindx = -1;
         lits.frame_delay = 30;
         lits.ease_func = ease_sine_in_out;
-        lits.swap = FilmKeypointLayerInteractSwap::SwapMode::KeepInAspect;
+        lits.swap = KeypointLayerInteractSwap::SwapMode::KeepInAspect;
         scene.addKeypoint(lits);
     }
-    swap.action = FilmTimer::InInputAfterAwait;
+    swap.action = TimerStep::InInputAfterAwait;
     swap.to = 0;
     scene.addKeypoint(swap);
     swap.to = 1;

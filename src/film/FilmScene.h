@@ -10,7 +10,11 @@
 #include <string>
 #include <memory>
 
-class FilmScene {
+namespace film {
+    class Scene;
+}
+
+class film::Scene {
 public:
     bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes);
     bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths);
@@ -40,20 +44,20 @@ public:
     inline bool isEnded() const { return mKeypointIndex >= maKeypoints.size(); }
 
     void clear();
-    ~FilmScene() { clear(); }
+    ~Scene() { clear(); }
 private:
     inline void implicitNext();
     void onUpdate();
     void onNext();
 
     std::vector<TextureIndex> mTextureIndexes;
-    std::vector<std::shared_ptr<FilmKeypoint>> maKeypoints;
-    FilmKeypoint* pKeypoint;
+    std::vector<std::shared_ptr<Keypoint>> maKeypoints;
+    Keypoint* pKeypoint;
 
     TextureManager* pTexMgr;
 
-    FilmLayerist mLayerist;
-    FilmBackground mBackground;
+    Layerist mLayerist;
+    Background mBackground;
 
     ScaleOption mScaleOption;
 
@@ -64,17 +68,19 @@ private:
 };
 
 template<typename T>
-inline void FilmScene::addKeypoint(T&& keypoint) {
+inline void film::Scene::addKeypoint(T&& keypoint) {
     using KeypointType = std::decay_t<T>;
-    static_assert(std::is_base_of<FilmKeypoint, KeypointType>::value, "you should add a derived struct FilmKeypoint");
+    static_assert(std::is_base_of<Keypoint, KeypointType>::value, "you should add a derived struct Keypoint");
 
     auto ptr = std::make_shared<KeypointType>(std::forward<T>(keypoint));
-    maKeypoints.push_back(std::static_pointer_cast<FilmKeypoint>(ptr));
+    maKeypoints.push_back(std::static_pointer_cast<Keypoint>(ptr));
 }
 
 template<typename T>
-inline T FilmScene::getKeypoint(size_t index) const {
-    static_assert(std::is_base_of<FilmKeypoint, T>::value, "you should add a derived struct FilmKeypoint");
+inline T film::Scene::getKeypoint(size_t index) const {
+    static_assert(std::is_base_of<Keypoint, T>::value, "you should add a derived struct Keypoint");
 
     return *dynamic_cast<T*>(maKeypoints[index].get());
 }
+
+using FilmScene = film::Scene;

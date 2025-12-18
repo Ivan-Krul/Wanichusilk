@@ -1,18 +1,23 @@
 #pragma once
 #include "FilmLayerBase.h"
+#include "FilmKeypointLayer.h"
 #include "../rect_math.h"
 #include "../TextureManager.h"
 
-class FilmLayerTexture : public FilmLayerBase {
+namespace film {
+    class LayerTexture;
+}
+
+class film::LayerTexture : public LayerBase {
 public:
-    FilmLayerTexture(Clock* clock, TextureManager* texmgr, LockerIndex texind);
+    LayerTexture(Clock* clock, TextureManager* texmgr, LockerIndex texind);
     void update() override;
     void render() const override;
     inline void clear() override;
     inline bool isWaiting() const noexcept override;
     inline TimerStep getLongestWaiting() const noexcept override;
 
-    virtual ~FilmLayerTexture() { clear(); }
+    virtual ~LayerTexture() { clear(); }
 private:
     enum PosChangeEnum {
         Pos,
@@ -21,17 +26,17 @@ private:
     };
 private:
 
-    inline void pushPosSetter(const FilmKeypointLayerInteractRect* keypoint, PosChangeEnum change);
-    inline void pushTexIndSetter(FilmKeypointLayerInteractSwap* keypoint);
+    inline void pushPosSetter(const KeypointLayerInteractRect* keypoint, PosChangeEnum change);
+    inline void pushTexIndSetter(KeypointLayerInteractSwap* keypoint);
 
-    bool onPushSetter(FilmKeypointLayer* keypoint) override;
+    bool onPushSetter(KeypointLayer* keypoint) override;
 
     inline void pushPosTracker(const LockerIndex ease_indx, PosChangeEnum change);
 
     bool onPushTracker(const LockerIndex ease_indx) override;
 
     void renderSwap(const SDL_FRect* res_rect, const SDL_FRect* res_part, uint8_t max_alpha) const;
-    void finalizeSwap(LockerSimple<FilmLayerBase::Tracker>::Iterator iter);
+    void finalizeSwap(LockerSimple<LayerBase::Tracker>::Iterator iter);
 
     inline bool areAllTransitParamDefault() const noexcept { return mPart.is_default() && mRect.is_default() && mAlpha.is_default() && mTexInd.is_default(); }
 
