@@ -17,7 +17,7 @@ public:
     bool   create(const char* path, SDL_Renderer* renderer);
     
     inline IMG_Animation*  getAnimationPtr()      const noexcept { return mHasHead ? muHandle.anim : nullptr; }
-    inline short           getFrameCount()        const noexcept { return mDelays_ms.size(); }
+    inline size_t          getFrameCount()        const noexcept { return mDelays_ms.size(); }
     inline float           getTimeMult()          const noexcept { return mTimeMult; }
     inline Clock::Duration getNextFrameDuration() const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelays_ms[mFrameIndex])) : Clock::Duration(0); }
     inline Clock::Duration getSumFrameDuration()  const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelaySum)) : Clock::Duration(0); }
@@ -28,14 +28,14 @@ public:
     inline virtual bool    isBig()                const noexcept { return DEFAULT_ANIM_SLOT_USE_THRESHOLD < (muHandle.anim ? (mDelays_ms.size() * getSizeWidth() * getSizeHeight()) : 0); }
     inline bool            isLoop()               const noexcept { return mIsLoop; }
 
-    virtual void start(float time_mult = 1.f) = 0;
-    virtual void render() = 0;
+    virtual void start(float time_mult = 1.f) {}
+    virtual void render() {}
     void finish();
 
     inline void setFrameMult(float time_mult = 1.f) noexcept { mTimeMult = time_mult; }
     inline void setRectRes(SDL_FRect rect)          noexcept { mRect = rect; }
     inline void setLooping(bool need_loop)          noexcept { mIsLoop = need_loop; }
-    inline virtual void setAlpha(uint8_t alpha)     noexcept = 0;
+    inline virtual void setAlpha(uint8_t alpha)     noexcept {}
 
     void lockChange();
 

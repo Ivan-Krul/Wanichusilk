@@ -3,6 +3,7 @@
 
 #include "Window.h"
 #include "TextureManager.h"
+#include "AnimationManager.h"
 #include "FilmScene.h"
 #include "Clock.h"
 #include "define.h"
@@ -29,8 +30,8 @@ private:
     bool mNeedQuit = false;
 
     TextureManager mTexMgr;
+    AnimationManager mAnimMgr;
     FilmScene mScene;
-    SmallAnimation mAnim;
     Clock mClock;
 
     size_t mCount = 0;

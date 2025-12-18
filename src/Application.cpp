@@ -27,15 +27,34 @@ void Application::OnInit() {
     //
     //mScene.start();
 
+    mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
+
     SCOPED_STOPWATCH("anim load");
-    assert(mAnim.create("./res/received_1095637438226501.gif", mMainWindow.getWindowRenderer()));
-    mAnim.setClock(&mClock);
-    mAnim.setLooping(true);
-    mAnim.setAlpha(128);
-    mAnim.start();
-    mAnim.lockChange();
-    auto res = mAnim.getRectRes();
-    mAnim.setRectRes(lerp_rect(res, SDL_FRect{ 0.f }, 0.5f));
+    auto indx1 = mAnimMgr.RequestAnimationLoad("./res/received_1095637438226501.gif");
+    assert(indx1 != -1);
+    auto indx2 = mAnimMgr.RequestAnimationLoad("./res/lancer-spin-big.gif");
+    assert(indx2 != -1);
+
+    auto anim = mAnimMgr.GetLockerAnimation(indx1);
+    anim->setClock(&mClock);
+    anim->setLooping(true);
+    anim->setAlpha(128);
+    anim->start();
+    anim->lockChange();
+    auto res = anim->getRectRes();
+    anim->setRectRes(lerp_rect(res, SDL_FRect{ 0.f }, 0.5f));
+    SDL_Log("isBig: %d", anim->isBig() ? 1 : 0);
+
+    anim = mAnimMgr.GetLockerAnimation(indx2);
+    anim->setClock(&mClock);
+    anim->setLooping(true);
+    anim->start();
+    anim->lockChange();
+    res = anim->getRectRes();
+    res.x = 200;
+    res.y = 200;
+    anim->setRectRes(res);
+    SDL_Log("isBig: %d", anim->isBig() ? 1 : 0);
 }
 
 void Application::OnLoop() {
@@ -47,11 +66,6 @@ void Application::OnLoop() {
     SDL_RenderClear(mMainWindow.getWindowRenderer());
     OnRender();
     SDL_RenderPresent(mMainWindow.getWindowRenderer());
-
-    auto res = mAnim.getRectRes();
-    res.x += .2f;
-    res.y += .1f;
-    mAnim.setRectRes(res);
 
     mClock.FinishMeasure(50);
 
@@ -88,7 +102,8 @@ void Application::OnUpdate() {
 
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100 + 100, 200, 255);
-    mAnim.render();
+    mAnimMgr.GetLockerAnimation(0)->render();
+    mAnimMgr.GetLockerAnimation(1)->render();
 
     //mScene.render();
 }

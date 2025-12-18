@@ -12,7 +12,7 @@
 
 class FilmScene {
 public:
-    bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<ResourceIndex>& texture_indexes);
+    bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes);
     bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths);
     void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); mBackground.setClock(clock); }
 
@@ -24,7 +24,7 @@ public:
     inline size_t keypointCount() const { return maKeypoints.size(); }
     inline size_t textureCount() const { return mTextureIndexes.size(); }
 
-    inline ResourceIndex getTextureIndex(size_t index) const { return mTextureIndexes[index]; }
+    inline TextureIndex getTextureIndex(size_t index) const { return mTextureIndexes[index]; }
     inline TextureManager* getTextureManager() const { return pTexMgr; }
 
     void start();
@@ -46,7 +46,7 @@ private:
     void onUpdate();
     void onNext();
 
-    std::vector<ResourceIndex> mTextureIndexes;
+    std::vector<TextureIndex> mTextureIndexes;
     std::vector<std::shared_ptr<FilmKeypoint>> maKeypoints;
     FilmKeypoint* pKeypoint;
 

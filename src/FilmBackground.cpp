@@ -55,7 +55,7 @@ void FilmBackground::render() {
     }
 }
 
-void FilmBackground::transformTexture(ResourceIndex texind, FilmKeypointBackground::RenderMode rend_mode) {
+void FilmBackground::transformTexture(TextureIndex texind, FilmKeypointBackground::RenderMode rend_mode) {
     if (texind == -1) return;
 
     switch (rend_mode) {
@@ -64,7 +64,7 @@ void FilmBackground::transformTexture(ResourceIndex texind, FilmKeypointBackgrou
     }
 }
 
-void FilmBackground::simplyPutTexture(ResourceIndex texind) {
+void FilmBackground::simplyPutTexture(TextureIndex texind) {
     auto& tex = pTexMgr->GetLockerTexture(texind);
 
     tex.setPartialRenderingResolution();
@@ -73,7 +73,7 @@ void FilmBackground::simplyPutTexture(ResourceIndex texind) {
     tex.setHeight(tex.getTexture()->h);
 }
 
-void FilmBackground::centerBlackBordersTexture(ResourceIndex texind) {
+void FilmBackground::centerBlackBordersTexture(TextureIndex texind) {
     auto& tex = pTexMgr->GetLockerTexture(texind);
     assert(pScale != nullptr);
 

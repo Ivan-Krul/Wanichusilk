@@ -18,12 +18,12 @@ public:
 
     inline TimerStep getLongestWaiting() const noexcept { return mEaseTimer.getLimiter(); }
 private:
-    void transformTexture(ResourceIndex texind, FilmKeypointBackground::RenderMode rend_mode);
-    void simplyPutTexture(ResourceIndex texind);
-    void centerBlackBordersTexture(ResourceIndex texind);
+    void transformTexture(TextureIndex texind, FilmKeypointBackground::RenderMode rend_mode);
+    void simplyPutTexture(TextureIndex texind);
+    void centerBlackBordersTexture(TextureIndex texind);
 
-    ResourceIndex mTexPrev;
-    ResourceIndex mTex;
+    TextureIndex mTexPrev;
+    TextureIndex mTex;
     FilmKeypointBackground::RenderMode mRendModePrev;
     FilmKeypointBackground::RenderMode mRendMode;
     EaseTracker<> mEaseTimer;

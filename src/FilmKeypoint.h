@@ -39,7 +39,7 @@ struct FilmKeypointBackground : public FilmKeypoint {
         //scroll
     };
 
-    ResourceIndex to = -1;
+    TextureIndex to = -1;
     RenderMode rend_mode = blank;
 };
 
@@ -52,7 +52,7 @@ struct FilmKeypointEase {
 };
 
 struct FilmKeypointBgTransparentSwap : public FilmKeypointBackground, public FilmKeypointEase {
-    ResourceIndex from;
+    TextureIndex from;
 
     inline FilmKeypointTypeStruct type() const override { return { FilmKeypointChangeType::Background, TransparentSwap }; }
     inline bool has_ease() override { return true; }
@@ -93,7 +93,7 @@ struct FilmKeypointLayerAdd : public FilmKeypointLayer {
 };
 
 struct FilmKeypointLayerAddTexture : public FilmKeypointLayerAdd {
-    ResourceIndex texind = -1;
+    TextureIndex texind = -1;
     inline virtual LayerBuildType layertype() const { return Texture; }
 };
 
@@ -134,7 +134,7 @@ struct FilmKeypointLayerInteractAlpha : public FilmKeypointLayer, public FilmKey
 };
 
 struct FilmKeypointLayerSwap : public FilmKeypointLayer {
-    ResourceIndex texindx = -1;
+    TextureIndex texindx = -1;
 
     enum SwapMode : short {
         KeepNotDeformed,

@@ -1,6 +1,6 @@
 #include "FilmScene.h"
 
-bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<ResourceIndex>& texture_indexes) {
+bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes) {
     pTexMgr = texmgr;
     mTextureIndexes = texture_indexes;
     mScaleOption = scr_res;
@@ -16,7 +16,7 @@ bool FilmScene::create(TextureManager* texmgr, ScaleOption scr_res, const std::v
     mScaleOption = scr_res;
     mTextureIndexes.reserve(texture_paths.size());
     
-    ResourceIndex indx;
+    TextureIndex indx;
     for (size_t i = 0; i < texture_paths.size(); i++) {
         indx = pTexMgr->RequestTextureLoad(texture_paths[i].c_str());
         if (indx == -1) return false;
