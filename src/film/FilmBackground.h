@@ -1,9 +1,8 @@
 #pragma once
 #include "FilmKeypoint.h"
-#include "TextureManager.h"
-#include "Clock.h"
-#include "FrameScaling.h"
-#include "EaseTracker.h"
+#include "../FrameScaling.h"
+#include "../EaseTracker.h"
+#include "../TextureManager.h"
 
 class FilmBackground {
 public:

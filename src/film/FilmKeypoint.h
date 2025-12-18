@@ -3,9 +3,9 @@
 #include <chrono>
 #include <memory>
 
-#include "TextureManager.h"
-#include "Clock.h"
-#include "define.h"
+#include "../define.h"
+#include "../Clock.h"
+#include "../TextureManager.h"
 
 typedef int LayerIndex;
 

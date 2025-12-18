@@ -1,10 +1,10 @@
 #pragma once
-#include "TextureManager.h"
 #include "FilmKeypoint.h"
-#include "Clock.h"
 #include "FilmLayerist.h"
 #include "FilmBackground.h"
-#include "FrameScaling.h"
+#include "../TextureManager.h"
+#include "../Clock.h"
+#include "../FrameScaling.h"
 
 #include <vector>
 #include <string>

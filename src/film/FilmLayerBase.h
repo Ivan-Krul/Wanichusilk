@@ -1,10 +1,10 @@
 #pragma once
 #include <limits>
 
-#include "Clock.h"
-#include "LockerSimple.h"
 #include "FilmKeypoint.h"
-#include "EaseTracker.h"
+#include "../Clock.h"
+#include "../LockerSimple.h"
+#include "../EaseTracker.h"
 
 class FilmLayerBase : public ClockHolder {
 public:

@@ -1,7 +1,7 @@
 #pragma once
 #include "FilmLayerBase.h"
-#include "rect_math.h"
-#include "TextureManager.h"
+#include "../rect_math.h"
+#include "../TextureManager.h"
 
 class FilmLayerTexture : public FilmLayerBase {
 public:
