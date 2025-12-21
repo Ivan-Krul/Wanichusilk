@@ -46,5 +46,7 @@ private:
     TransitParam<SDL_FRect> mRect;
     TransitParam<uint8_t> mAlpha;
     TransitParam<TextureIndex> mTexInd;
+
+    Texture* pTexture;
 };
 

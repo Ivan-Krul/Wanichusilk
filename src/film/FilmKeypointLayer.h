@@ -13,9 +13,11 @@ namespace film {
             InteractAlpha,
             InteractSwap,
             InteractTransparentSwap,
-            InteractAnimateSwap,
-            InteractAnimateSwapLoop,
-            InteractLoop,
+            InteractAnimationStart,
+            InteractAnimationStop,
+            InteractAnimationLoop,
+            InteractAnimationUnloop,
+            InteractAnimationSpeed,
             InteractDefault,
             Enable,
             Disable,
@@ -29,7 +31,8 @@ namespace film {
     struct KeypointLayerAdd : public KeypointLayer {
         enum LayerBuildType : char {
             None = 0,
-            Texture
+            Texture,
+            Animation
         };
 
         inline virtual LayerBuildType layertype() const { return { None }; }
@@ -113,22 +116,30 @@ namespace film {
         inline bool has_ease() override { return true; }
     };
 
-    struct KeypointLayerInteractAnimateSwap : public KeypointLayer {
-        struct Flip {
-            int duration_ms;
-            LockerIndex new_tex_ind;
-        };
-
-        std::vector<Flip> flips;
-
-        LockerIndex delay_after_frame;
-
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimateSwap }; }
+    struct KeypointLayerAddAnimation : public KeypointLayerAdd {
+        LockerIndex animind = -1;
+        inline virtual LayerBuildType layertype() const { return Animation; }
     };
 
-    struct KeypointLayerInteractAnimateSwapLoop : public KeypointLayerInteractAnimateSwap {
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimateSwapLoop }; }
-        inline bool has_ease() override { return true; }
+    struct KeypointLayerInteractAnimationSpeed : public KeypointLayer {
+        float speed = 1.f;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationSpeed }; }
+    };
+
+    struct KeypointLayerInteractAnimationLoop : public KeypointLayer {
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationLoop }; }
+    };
+
+    struct KeypointLayerInteractAnimationUnloop : public KeypointLayer {
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationUnloop }; }
+    };
+
+    struct KeypointLayerInteractAnimationStart : public KeypointLayer {
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationStart }; }
+    };
+
+    struct KeypointLayerInteractAnimationStop : public KeypointLayer {
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationStop }; }
     };
 
     struct KeypointLayerInteractDefault : public KeypointLayer {

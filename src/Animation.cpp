@@ -6,6 +6,8 @@ bool Animation::create(const char* path, SDL_Renderer* renderer) {
     muHandle.anim = IMG_LoadAnimation(path);
     if (muHandle.anim == NULL) return false;
     mHasHead = true;
+    mIsLoop = false;
+    mIsFreezed = false;
 
     mRect.w = muHandle.anim->w;
     mRect.h = muHandle.anim->h;
@@ -61,6 +63,7 @@ void Animation::clear() {
 
 bool Animation::preRender() {
     if (mFrameIndex >= mDelays_ms.size()) return true;
+    if (mIsFreezed) return false;
     mCurrentDelay -= pClock->DeltaTime();
 
     while (mCurrentDelay.count() < 0.f) {

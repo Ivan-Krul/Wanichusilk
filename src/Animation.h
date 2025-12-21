@@ -27,6 +27,7 @@ public:
     inline bool            isGoing()              const noexcept { return mFrameIndex != 1; }
     inline virtual bool    isBig()                const noexcept { return DEFAULT_ANIM_SLOT_USE_THRESHOLD < (muHandle.anim ? (mDelays_ms.size() * getSizeWidth() * getSizeHeight()) : 0); }
     inline bool            isLoop()               const noexcept { return mIsLoop; }
+    inline bool            isFreezed()            const noexcept { return mIsFreezed; }
 
     virtual void start(float time_mult = 1.f) {}
     virtual void render() {}
@@ -35,6 +36,7 @@ public:
     inline void setFrameMult(float time_mult = 1.f) noexcept { mTimeMult = time_mult; }
     inline void setRectRes(SDL_FRect rect)          noexcept { mRect = rect; }
     inline void setLooping(bool need_loop)          noexcept { mIsLoop = need_loop; }
+    inline void setFreeze(bool freeze)              noexcept { mIsFreezed = freeze; }
     inline virtual void setAlpha(uint8_t alpha)     noexcept {}
 
     void lockChange();
@@ -48,7 +50,7 @@ protected:
 
     bool preRender();
 
-    inline virtual void childClean() {};
+    inline virtual void childClean() {}
 
 protected:
     static const SDL_PixelFormat cPixelFormat = SDL_PIXELFORMAT_RGBA32;
@@ -73,6 +75,7 @@ protected:
     uint8_t mAlpha = 255;
     bool mIsLoop = false;
     bool mHasHead = true;
+    bool mIsFreezed = false;
 
     Clock::Duration mCurrentDelay;
 

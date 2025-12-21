@@ -5,7 +5,8 @@ film::LayerTexture::LayerTexture(Clock* clock, TextureManager* texmgr, LockerInd
     setClock(clock);
 
     mTexInd.elem_to = texind;
-    mRect.elem_to = pTexMgr->GetLockerTexture(texind).getRectRes();
+    pTexture = texind != -1 ? &pTexMgr->GetLockerTexture(texind) : nullptr;
+    mRect.elem_to = pTexture ? pTexture->getRectRes() : SDL_FRect{ 0.f };
 
     mPart.ease_tracker.setClock(clock);
     mRect.ease_tracker.setClock(clock);
@@ -66,9 +67,9 @@ void film::LayerTexture::render() const {
         renderSwap(res_rect, res_part, alpha);
     else if (mTexInd.elem_to == -1) return;
     else if (areAllTransitParamDefault())
-        pTexMgr->GetLockerTexture(mTexInd.elem_to).render();
+        pTexture->render();
     else
-        pTexMgr->GetLockerTexture(mTexInd.elem_to).renderRaw(res_part, res_rect, alpha);
+        pTexture->renderRaw(res_part, res_rect, alpha);
 }
 
 inline void film::LayerTexture::clear() {
@@ -87,6 +88,8 @@ inline TimerStep film::LayerTexture::getLongestWaiting() const noexcept {
     TimerStep longest = clockfunc::max(mPart.ease_tracker.getLimiter(), mRect.ease_tracker.getLimiter());
     longest = clockfunc::max(mAlpha.ease_tracker.getLimiter(), longest);
     longest = clockfunc::max(mTexInd.ease_tracker.getLimiter(), longest);
+    longest = clockfunc::max(mRect.ease_tracker.getLimiter(), longest);
+    longest = clockfunc::max(mPart.ease_tracker.getLimiter(), longest);
     return longest;
 }
 
@@ -110,14 +113,14 @@ void film::LayerTexture::pushTexIndSetter(KeypointLayerInteractSwap* keypoint) {
     mTexInd.reset_tracker();
     mTexInd.shift_elem();
     mTexInd.elem_to = keypoint->texindx;
+    pTexture = mTexInd.elem_to != -1 ? &pTexMgr->GetLockerTexture(mTexInd.elem_to) : nullptr;
 
     switch (swapmode) {
     case KeypointLayerSwap::KeepNotDeformed:
-    {
-        const auto& tex = pTexMgr->GetLockerTexture(mTexInd.elem_to);
-        mRect.elem_to = tex.getRectRes();
-        mPart.elem_to = tex.getRectPart();
-    }   break;
+        if (pTexture == nullptr) break;
+        mRect.elem_to = pTexture->getRectRes();
+        mPart.elem_to = pTexture->getRectPart();
+        break;
     case KeypointLayerSwap::SetDefault:
         mRect.set_default();
         mPart.set_default();
@@ -202,6 +205,7 @@ bool film::LayerTexture::onPushTracker(LockerIndex ease_indx) {
         mTexInd.ease_tracker.start(*dynamic_cast<TimerStep*>(keypoint));
         mTexInd.elem_to = kp_swap->texindx;
         mTexInd.unused_padding = ease_indx;
+        pTexture = mTexInd.elem_to != -1 ? &pTexMgr->GetLockerTexture(mTexInd.elem_to) : nullptr;
         tracker.ease = &(mTexInd.ease_tracker);
     }   break;
     default:
@@ -216,22 +220,21 @@ void film::LayerTexture::renderSwap(const SDL_FRect* res_rect, const SDL_FRect* 
     if (mTexInd.elem_from != -1) pTexMgr->GetLockerTexture(mTexInd.elem_from).renderRaw(res_part, res_rect, max_alpha * (1.f - progress));
     if (mTexInd.elem_to == -1) return;
 
-    const auto& tex_to = pTexMgr->GetLockerTexture(mTexInd.elem_to);
     const auto tracked_kp = dynamic_cast<KeypointLayerInteractTransparentSwap*>(maEases.at(mTexInd.unused_padding).keypoint);
 
     switch (tracked_kp->swap) {
     default:
     case KeypointLayerSwap::KeepInAspect: _FALLTHROUGH
-        tex_to.renderRaw(res_part, res_rect, max_alpha * progress);
+        pTexture->renderRaw(res_part, res_rect, max_alpha * progress);
         break;
     case KeypointLayerSwap::KeepNotDeformed:
-        tex_to.render();
+        pTexture->render();
         break;
     case KeypointLayerSwap::SetDefault:
-        tex_to.renderRaw(nullptr, nullptr, max_alpha * progress);
+        pTexture->renderRaw(nullptr, nullptr, max_alpha * progress);
         break;
     case KeypointLayerSwap::NewTransform:
-        tex_to.renderRaw(tracked_kp->swap_part_ptr.get(), tracked_kp->swap_rect_ptr.get(), max_alpha * progress);
+        pTexture->renderRaw(tracked_kp->swap_part_ptr.get(), tracked_kp->swap_rect_ptr.get(), max_alpha * progress);
         break;
     }
 }
@@ -245,11 +248,10 @@ void film::LayerTexture::finalizeSwap(LockerSimple<LayerBase::Tracker>::Iterator
 
     switch (swapmode) {
     case KeypointLayerSwap::KeepNotDeformed:
-    {
-        const auto& tex = pTexMgr->GetLockerTexture(mTexInd.elem_to);
-        mRect.elem_to = tex.getRectRes();
-        mPart.elem_to = tex.getRectPart();
-    }   break;
+        if (pTexture == nullptr) break;
+        mRect.elem_to = pTexture->getRectRes();
+        mPart.elem_to = pTexture->getRectPart();
+        break;
     case KeypointLayerSwap::SetDefault:
         mRect.set_default();
         mPart.set_default();
