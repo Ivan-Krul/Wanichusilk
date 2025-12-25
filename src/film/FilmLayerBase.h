@@ -50,6 +50,9 @@ protected:
     virtual bool onPushSetter(KeypointLayer* keypoint) = 0;
     virtual bool onPushTracker(const LockerIndex ease_indx) = 0;
 
+    template<typename T>
+    inline void pushTransitTracker(Tracker& tracker, TransitParam<T>& param);
+
     LockerSimple<Tracker> maEases;
 };
 
@@ -74,4 +77,13 @@ inline bool film::LayerBase::pushTracker(T* keypoint) {
     auto indx = maEases.pushInLocker(tracker);
     if (onPushTracker(indx)) return true;
     return false;
+}
+
+template<typename T>
+inline void film::LayerBase::pushTransitTracker(Tracker& tracker, TransitParam<T>& param) {
+    const auto keypoint = tracker.keypoint;
+    param.shift_elem();
+    param.ease_tracker.setEase(dynamic_cast<KeypointEase*>(keypoint)->ease_func);
+    param.ease_tracker.start(*dynamic_cast<TimerStep*>(keypoint));
+    tracker.ease = &(param.ease_tracker);
 }

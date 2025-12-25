@@ -1,14 +1,13 @@
 #pragma once
-#include "FilmLayerBase.h"
+#include "FilmLayerRect.h"
 #include "FilmKeypointLayer.h"
-#include "../rect_math.h"
 #include "../TextureManager.h"
 
 namespace film {
     class LayerTexture;
 }
 
-class film::LayerTexture : public LayerBase {
+class film::LayerTexture : public LayerRect {
 public:
     LayerTexture(Clock* clock, TextureManager* texmgr, LockerIndex texind);
     void update() override;
@@ -18,21 +17,11 @@ public:
     inline TimerStep getLongestWaiting() const noexcept override;
 
     virtual ~LayerTexture() { clear(); }
-private:
-    enum PosChangeEnum {
-        Pos,
-        RectPos,
-        PartPos
-    };
-private:
 
-    inline void pushPosSetter(const KeypointLayerInteractRect* keypoint, PosChangeEnum change);
+private:
     inline void pushTexIndSetter(KeypointLayerInteractSwap* keypoint);
 
     bool onPushSetter(KeypointLayer* keypoint) override;
-
-    inline void pushPosTracker(const LockerIndex ease_indx, PosChangeEnum change);
-
     bool onPushTracker(const LockerIndex ease_indx) override;
 
     void renderSwap(const SDL_FRect* res_rect, const SDL_FRect* res_part, uint8_t max_alpha) const;
@@ -43,10 +32,8 @@ private:
     TextureManager* pTexMgr;
 
     TransitParam<SDL_FRect> mPart;
-    TransitParam<SDL_FRect> mRect;
     TransitParam<uint8_t> mAlpha;
     TransitParam<TextureIndex> mTexInd;
 
     Texture* pTexture;
 };
-
