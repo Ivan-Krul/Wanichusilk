@@ -24,8 +24,8 @@ private:
     bool onPushSetter(KeypointLayer* keypoint) override;
     bool onPushTracker(const LockerIndex ease_indx) override;
 
-    void renderSwap(const SDL_FRect* res_rect, const SDL_FRect* res_part, uint8_t max_alpha) const;
-    void finalizeSwap(LockerSimple<LayerBase::Tracker>::Iterator iter);
+    inline void renderSwap(const SDL_FRect* res_rect, const SDL_FRect* res_part, uint8_t max_alpha) const;
+    inline void finalizeSwap(LockerSimple<LayerBase::Tracker>::Iterator iter);
 
     inline bool areAllTransitParamDefault() const noexcept { return mPart.is_default() && mRect.is_default() && mAlpha.is_default() && mTexInd.is_default(); }
 

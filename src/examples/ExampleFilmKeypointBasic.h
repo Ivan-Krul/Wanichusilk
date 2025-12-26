@@ -68,7 +68,7 @@ inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
         KeypointLayerInteractTransparentSwap lits;
         lits.action = TimerStep::Await;
         lits.layerindx = 0;
-        lits.texindx = 3;
+        lits.indx = 3;
         lits.frame_delay = 50;
         lits.ease_func = ease_sine_in_out;
         lits.swap = KeypointLayerInteractSwap::SwapMode::KeepInAspect;
@@ -85,7 +85,7 @@ inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
         KeypointLayerInteractTransparentSwap lits;
         lits.action = TimerStep::Await;
         lits.layerindx = 0;
-        lits.texindx = -1;
+        lits.indx = -1;
         lits.frame_delay = 30;
         lits.ease_func = ease_sine_in_out;
         lits.swap = KeypointLayerInteractSwap::SwapMode::KeepInAspect;

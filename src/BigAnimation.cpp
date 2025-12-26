@@ -27,6 +27,20 @@ void BigAnimation::render() {
     SDL_RenderTexture(mpRendererOrigin, mapTextures[mFrameIndex], nullptr, &mRect);
 }
 
+void BigAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const float time_mult) {
+    const float time_mult_was = mTimeMult;
+    mTimeMult = time_mult;
+
+    if (preRender()) return;
+
+    SDL_SetTextureAlphaMod(mapTextures[mFrameIndex], alpha);
+
+    SDL_RenderTexture(mpRendererOrigin, mapTextures[mFrameIndex], nullptr, rect);
+
+    SDL_SetTextureAlphaMod(mapTextures[mFrameIndex], mAlpha);
+    mTimeMult = time_mult_was;
+}
+
 void BigAnimation::setAlpha(uint8_t alpha) noexcept {
     mAlpha = alpha;
     for (auto frame : mapTextures)

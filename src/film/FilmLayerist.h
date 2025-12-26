@@ -6,6 +6,7 @@
 
 #include "FilmKeypointLayer.h"
 #include "FilmLayerTexture.h"
+#include "FilmLayerAnimation.h"
 #include "../LockerSimple.h"
 #include "../Clock.h"
 #include "../EaseTracker.h"
@@ -21,20 +22,24 @@ namespace film {
 class film::Layerist : public ClockHolder {
 public:
     inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
-    void registerLayerKeypoint(KeypointLayer* keypoint);
+    inline void setAnimationManager(AnimationManager* animmgr) { pAnimMgr = animmgr; }
+    bool registerLayerKeypoint(KeypointLayer* keypoint);
 
     bool isWaiting() const;
     void update();
     void render();
 
     TimerStep getLongestWaiting() const;
+
 private:
-    void registerLayerKeypointAdd(KeypointLayerAdd* keypoint);
-    void registerKeypointInteraction(LayerIndex li, KeypointLayer* keypoint);
+    inline bool registerLayerKeypointAdd(KeypointLayerAdd* keypoint);
+    inline bool registerKeypointInteraction(LayerIndex li, KeypointLayer* keypoint);
+
 private:
     PolyPointerList<LayerBase> maLayers;
     std::vector<PolyPointerList<LayerBase>::Iterator> maActiveLayerIndexes;
 
-    TextureManager* pTexMgr;
+    TextureManager*   pTexMgr  = nullptr;
+    AnimationManager* pAnimMgr = nullptr;
 };
 

@@ -15,8 +15,8 @@ public:
     inline Animation(const char* path, SDL_Renderer* renderer) { create(path, renderer); }
     bool   create(Animation&& instance) noexcept;
     bool   create(const char* path, SDL_Renderer* renderer);
-    
-    inline IMG_Animation*  getAnimationPtr()      const noexcept { return mHasHead ? muHandle.anim : nullptr; }
+
+    inline IMG_Animation* getAnimationPtr()      const noexcept { return mHasHead ? muHandle.anim : nullptr; }
     inline size_t          getFrameCount()        const noexcept { return mDelays_ms.size(); }
     inline float           getTimeMult()          const noexcept { return mTimeMult; }
     inline Clock::Duration getNextFrameDuration() const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelays_ms[mFrameIndex])) : Clock::Duration(0); }
@@ -31,6 +31,7 @@ public:
 
     virtual void start(float time_mult = 1.f) {}
     virtual void render() {}
+    virtual void renderRaw(const SDL_FRect* rect, const uint8_t alpha = 255, const float time_mult = 1.f) {}
     void finish();
 
     inline void setFrameMult(float time_mult = 1.f) noexcept { mTimeMult = time_mult; }
@@ -45,8 +46,8 @@ public:
     inline virtual ~Animation() { if (muHandle.anim && mHasHead) IMG_FreeAnimation(muHandle.anim); }
 
 protected:
-    inline short getSizeWidth() const noexcept { return mHasHead ? muHandle.anim->w : muHandle.size.width; }
-    inline short getSizeHeight() const noexcept { return mHasHead ? muHandle.anim->h : muHandle.size.height; }
+    inline int16_t getSizeWidth() const noexcept { return mHasHead ? muHandle.anim->w : muHandle.size.width; }
+    inline int16_t getSizeHeight() const noexcept { return mHasHead ? muHandle.anim->h : muHandle.size.height; }
 
     bool preRender();
 
@@ -59,8 +60,8 @@ protected:
     union {
         IMG_Animation* anim = NULL;
         struct {
-            short width;
-            short height;
+            int16_t width;
+            int16_t height;
         } size;
     } muHandle;
     //IMG_Animation* mpAnimation = NULL;
@@ -68,8 +69,8 @@ protected:
 
     SDL_FRect mRect = { 0.f };
     std::vector<uint16_t> mDelays_ms;
-    uint16_t mDelaySum;
-    short mFrameIndex = -1;
+    uint16_t mDelaySum = 0; // not longer than 65 seconds
+    int16_t mFrameIndex = -1;
     float mTimeMult = 1.f;
 
     uint8_t mAlpha = 255;
@@ -77,7 +78,7 @@ protected:
     bool mHasHead = true;
     bool mIsFreezed = false;
 
-    Clock::Duration mCurrentDelay;
+    Clock::Duration mCurrentDelay = Clock::Duration::zero();
 
 
 };

@@ -61,10 +61,6 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractPartPos }; }
     };
 
-    struct KeypointLayerDefaultInteractPos : public KeypointLayerInteractRect {
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractDefaultPos }; }
-    };
-
     struct KeypointLayerInteractDefaultPos : public KeypointLayerInteractRect {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractDefaultPos }; }
     };
@@ -81,7 +77,7 @@ namespace film {
     };
 
     struct KeypointLayerSwap : public KeypointLayer {
-        TextureIndex texindx = -1;
+        LockerIndex indx = -1;
 
         enum SwapMode : short {
             KeepNotDeformed,
@@ -97,7 +93,7 @@ namespace film {
         KeypointLayerSwap() = default;
         KeypointLayerSwap(const KeypointLayerSwap& other)
             : KeypointLayer(other),
-            texindx(other.texindx),
+            indx(other.indx),
             swap(other.swap),
             swap_rect_ptr(other.swap_rect_ptr ? std::make_unique<SDL_FRect>(*other.swap_rect_ptr) : nullptr),
             swap_part_ptr(other.swap_part_ptr ? std::make_unique<SDL_FRect>(*other.swap_part_ptr) : nullptr) {
@@ -169,7 +165,7 @@ namespace film {
     inline KeypointLayerSwap& KeypointLayerSwap::operator=(const KeypointLayerSwap& other) {
         if (this == &other) return *this;
         KeypointLayer::operator=(other);
-        texindx = other.texindx;
+        indx = other.indx;
         swap = other.swap;
         swap_rect_ptr = other.swap_rect_ptr ? std::make_unique<SDL_FRect>(*other.swap_rect_ptr) : nullptr;
         swap_part_ptr = other.swap_part_ptr ? std::make_unique<SDL_FRect>(*other.swap_part_ptr) : nullptr;

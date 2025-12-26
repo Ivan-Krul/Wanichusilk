@@ -26,6 +26,29 @@ void SmallAnimation::render() {
     SDL_RenderTexture(mpRendererOrigin, mpRenderTextureTile, &mSrcRect, &mRect);
 }
 
+void SmallAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const float time_mult) {
+    const float time_mult_was = mTimeMult;
+    mTimeMult = time_mult;
+
+    if (preRender()) return;
+    if (mpRenderTextureTile == nullptr) return;
+
+    if (!packAnimationInRendTexture()) {
+        SDL_Log("error: %s\n", SDL_GetError());
+        return;
+    }
+
+    mSrcRect.x = (mFrameIndex % mRenderTexTileWidth) * mSrcRect.w;
+    mSrcRect.y = (mFrameIndex / mRenderTexTileWidth) * mSrcRect.h;
+
+    SDL_SetTextureAlphaMod(mpRenderTextureTile, alpha);
+
+    SDL_RenderTexture(mpRendererOrigin, mpRenderTextureTile, &mSrcRect, rect);
+
+    SDL_SetTextureAlphaMod(mpRenderTextureTile, mAlpha);
+    mTimeMult = time_mult_was;
+}
+
 void SmallAnimation::setAlpha(uint8_t alpha) noexcept {
     mAlpha = alpha;
     if (mpRenderTextureTile)

@@ -70,7 +70,7 @@ bool Animation::preRender() {
         mFrameIndex++;
         if (mFrameIndex >= mDelays_ms.size() && !mIsLoop) return true;
         mFrameIndex %= mDelays_ms.size();
-        mCurrentDelay += std::chrono::milliseconds(mDelays_ms[mFrameIndex]);
+        mCurrentDelay += std::chrono::milliseconds(mDelays_ms[mFrameIndex]) * mTimeMult;
     }
 
     return false;

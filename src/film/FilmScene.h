@@ -2,7 +2,6 @@
 #include "FilmKeypoint.h"
 #include "FilmLayerist.h"
 #include "FilmBackground.h"
-#include "../TextureManager.h"
 #include "../Clock.h"
 #include "../FrameScaling.h"
 
@@ -16,8 +15,18 @@ namespace film {
 
 class film::Scene {
 public:
-    bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes);
-    bool create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths);
+    // default empty constructor
+    //
+    // (possible trashed alert) set ptrs to managers or possibly create their own instances within the class
+    // set clock
+    // 
+    // load stuff?
+    //  - all in one list with flags in it?
+    //  - everything separately?
+    //  - (possibly the solution) make into separate struct to bind all resources and handle loading separately (possibly async/worker thread implementation)
+
+    bool create(ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes, TextureManager* texmgr = nullptr, AnimationManager* animmgr = nullptr);
+    bool create(ScaleOption scr_res, const std::vector<std::string>& texture_paths   , TextureManager* texmgr = nullptr, AnimationManager* animmgr = nullptr);
     void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); mBackground.setClock(clock); }
 
     template<typename T>
@@ -54,7 +63,8 @@ private:
     std::vector<std::shared_ptr<Keypoint>> maKeypoints;
     Keypoint* pKeypoint;
 
-    TextureManager* pTexMgr;
+    TextureManager* pTexMgr    = nullptr;
+    AnimationManager* pAnimMgr = nullptr;
 
     Layerist mLayerist;
     Background mBackground;
