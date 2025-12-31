@@ -6,7 +6,7 @@ film::LayerTexture::LayerTexture(Clock* clock, TextureManager* texmgr, LockerInd
     setClock(clock);
 
     mTexInd.elem_to = texind;
-    pTexture = texind != -1 ? &pTexMgr->GetLockerTexture(texind) : nullptr;
+    pTexture = texind != -1 ? pTexMgr->GetLockerResource(texind) : nullptr;
     mRect.elem_to = pTexture ? pTexture->getRectRes() : SDL_FRect{ 0.f };
 
     mPart.ease_tracker.setClock(clock);
@@ -86,7 +86,7 @@ void film::LayerTexture::pushTexIndSetter(KeypointLayerInteractSwap* keypoint) {
     mTexInd.reset_tracker();
     mTexInd.shift_elem();
     mTexInd.elem_to = keypoint->indx;
-    pTexture = mTexInd.elem_to != -1 ? &pTexMgr->GetLockerTexture(mTexInd.elem_to) : nullptr;
+    pTexture = mTexInd.elem_to != -1 ? pTexMgr->GetLockerResource(mTexInd.elem_to) : nullptr;
 
     switch (swapmode) {
     case KeypointLayerSwap::KeepNotDeformed:
@@ -160,7 +160,7 @@ bool film::LayerTexture::onPushTracker(LockerIndex ease_indx) {
         pushTransitTracker(tracker, mTexInd);
         mTexInd.elem_to = dynamic_cast<KeypointLayerInteractTransparentSwap*>(keypoint)->indx;
         mTexInd.unused_padding = ease_indx;
-        pTexture = mTexInd.elem_to != -1 ? &pTexMgr->GetLockerTexture(mTexInd.elem_to) : nullptr;
+        pTexture = mTexInd.elem_to != -1 ? pTexMgr->GetLockerResource(mTexInd.elem_to) : nullptr;
     }   break;
     default:
         return true;
@@ -171,7 +171,7 @@ bool film::LayerTexture::onPushTracker(LockerIndex ease_indx) {
 
 inline void film::LayerTexture::renderSwap(const SDL_FRect* res_rect, const SDL_FRect* res_part, uint8_t max_alpha) const {
     const float progress = mTexInd.ease_tracker;
-    if (mTexInd.elem_from != -1) pTexMgr->GetLockerTexture(mTexInd.elem_from).renderRaw(res_part, res_rect, max_alpha * (1.f - progress));
+    if (mTexInd.elem_from != -1) pTexMgr->GetLockerResource(mTexInd.elem_from)->renderRaw(res_part, res_rect, max_alpha * (1.f - progress));
     if (mTexInd.elem_to == -1) return;
 
     const auto tracked_kp = dynamic_cast<KeypointLayerInteractTransparentSwap*>(maEases.at(mTexInd.unused_padding).keypoint);

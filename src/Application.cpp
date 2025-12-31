@@ -30,12 +30,12 @@ void Application::OnInit() {
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
 
     SCOPED_STOPWATCH("anim load");
-    auto indx1 = mAnimMgr.RequestAnimationLoad("./res/received_1095637438226501.gif");
+    auto indx1 = mAnimMgr.RequestResourceLoad("./res/received_1095637438226501.gif");
     assert(indx1 != -1);
-    auto indx2 = mAnimMgr.RequestAnimationLoad("./res/lancer-spin-big.gif");
+    auto indx2 = mAnimMgr.RequestResourceLoad("./res/lancer-spin-big.gif");
     assert(indx2 != -1);
 
-    auto anim = mAnimMgr.GetLockerAnimation(indx1);
+    auto anim = mAnimMgr.GetLockerResource(indx1);
     anim->setClock(&mClock);
     anim->setLooping(true);
     anim->setAlpha(128);
@@ -45,7 +45,7 @@ void Application::OnInit() {
     anim->setRectRes(lerp_rect(res, SDL_FRect{ 0.f }, 0.5f));
     SDL_Log("isBig: %d", anim->isBig() ? 1 : 0);
 
-    anim = mAnimMgr.GetLockerAnimation(indx2);
+    anim = mAnimMgr.GetLockerResource(indx2);
     anim->setClock(&mClock);
     anim->setLooping(true);
     anim->start();
@@ -102,8 +102,8 @@ void Application::OnUpdate() {
 
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100 + 100, 200, 255);
-    mAnimMgr.GetLockerAnimation(0)->render();
-    mAnimMgr.GetLockerAnimation(1)->render();
+    mAnimMgr.GetLockerResource(0)->render();
+    mAnimMgr.GetLockerResource(1)->render();
 
     //mScene.render();
 }

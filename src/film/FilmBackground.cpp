@@ -29,8 +29,8 @@ void film::Background::update() {
     if (pKeypoint->type().specific_type == KeypointBackground::TransparentSwap) {
         const auto kp = dynamic_cast<KeypointBgTransparentSwap*>(pKeypoint);
 
-        if (kp->from != -1) pTexMgr->GetLockerTexture(kp->from).setAlpha(SDL_clamp((1.f - mEaseTimer) * 255, 0, 255));
-        if (kp->to != -1) pTexMgr->GetLockerTexture(kp->to).setAlpha(SDL_clamp(mEaseTimer * 255, 0, 255));
+        if (kp->from != -1) pTexMgr->GetLockerResource(kp->from)->setAlpha(SDL_clamp((1.f - mEaseTimer) * 255, 0, 255));
+        if (kp->to != -1) pTexMgr->GetLockerResource(kp->to)->setAlpha(SDL_clamp(mEaseTimer * 255, 0, 255));
     }
 }
 
@@ -40,17 +40,17 @@ void film::Background::render() {
         const auto target = swapkp.to;
 
         if (target != -1) {
-            pTexMgr->GetLockerTexture(target).render();
+            pTexMgr->GetLockerResource(target)->render();
         }
     }
 
     if (pKeypoint->type().specific_type == KeypointBackground::TransparentSwap) {
         const auto swapkp = *dynamic_cast<KeypointBgTransparentSwap*>(pKeypoint);
         if (swapkp.from != -1) {
-            pTexMgr->GetLockerTexture(swapkp.from).render();
+            pTexMgr->GetLockerResource(swapkp.from)->render();
         }
         if (swapkp.to != -1) {
-            pTexMgr->GetLockerTexture(swapkp.to).render();
+            pTexMgr->GetLockerResource(swapkp.to)->render();
         }
     }
 }
@@ -65,7 +65,7 @@ void film::Background::transformTexture(TextureIndex texind, KeypointBackground:
 }
 
 void film::Background::simplyPutTexture(TextureIndex texind) {
-    auto& tex = pTexMgr->GetLockerTexture(texind);
+    auto& tex = *pTexMgr->GetLockerResource(texind);
 
     tex.setPartialRenderingResolution();
     tex.setOffset(0, 0);
@@ -74,7 +74,7 @@ void film::Background::simplyPutTexture(TextureIndex texind) {
 }
 
 void film::Background::centerBlackBordersTexture(TextureIndex texind) {
-    auto& tex = pTexMgr->GetLockerTexture(texind);
+    auto& tex = *pTexMgr->GetLockerResource(texind);
     assert(pScale != nullptr);
 
     const auto frame = pScale->getFrameSize();

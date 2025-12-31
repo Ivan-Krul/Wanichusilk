@@ -18,7 +18,7 @@ bool film::Scene::create(TextureManager* texmgr, ScaleOption scr_res, const std:
     
     TextureIndex indx;
     for (size_t i = 0; i < texture_paths.size(); i++) {
-        indx = pTexMgr->RequestTextureLoad(texture_paths[i].c_str());
+        indx = pTexMgr->RequestResourceLoad(texture_paths[i].c_str());
         if (indx == -1) return false;
         mTextureIndexes.push_back(indx);
     }
@@ -77,7 +77,7 @@ inline bool film::Scene::canTriggerNext() const {
 
 void film::Scene::clear() {
     while(!mTextureIndexes.empty()) {
-        pTexMgr->RequestTextureClean(mTextureIndexes.back());
+        pTexMgr->RequestResourceClean(mTextureIndexes.back());
         mTextureIndexes.pop_back();
     }
 

@@ -2,19 +2,20 @@
 #include <vector>
 #include <memory>
 
+#include "IResourceManager.h"
 #include "BigAnimation.h"
 #include "SmallAnimation.h"
 #include "LockerSimple.h"
 
 using AnimationIndex = LockerIndex;
 
-class AnimationManager {
+class AnimationManager : public IResourceManager, public IResourceAccesser<Animation> {
 public:
     inline void SetRenderer(SDL_Renderer* renderer) noexcept { mpRenderer = renderer; }
     inline SDL_Renderer* GetRenderer() const noexcept { return mpRenderer; }
 
-    inline Animation* GetLockerAnimation(AnimationIndex index) { assert(index != -1);  return mAnimationLocker[index].get(); }
-    AnimationIndex RequestAnimationLoad(const char* path) {
+    inline Animation* GetLockerResource(LockerIndex index) override { assert(index != -1);  return mAnimationLocker[index].get(); }
+    LockerIndex RequestResourceLoad(const char* path) {
         Animation anim;
         bool ret = anim.create(path, mpRenderer);
         if (!ret) return -1;
@@ -28,7 +29,7 @@ public:
         return indx;
     }
 
-    inline void RequestAnimationClean(AnimationIndex index) {
+    inline void RequestResourceClean(LockerIndex index) {
         mAnimationLocker.popFromLocker(index);
     }
 

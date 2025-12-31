@@ -5,7 +5,7 @@ film::LayerAnimation::LayerAnimation(Clock* clock, AnimationManager* animmgr, An
     setClock(clock);
 
     mAnimInd.elem_to = animind;
-    pAnimation = animind != -1 ? pAnimMgr->GetLockerAnimation(animind) : nullptr;
+    pAnimation = animind != -1 ? pAnimMgr->GetLockerResource(animind) : nullptr;
     mRect.elem_to = pAnimation ? pAnimation->getRectRes() : SDL_FRect{ 0.f };;
 
     mRect.ease_tracker.setClock(clock);
@@ -83,7 +83,7 @@ void film::LayerAnimation::pushAnimIndSetter(KeypointLayer* keypoint) {
     mAnimInd.reset_tracker();
     mAnimInd.shift_elem();
     mAnimInd.elem_to = kp->indx;
-    pAnimation = mAnimInd.elem_to != -1 ? pAnimMgr->GetLockerAnimation(mAnimInd.elem_to) : nullptr;
+    pAnimation = mAnimInd.elem_to != -1 ? pAnimMgr->GetLockerResource(mAnimInd.elem_to) : nullptr;
 
     switch (swapmode) {
     case KeypointLayerSwap::KeepNotDeformed:
@@ -139,7 +139,7 @@ bool film::LayerAnimation::onPushSetter(KeypointLayer* keypoint) {
 
 inline void film::LayerAnimation::renderSwap(const SDL_FRect* res_rect, uint8_t max_alpha, float time_mult) const {
     const float progress = mAnimInd.ease_tracker;
-    if (mAnimInd.elem_from != -1) pAnimMgr->GetLockerAnimation(mAnimInd.elem_from)->renderRaw(res_rect, max_alpha * (1.f - progress), time_mult);
+    if (mAnimInd.elem_from != -1) pAnimMgr->GetLockerResource(mAnimInd.elem_from)->renderRaw(res_rect, max_alpha * (1.f - progress), time_mult);
     if (mAnimInd.elem_to == -1) return;
 
     const auto tracked_kp = dynamic_cast<KeypointLayerInteractTransparentSwap*>(maEases.at(mAnimInd.unused_padding).keypoint);
@@ -202,7 +202,7 @@ bool film::LayerAnimation::onPushTracker(const LockerIndex ease_indx) {
         pushTransitTracker(tracker, mAnimInd);
         mAnimInd.elem_to = dynamic_cast<KeypointLayerInteractTransparentSwap*>(keypoint)->indx;
         mAnimInd.unused_padding = ease_indx;
-        pAnimation = mAnimInd.elem_to != -1 ? pAnimMgr->GetLockerAnimation(mAnimInd.elem_to) : nullptr;
+        pAnimation = mAnimInd.elem_to != -1 ? pAnimMgr->GetLockerResource(mAnimInd.elem_to) : nullptr;
     }   break;
     default:
         return true;
