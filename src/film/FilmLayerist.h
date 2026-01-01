@@ -12,6 +12,7 @@
 #include "../EaseTracker.h"
 #include "../rect_math.h"
 #include "../PolyPointerList.h"
+#include "../Loader.h"
 
 // it handles layer stuff, transition between positions, using ease functions, etc...
 
@@ -19,10 +20,8 @@ namespace film {
     class Layerist;
 }
 
-class film::Layerist : public ClockHolder {
+class film::Layerist : public ClockHolder, public LoaderHolder {
 public:
-    inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
-    inline void setAnimationManager(AnimationManager* animmgr) { pAnimMgr = animmgr; }
     bool registerLayerKeypoint(KeypointLayer* keypoint);
 
     bool isWaiting() const;
@@ -38,8 +37,5 @@ private:
 private:
     PolyPointerList<LayerBase> maLayers;
     std::vector<PolyPointerList<LayerBase>::Iterator> maActiveLayerIndexes;
-
-    TextureManager*   pTexMgr  = nullptr;
-    AnimationManager* pAnimMgr = nullptr;
 };
 

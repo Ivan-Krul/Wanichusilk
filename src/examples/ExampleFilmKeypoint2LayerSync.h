@@ -11,9 +11,9 @@ void PushExampleFilmKeypoint2LayerSync(FilmScene& scene) {
     scene.addKeypoint(bgswap);
 
     KeypointLayerAddTexture ladd;
-    ladd.texind = 2;
+    ladd.loaderind = 2;
     scene.addKeypoint(ladd);
-    ladd.texind = 3;
+    ladd.loaderind = 3;
     scene.addKeypoint(ladd);
 
     KeypointLayerInteractRectPos lrect;

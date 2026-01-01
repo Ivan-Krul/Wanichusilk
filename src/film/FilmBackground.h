@@ -3,12 +3,13 @@
 #include "../FrameScaling.h"
 #include "../EaseTracker.h"
 #include "../TextureManager.h"
+#include "../Loader.h"
 
 namespace film {
     class Background;
 }
 
-class film::Background {
+class film::Background : public LoaderHolder {
 public:
     inline void setTextureManager(TextureManager* texmgr) { pTexMgr = texmgr; }
     inline void setScaleOption(ScaleOption* scale) { pScale = scale; }

@@ -12,6 +12,7 @@ public:
     inline void SetRenderer(SDL_Renderer* renderer) { mpRenderer = renderer; }
     inline SDL_Renderer* GetRenderer() const { return mpRenderer; }
     
+    LockerIndex RequestResourceCreate() override { return -1; };
     inline Texture* GetLockerResource(LockerIndex index) override { assert(index != -1);  return &mTextureLocker[index]; }
     LockerIndex RequestResourceLoad(const char* path) override {
         Texture tex;

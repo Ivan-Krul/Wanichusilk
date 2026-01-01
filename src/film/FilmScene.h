@@ -2,8 +2,10 @@
 #include "FilmKeypoint.h"
 #include "FilmLayerist.h"
 #include "FilmBackground.h"
+#include "FilmLoaderView.h"
 #include "../Clock.h"
 #include "../FrameScaling.h"
+#include "../Loader.h"
 
 #include <vector>
 #include <string>
@@ -15,18 +17,7 @@ namespace film {
 
 class film::Scene {
 public:
-    // default empty constructor
-    //
-    // (possible trashed alert) set ptrs to managers or possibly create their own instances within the class
-    // set clock
-    // 
-    // load stuff?
-    //  - all in one list with flags in it?
-    //  - everything separately?
-    //  - (possibly the solution) make into separate struct to bind all resources and handle loading separately (possibly async/worker thread implementation)
-
-    bool create(ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes, TextureManager* texmgr = nullptr, AnimationManager* animmgr = nullptr);
-    bool create(ScaleOption scr_res, const std::vector<std::string>& texture_paths   , TextureManager* texmgr = nullptr, AnimationManager* animmgr = nullptr);
+    bool create(ScaleOption scr_res, Loader* loader, SDL_Renderer* renderer);
     void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); mBackground.setClock(clock); }
 
     template<typename T>
@@ -35,10 +26,7 @@ public:
     T getKeypoint(size_t index) const;
 
     inline size_t keypointCount() const { return maKeypoints.size(); }
-    inline size_t textureCount() const { return mTextureIndexes.size(); }
-
-    inline TextureIndex getTextureIndex(size_t index) const { return mTextureIndexes[index]; }
-    inline TextureManager* getTextureManager() const { return pTexMgr; }
+    inline size_t resourceCount() const { return mpLoader->Size(); }
 
     void start();
     void update();
@@ -59,22 +47,22 @@ private:
     void onUpdate();
     void onNext();
 
-    std::vector<TextureIndex> mTextureIndexes;
+    //std::vector<TextureIndex> mTextureIndexes;
     std::vector<std::shared_ptr<Keypoint>> maKeypoints;
     Keypoint* pKeypoint;
 
-    TextureManager* pTexMgr    = nullptr;
-    AnimationManager* pAnimMgr = nullptr;
-
     Layerist mLayerist;
     Background mBackground;
+    LoaderView mLoaderView;
 
     ScaleOption mScaleOption;
 
     size_t mKeypointIndex = -1;
     Clock* mpClock;
+    Loader* mpLoader;
 
     TimerStep mBackupTimer;
+
 };
 
 template<typename T>

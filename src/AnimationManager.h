@@ -11,9 +11,11 @@ using AnimationIndex = LockerIndex;
 
 class AnimationManager : public IResourceManager, public IResourceAccesser<Animation> {
 public:
+    inline void SetClock(Clock* const clock) { mpClock = clock; }
     inline void SetRenderer(SDL_Renderer* renderer) noexcept { mpRenderer = renderer; }
     inline SDL_Renderer* GetRenderer() const noexcept { return mpRenderer; }
 
+    LockerIndex RequestResourceCreate() override { return -1; };
     inline Animation* GetLockerResource(LockerIndex index) override { assert(index != -1);  return mAnimationLocker[index].get(); }
     LockerIndex RequestResourceLoad(const char* path) {
         Animation anim;
@@ -25,6 +27,8 @@ public:
             indx = mAnimationLocker.pushInLocker(std::make_unique<BigAnimation>());
         else
             indx = mAnimationLocker.pushInLocker(std::make_unique<SmallAnimation>());
+
+        anim.setClock(mpClock);
         mAnimationLocker[indx]->create(std::move(anim));
         return indx;
     }
@@ -35,5 +39,6 @@ public:
 
 private:
     SDL_Renderer* mpRenderer = nullptr;
+    Clock* mpClock = nullptr;
     LockerSimple<std::unique_ptr<Animation>> mAnimationLocker;
 };

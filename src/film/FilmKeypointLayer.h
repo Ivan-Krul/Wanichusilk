@@ -35,12 +35,13 @@ namespace film {
             Animation
         };
 
+        LockerIndex loaderind = -1;
+
         inline virtual LayerBuildType layertype() const { return { None }; }
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, Add }; }
     };
 
     struct KeypointLayerAddTexture : public KeypointLayerAdd {
-        TextureIndex texind = -1;
         inline virtual LayerBuildType layertype() const { return Texture; }
     };
 
@@ -113,11 +114,10 @@ namespace film {
     };
 
     struct KeypointLayerAddAnimation : public KeypointLayerAdd {
-        LockerIndex animind = -1;
         inline virtual LayerBuildType layertype() const { return Animation; }
     };
 
-    struct KeypointLayerInteractAnimationSpeed : public KeypointLayer {
+    struct KeypointLayerInteractAnimationSpeed : public KeypointLayer, public KeypointEase {
         float speed = 1.f;
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationSpeed }; }
     };

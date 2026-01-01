@@ -1,32 +1,15 @@
 #include "FilmScene.h"
 
-bool film::Scene::create(ScaleOption scr_res, const std::vector<TextureIndex>& texture_indexes, TextureManager* texmgr, AnimationManager* animmgr) {
-    pTexMgr = texmgr;
-    mTextureIndexes = texture_indexes;
+bool film::Scene::create(ScaleOption scr_res, Loader* loader, SDL_Renderer* renderer) {
+    mpLoader = loader;
     mScaleOption = scr_res;
-    mLayerist.setTextureManager(texmgr);
-    mBackground.setTextureManager(texmgr);
+    mLayerist.setLoader(loader);
+    mBackground.setLoader(loader);
+    mLoaderView.setLoader(loader);
+    mLoaderView.setRenderer(renderer);
     mBackground.setScaleOption(&mScaleOption);
 
-    return true;
-}
-
-bool film::Scene::create(TextureManager* texmgr, ScaleOption scr_res, const std::vector<std::string>& texture_paths) {
-    pTexMgr = texmgr;
-    mScaleOption = scr_res;
-    mTextureIndexes.reserve(texture_paths.size());
-    
-    TextureIndex indx;
-    for (size_t i = 0; i < texture_paths.size(); i++) {
-        indx = pTexMgr->RequestResourceLoad(texture_paths[i].c_str());
-        if (indx == -1) return false;
-        mTextureIndexes.push_back(indx);
-    }
-    mLayerist.setTextureManager(texmgr);
-    mBackground.setTextureManager(texmgr);
-    mBackground.setScaleOption(&mScaleOption);
-
-    return true;
+    return false;
 }
 
 void film::Scene::start() {
@@ -76,11 +59,7 @@ inline bool film::Scene::canTriggerNext() const {
 }
 
 void film::Scene::clear() {
-    while(!mTextureIndexes.empty()) {
-        pTexMgr->RequestResourceClean(mTextureIndexes.back());
-        mTextureIndexes.pop_back();
-    }
-
+    mpLoader->Clean();
     maKeypoints.clear();
 }
 
