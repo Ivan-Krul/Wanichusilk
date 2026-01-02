@@ -12,9 +12,9 @@ namespace film {
 
     enum class KeypointChangeType : short {
         None = 0,
+        Utility,
         Background,
-        Layer,
-        LoaderView
+        Layer
     };
 
     struct KeypointTypeStruct {

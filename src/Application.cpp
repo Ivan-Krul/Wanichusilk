@@ -11,7 +11,6 @@ void Application::OnInit() {
     OpenWindow();
     SDL_SetRenderVSync(mMainWindow.getWindowRenderer(), false);
 
-    //mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
 
     //std::vector<std::string> vec {
     //    "./res/Stefan chill emoji.png",
@@ -27,15 +26,35 @@ void Application::OnInit() {
     //
     //mScene.start();
 
+    mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
+    mAnimMgr.SetClock(&mClock);
+
+    mLoader.PushResourcePathInQueue("./res/received_1095637438226501.gif", &mAnimMgr);
+    mLoader.PushResourcePathInQueue("./res/lancer-spin-big.gif", &mAnimMgr);
 
     SCOPED_STOPWATCH("anim load");
-    auto indx1 = mAnimMgr.RequestResourceLoad("./res/received_1095637438226501.gif");
-    assert(indx1 != -1);
-    auto indx2 = mAnimMgr.RequestResourceLoad("./res/lancer-spin-big.gif");
-    assert(indx2 != -1);
 
-    auto anim = mAnimMgr.GetLockerResource(indx1);
+    mLoader.Load();
+
+    while (mLoader.IsProgress()) { // async loading
+        SDL_Log("Progress: %d%%\r", (int)((float)mLoader.GetProgress() / (float)mLoader.Size() * 100.f));
+    }
+
+    SDL_Log("\n");
+
+    if (mLoader.IsFailed()) {
+        SDL_Log("Error while loading: %zu\n", mLoader.GetFailed());
+        assert(false);
+    }
+
+    mScene.create(ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), &mLoader);
+
+
+    assert(mLoader.GetTranscription(0) == 0);
+    assert(mLoader.GetTranscription(1) == 1);
+
+    auto anim = mAnimMgr.GetLockerResource(mLoader.GetTranscription(0));
     anim->setClock(&mClock);
     anim->setLooping(true);
     anim->setAlpha(128);
@@ -45,7 +64,7 @@ void Application::OnInit() {
     anim->setRectRes(lerp_rect(res, SDL_FRect{ 0.f }, 0.5f));
     SDL_Log("isBig: %d", anim->isBig() ? 1 : 0);
 
-    anim = mAnimMgr.GetLockerResource(indx2);
+    anim = mAnimMgr.GetLockerResource(mLoader.GetTranscription(1));
     anim->setClock(&mClock);
     anim->setLooping(true);
     anim->start();

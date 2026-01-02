@@ -4,7 +4,7 @@
 inline void PushExampleFilmKeypointBasic(FilmScene& scene) {
     using namespace film;
 
-    KeypointBgTransparentSwap swap;
+    KeypointBgTransparentTexSwap swap;
     swap.action = TimerStep::InInputAfterAwait;
     swap.rend_mode = swap.simple;
     swap.ease_func = ease_cubic_out;

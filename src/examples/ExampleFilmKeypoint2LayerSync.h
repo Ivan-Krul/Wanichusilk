@@ -5,8 +5,8 @@ void PushExampleFilmKeypoint2LayerSync(FilmScene& scene) {
     using namespace film;
 
     // setup
-    KeypointBgSwap bgswap;
-    bgswap.rend_mode = KeypointBgSwap::centered_black_borders;
+    KeypointBgTexSwap bgswap;
+    bgswap.rend_mode = KeypointBgTexSwap::centered_black_borders;
     bgswap.to = 1;
     scene.addKeypoint(bgswap);
 

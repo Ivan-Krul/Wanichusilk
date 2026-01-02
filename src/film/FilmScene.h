@@ -2,7 +2,6 @@
 #include "FilmKeypoint.h"
 #include "FilmLayerist.h"
 #include "FilmBackground.h"
-#include "FilmLoaderView.h"
 #include "../Clock.h"
 #include "../FrameScaling.h"
 #include "../Loader.h"
@@ -17,7 +16,7 @@ namespace film {
 
 class film::Scene {
 public:
-    bool create(ScaleOption scr_res, Loader* loader, SDL_Renderer* renderer);
+    bool create(ScaleOption scr_res, Loader* loader);
     void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); mBackground.setClock(clock); }
 
     template<typename T>
@@ -53,8 +52,7 @@ private:
 
     Layerist mLayerist;
     Background mBackground;
-    LoaderView mLoaderView;
-
+    
     ScaleOption mScaleOption;
 
     size_t mKeypointIndex = -1;

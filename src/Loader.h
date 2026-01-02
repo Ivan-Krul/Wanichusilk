@@ -15,6 +15,8 @@ public:
     inline IResourceManager* GetManager(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).mgr_ptr : nullptr; }
     LockerIndex GetTranscription(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).index : -1; }
 
+    IResourceManager* GetRequiredInterface(ResourceManagerAttribute attr) const noexcept;
+
     void Load();
     void Clean();
 
@@ -22,6 +24,7 @@ public:
 
     inline bool IsCleaned() const noexcept { return mLoadErrNum == -2; }
     inline bool IsFailed() const noexcept { return !(IsCleaned() || IsLoaded()); }
+    inline bool IsProgress() const noexcept { return mProgress != -1; }
     inline bool IsLoaded() const noexcept { return mLoadErrNum == -1; }
     inline size_t GetFailed() const noexcept { return mLoadErrNum; }
     inline size_t GetProgress() const noexcept { return mProgress; }
@@ -40,7 +43,7 @@ private:
 
     std::thread mLoadThread;
     size_t mLoadErrNum = -2;
-    size_t mProgress = 0;
+    size_t mProgress = -1;
 };
 
 struct LoaderHolder {
@@ -48,4 +51,3 @@ struct LoaderHolder {
 protected:
     Loader* pLoader;
 };
-

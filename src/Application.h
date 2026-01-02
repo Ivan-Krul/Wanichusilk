@@ -31,6 +31,9 @@ private:
 
     TextureManager mTexMgr;
     AnimationManager mAnimMgr;
+
+    Loader mLoader;
+
     FilmScene mScene;
     Clock mClock;
 

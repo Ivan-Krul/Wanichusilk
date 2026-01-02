@@ -1,18 +1,26 @@
 #include "Loader.h"
+#include "Loader.h"
 
 void Loader::PushResourcePathInQueue(const char* path, IResourceManager* manager) {
-    mIsLoaded = false;
     mLoadErrNum = -2;
 
     ResourceIndexer ri;
     ri.mgr_ptr = manager;
     ri.path = path;
 
-    maResMgr.emplace_back(ri);
+    maResMgr.push_back(ri);
+}
+
+IResourceManager* Loader::GetRequiredInterface(ResourceManagerAttribute attr) const noexcept {
+    for (auto& idx : maResMgr) {
+        if (static_cast<short>(idx.mgr_ptr->GetAttribute() & attr)) return idx.mgr_ptr;
+    }
+    return nullptr;
 }
 
 void Loader::Load() {
     mLoadErrNum = -2;
+    mProgress = 0;
     mLoadThread.swap(std::thread(&Loader::loadMain, this));
     mLoadThread.detach();
 }
@@ -29,15 +37,19 @@ void Loader::Clean() {
 
 void Loader::loadMain() {
     LockerIndex li_res;
-    for (mProgress = 0; i < maResMgr.size(); i++) {
-        auto& res = maResMgr[i];
+    for (mProgress = 0; mProgress < maResMgr.size(); mProgress++) {
+        auto& res = maResMgr[mProgress];
         li_res = res.mgr_ptr->RequestResourceLoad(res.path);
 
         if (li_res == -1) {
-            mLoadErrNum = i;
+            mProgress = -1;
+            mLoadErrNum = mProgress;
             return;
         }
+
+        res.index = li_res;
     }
 
+    mProgress = -1;
     mLoadErrNum = -1;
 }

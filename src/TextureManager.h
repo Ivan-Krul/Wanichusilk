@@ -7,10 +7,10 @@
 
 using TextureIndex = LockerIndex;
 
-class TextureManager : public IResourceManager, public IResourceAccesser<Texture> {
+class TextureManager : public IResourceManager, public IResourceAccesser<Texture>, public IRendererGiver {
 public:
-    inline void SetRenderer(SDL_Renderer* renderer) { mpRenderer = renderer; }
-    inline SDL_Renderer* GetRenderer() const { return mpRenderer; }
+    inline void SetRenderer(SDL_Renderer* renderer) noexcept override { mpRenderer = renderer; }
+    inline SDL_Renderer* GetRenderer() const noexcept override { return mpRenderer; }
     
     LockerIndex RequestResourceCreate() override { return -1; };
     inline Texture* GetLockerResource(LockerIndex index) override { assert(index != -1);  return &mTextureLocker[index]; }
@@ -24,6 +24,8 @@ public:
     inline void RequestResourceClean(LockerIndex index) override {
         mTextureLocker.popFromLocker(index);
     }
+
+    inline Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser; }
 
 private:
     SDL_Renderer* mpRenderer = nullptr;

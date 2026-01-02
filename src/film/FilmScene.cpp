@@ -1,12 +1,10 @@
 #include "FilmScene.h"
 
-bool film::Scene::create(ScaleOption scr_res, Loader* loader, SDL_Renderer* renderer) {
+bool film::Scene::create(ScaleOption scr_res, Loader* loader) {
     mpLoader = loader;
     mScaleOption = scr_res;
     mLayerist.setLoader(loader);
     mBackground.setLoader(loader);
-    mLoaderView.setLoader(loader);
-    mLoaderView.setRenderer(renderer);
     mBackground.setScaleOption(&mScaleOption);
 
     return false;

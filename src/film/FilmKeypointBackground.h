@@ -4,10 +4,18 @@
 namespace film {
     struct KeypointBackground : public Keypoint {
         enum Type : short {
-            Swap = 1,
-            TransparentSwap
+            Fill = 1,
+            TextureSwap,
+            TransparentTextureSwap
         };
+    };
 
+    struct KeypointBgFill : public KeypointBackground {
+        SDL_Color color = { 0 };
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Background, Fill }; }
+    };
+
+    struct KeypointBgTexSwap : public KeypointBackground {
         enum RenderMode {
             blank,
             simple,
@@ -16,18 +24,16 @@ namespace film {
             //scroll
         };
 
-        TextureIndex to = -1;
         RenderMode rend_mode = blank;
+
+        TextureIndex to = -1;
+        inline KeypointTypeStruct type() const { return { KeypointChangeType::Background, TextureSwap }; }
     };
 
-    struct KeypointBgSwap : public KeypointBackground {
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Background, Swap }; }
-    };
-
-    struct KeypointBgTransparentSwap : public KeypointBackground, public KeypointEase {
+    struct KeypointBgTransparentTexSwap : public KeypointBgTexSwap, public KeypointEase {
         TextureIndex from;
 
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Background, TransparentSwap }; }
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Background, TransparentTextureSwap }; }
         inline bool has_ease() override { return true; }
     };
 }

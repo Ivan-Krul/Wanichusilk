@@ -9,11 +9,11 @@
 
 using AnimationIndex = LockerIndex;
 
-class AnimationManager : public IResourceManager, public IResourceAccesser<Animation> {
+class AnimationManager : public IResourceManager, public IResourceAccesser<Animation>, public IRendererGiver {
 public:
     inline void SetClock(Clock* const clock) { mpClock = clock; }
-    inline void SetRenderer(SDL_Renderer* renderer) noexcept { mpRenderer = renderer; }
-    inline SDL_Renderer* GetRenderer() const noexcept { return mpRenderer; }
+    inline void SetRenderer(SDL_Renderer* renderer) noexcept override { mpRenderer = renderer; }
+    inline SDL_Renderer* GetRenderer() const noexcept override { return mpRenderer; }
 
     LockerIndex RequestResourceCreate() override { return -1; };
     inline Animation* GetLockerResource(LockerIndex index) override { assert(index != -1);  return mAnimationLocker[index].get(); }
@@ -33,9 +33,9 @@ public:
         return indx;
     }
 
-    inline void RequestResourceClean(LockerIndex index) {
-        mAnimationLocker.popFromLocker(index);
-    }
+    inline void RequestResourceClean(LockerIndex index) { mAnimationLocker.popFromLocker(index); }
+
+    inline Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser; }
 
 private:
     SDL_Renderer* mpRenderer = nullptr;
