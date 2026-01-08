@@ -27,6 +27,7 @@ void film::Background::registerBackgroundKeypoint(KeypointBackground* keypoint) 
 }
 
 void film::Background::update() {
+    if (!pKeypoint) return;
     mEaseTimer.update();
 
     if (pKeypoint->type().specific_type == KeypointBackground::TransparentTextureSwap) {
@@ -38,6 +39,7 @@ void film::Background::update() {
 }
 
 void film::Background::render() {
+    if (!pKeypoint) return;
     switch (pKeypoint->type().specific_type) {
     case KeypointBackground::Fill: {
         auto color = dynamic_cast<KeypointBgFill*>(pKeypoint)->color;

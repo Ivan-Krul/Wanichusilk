@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "Logger.h"
 
 Texture::Texture(Texture&& tex) noexcept {
     mpTexture = tex.mpTexture;
@@ -18,7 +19,11 @@ bool Texture::create(const char* src, SDL_Renderer* renderer) {
     mpRendererOrigin = renderer;
 
     mpTexture = IMG_LoadTexture(mpRendererOrigin, src);
-    if (mpTexture == NULL) return false;
+    if (mpTexture == NULL) {
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
+        return false;
+    }
     mRectRes.w = mpTexture->w;
     mRectRes.h = mpTexture->h;
 
@@ -33,14 +38,13 @@ void Texture::renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8
         SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
         SDL_SetTextureAlphaMod(mpTexture, mAlpha);
     }
-    else SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
+    else 
+        SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
 }
 
 void Texture::render() const {
     if (mpTexture)
         SDL_RenderTexture(mpRendererOrigin, mpTexture, mUseRectPart ? &mRectPart : NULL, &mRectRes);
-    else
-        SDL_Log("Not rendering");
 }
 
 void Texture::clear() {

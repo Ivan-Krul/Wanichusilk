@@ -18,6 +18,9 @@
 #define DEFAULT_ANIM_SLOT_USE_THRESHOLD 100 * 100 * 10
 #define DEFAULT_ANIM_SLOT_SIZE 4
 
+#define DEFAULT_LOG_SDL_PATH "./SDL3.log"
+#define DEFAULT_LOG_PATH "./Wanichusilk.log"
+
 #if __cplusplus >= 201703L
 #define _FALLTHROUGH [[fallthrough]]
 #else
@@ -46,8 +49,12 @@
     ClassName& operator=(ClassName&&) noexcept = default;
 #endif
 
+#define ENABLE_DEBUG_LOG
+
 //#define USE_THIRD_PARTY_MATH
 //#define NO_CLOCK_TRACKING
 #define PLACE_ANIMATION_AS_IMAGE
+#define ENABLE_DEBUG_LOG
+#define ENABLE_CONSOLE_LOG
 
 #endif

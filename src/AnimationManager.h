@@ -5,7 +5,6 @@
 #include "IResourceManager.h"
 #include "BigAnimation.h"
 #include "SmallAnimation.h"
-#include "LockerSimple.h"
 
 using AnimationIndex = LockerIndex;
 
@@ -30,6 +29,7 @@ public:
 
         anim.setClock(mpClock);
         mAnimationLocker[indx]->create(std::move(anim));
+        mAnimationLocker[indx]->start(1.f);
         return indx;
     }
 

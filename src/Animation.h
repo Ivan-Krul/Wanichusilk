@@ -76,7 +76,7 @@ protected:
     uint8_t mAlpha = 255;
     bool mIsLoop = false;
     bool mHasHead = true;
-    bool mIsFreezed = false;
+    bool mIsFreezed = true;
 
     Clock::Duration mCurrentDelay = Clock::Duration::zero();
 

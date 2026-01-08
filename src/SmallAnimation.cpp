@@ -1,12 +1,24 @@
 #include "SmallAnimation.h"
+#include "Logger.h"
 
 void SmallAnimation::start(float time_mult) {
-    if (!muHandle.anim || !mHasHead) return;
+    if (!muHandle.anim || !mHasHead) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
+        log.logInfoIn(__FUNCTION__, "has_head: %d.", mHasHead);
+        return;
+    }
+    if (!pClock) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Animation didn't got a clock.");
+        return;
+    }
     mFrameIndex = 0;
     mTimeMult = time_mult;
 
     if (!packAnimationInRendTexture()) {
-        SDL_Log("error: %s\n", SDL_GetError());
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
         return;
     }
 
@@ -17,7 +29,11 @@ void SmallAnimation::start(float time_mult) {
 
 void SmallAnimation::render() {
     if (preRender()) return;
-    if (mpRenderTextureTile == nullptr) return;
+    if (mpRenderTextureTile == nullptr) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Texture tile wasn't initialised.");
+        return;
+    }
 
     // render here
     mSrcRect.x = (mFrameIndex % mRenderTexTileWidth) * mSrcRect.w;
@@ -31,10 +47,9 @@ void SmallAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const
     mTimeMult = time_mult;
 
     if (preRender()) return;
-    if (mpRenderTextureTile == nullptr) return;
-
-    if (!packAnimationInRendTexture()) {
-        SDL_Log("error: %s\n", SDL_GetError());
+    if (mpRenderTextureTile == nullptr) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Texture tile wasn't initialised.");
         return;
     }
 
@@ -62,8 +77,11 @@ void SmallAnimation::childClean() {
 bool SmallAnimation::packAnimationInRendTexture() {
     findTileResolution();
     SDL_Surface* surf = SDL_CreateSurface(muHandle.anim->w * mRenderTexTileWidth, muHandle.anim->h * mRenderTexTileHeight, cPixelFormat);
-    if (!surf)
+    if (!surf) {
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logErrorIn(__FUNCTION__,  "Error with surface %s.", SDL_GetError());
         return false;
+    }
 
     const auto ox = muHandle.anim->w;
     const auto oy = muHandle.anim->h;

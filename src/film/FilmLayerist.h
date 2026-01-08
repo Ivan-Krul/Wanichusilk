@@ -13,6 +13,7 @@
 #include "../rect_math.h"
 #include "../PolyPointerList.h"
 #include "../Loader.h"
+#include "../Logger.h"
 
 // it handles layer stuff, transition between positions, using ease functions, etc...
 

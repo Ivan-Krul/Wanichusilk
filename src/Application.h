@@ -4,12 +4,11 @@
 #include "Window.h"
 #include "TextureManager.h"
 #include "AnimationManager.h"
+#include "FontManager.h"
 #include "FilmScene.h"
 #include "Clock.h"
 #include "define.h"
 #include "Stopwatch.h"
-#include "SmallAnimation.h"
-#include "BigAnimation.h"
 
 class Application {
 public:

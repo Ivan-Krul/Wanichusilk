@@ -1,10 +1,15 @@
 #include "Animation.h"
+#include "Logger.h"
 
 bool Animation::create(const char* path, SDL_Renderer* renderer) {
     if (mHasHead && muHandle.anim) return false;
     mpRendererOrigin = renderer;
     muHandle.anim = IMG_LoadAnimation(path);
-    if (muHandle.anim == NULL) return false;
+    if (muHandle.anim == NULL) {
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
+        return false;
+    }
     mHasHead = true;
     mIsLoop = false;
     mIsFreezed = false;
@@ -19,7 +24,7 @@ bool Animation::create(const char* path, SDL_Renderer* renderer) {
         mDelaySum += mDelays_ms[i];
     }
 
-    return muHandle.anim;
+    return true;
 }
 
 bool Animation::create(Animation&& instance) noexcept {
@@ -64,6 +69,7 @@ void Animation::clear() {
 bool Animation::preRender() {
     if (mFrameIndex >= mDelays_ms.size()) return true;
     if (mIsFreezed) return false;
+    if (!(mTimeMult > 0.f)) return false;
     mCurrentDelay -= pClock->DeltaTime();
 
     while (mCurrentDelay.count() < 0.f) {

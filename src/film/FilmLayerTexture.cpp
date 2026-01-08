@@ -8,6 +8,7 @@ film::LayerTexture::LayerTexture(Clock* clock, TextureManager* texmgr, LockerInd
     mTexInd.elem_to = texind;
     pTexture = texind != -1 ? pTexMgr->GetLockerResource(texind) : nullptr;
     mRect.elem_to = pTexture ? pTexture->getRectRes() : SDL_FRect{ 0.f };
+    mAlpha.elem_to = 255;
 
     mPart.ease_tracker.setClock(clock);
     mRect.ease_tracker.setClock(clock);

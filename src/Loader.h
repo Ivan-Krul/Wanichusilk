@@ -23,7 +23,7 @@ public:
     inline size_t Size() const noexcept { return maResMgr.size(); }
 
     inline bool IsCleaned() const noexcept { return mLoadErrNum == -2; }
-    inline bool IsFailed() const noexcept { return !(IsCleaned() || IsLoaded()); }
+    inline bool IsFailed() const noexcept { return mLoadErrNum != -2 && mLoadErrNum != -1; }
     inline bool IsProgress() const noexcept { return mProgress != -1; }
     inline bool IsLoaded() const noexcept { return mLoadErrNum == -1; }
     inline size_t GetFailed() const noexcept { return mLoadErrNum; }

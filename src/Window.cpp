@@ -1,11 +1,8 @@
 #include "Window.h"
+#include "Logger.h"
 #include <stdexcept>
 
 bool Window::create(const char* name, int width, int height, SDL_WindowFlags flags) noexcept {
-#ifdef PRECHECK_INSTANCE
-	if ((SDLRoot::getInstance() & (Uint32)SDLRoot::InitPart::video) == 0) return false;
-#endif
-
 #pragma warning(suppress : 4554)
 	if (width >> sizeof(width) * 8 - 1) width = ((width << 1) >> 1);
 #pragma warning(suppress : 4554)
@@ -23,10 +20,17 @@ bool Window::create(const char* name, int width, int height, SDL_WindowFlags fla
 	mWindowName[name_len] = 0;
 
 	//Create window
-	if ((mpWindow = SDL_CreateWindow(mWindowName, width, height, flags)) == nullptr)
+	if ((mpWindow = SDL_CreateWindow(mWindowName, width, height, flags)) == nullptr) {
+		Logger log(DEFAULT_LOG_SDL_PATH);
+		log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
 		return false;
+	}
 
-	if (!createRenderer()) return false; // Get window surface
+	if (!createRenderer()) {
+		Logger log(DEFAULT_LOG_SDL_PATH);
+		log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
+		return false;
+	}
 
 	if (mfOnCreate)
 		mfOnCreate();

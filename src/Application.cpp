@@ -7,17 +7,18 @@
 
 void Application::OnInit() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
-#ifdef DEBUG
-        printf("SDL failed to load: %s\n", SDL_GetError());
-#endif
-        // the loading of SDL was failed: log
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logCritical("SDL failed to initialize: %s.", SDL_GetError());
         exit(1);
     }
 
-    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
-    OpenWindow();
-    SDL_SetRenderVSync(mMainWindow.getWindowRenderer(), false);
+    if (!TTF_Init()) {
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logCritical("SDL_ttf failed to initialize: %s.", SDL_GetError());
+        exit(1);
+    }
 
+    OpenWindow();
 
     //std::vector<std::string> vec {
     //    "./res/Stefan chill emoji.png",
@@ -45,42 +46,63 @@ void Application::OnInit() {
     mLoader.Load();
 
     while (mLoader.IsProgress()) { // async loading
-        SDL_Log("Progress: %d%%\r", (int)((float)mLoader.GetProgress() / (float)mLoader.Size() * 100.f));
+        printf("\r%d%%", (int)((float)mLoader.GetProgress() / (float)mLoader.Size() * 100.f));
     }
-
-    SDL_Log("\n");
+    printf("\r100%%\n");
 
     if (mLoader.IsFailed()) {
-        SDL_Log("Error while loading: %zu\n", mLoader.GetFailed());
-        assert(false);
+        Logger log(DEFAULT_LOG_PATH);
+        log.logError("Resource wasn't loaded properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
+        exit(1);
     }
-
-    mScene.create(ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), &mLoader);
-
-
     assert(mLoader.GetTranscription(0) == 0);
     assert(mLoader.GetTranscription(1) == 1);
 
-    auto anim = mAnimMgr.GetLockerResource(mLoader.GetTranscription(0));
-    anim->setClock(&mClock);
-    anim->setLooping(true);
-    anim->setAlpha(128);
-    anim->start();
-    anim->lockChange();
-    auto res = anim->getRectRes();
-    anim->setRectRes(lerp_rect(res, SDL_FRect{ 0.f }, 0.5f));
-    SDL_Log("isBig: %d", anim->isBig() ? 1 : 0);
+    mScene.create(ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), &mLoader);
+    mScene.setClock(&mClock);
 
-    anim = mAnimMgr.GetLockerResource(mLoader.GetTranscription(1));
-    anim->setClock(&mClock);
-    anim->setLooping(true);
-    anim->start();
-    anim->lockChange();
-    res = anim->getRectRes();
-    res.x = 200;
-    res.y = 200;
-    anim->setRectRes(res);
-    SDL_Log("isBig: %d", anim->isBig() ? 1 : 0);
+    film::KeypointLayerAddAnimation a;
+    a.loaderind = mLoader.GetTranscription(0);
+    mScene.addKeypoint(a);
+    a.loaderind = mLoader.GetTranscription(1);
+    mScene.addKeypoint(a);
+
+    film::KeypointLayerInteractPos p;
+    p.layerindx = 1;
+    p.rect.x = 200;
+    p.rect.y = 200;
+    mScene.addKeypoint(p);
+
+    film::KeypointLayerInteractAlpha ana;
+    ana.layerindx = 0;
+    ana.alpha = 128;
+    mScene.addKeypoint(ana);
+
+    film::KeypointLayerInteractAnimationLoop anl;
+    anl.layerindx = 0;
+    mScene.addKeypoint(anl);
+    anl.layerindx = 1;
+    mScene.addKeypoint(anl);
+
+    film::KeypointLayerInteractAnimationStart ans;
+    ans.layerindx = 0;
+    mScene.addKeypoint(ans);
+    ans.layerindx = 1;
+    mScene.addKeypoint(ans);
+
+    film::KeypointLayerEnable e;
+    e.layerindx = 0;
+    mScene.addKeypoint(e);
+    e.layerindx = 1;
+    mScene.addKeypoint(e);
+
+
+    film::Keypoint ts;
+    ts.action = ts.InInputAfterAwait;
+    ts.frame_delay = 100;
+    mScene.addKeypoint(ts);
+
+    mScene.start();
 }
 
 void Application::OnLoop() {
@@ -100,9 +122,13 @@ void Application::OnLoop() {
 }
 
 void Application::OpenWindow() {
+    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
     if (!mMainWindow.create("Wanichusilk", DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y)) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Could not create window: %s\n", SDL_GetError());
+        Logger log(DEFAULT_LOG_PATH);
+        log.logCritical("Couldn't create main window");
+        exit(1);
     }
+    SDL_SetRenderVSync(mMainWindow.getWindowRenderer(), false);
 }
 
 void Application::PullEvents() {
@@ -123,13 +149,10 @@ void Application::PullEvents() {
 }
 
 void Application::OnUpdate() {
-    //mScene.update();
+    mScene.update();
 }
 
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100 + 100, 200, 255);
-    mAnimMgr.GetLockerResource(0)->render();
-    mAnimMgr.GetLockerResource(1)->render();
-
-    //mScene.render();
+    mScene.render();
 }

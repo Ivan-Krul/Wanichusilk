@@ -1,7 +1,18 @@
 #include "BigAnimation.h"
+#include "Logger.h"
 
 void BigAnimation::start(float time_mult) {
-    if (!muHandle.anim || !mHasHead) return;
+    if (!muHandle.anim || !mHasHead) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
+        log.logInfoIn(__FUNCTION__, "has_head: %d.", mHasHead);
+        return;
+    }
+    if (!pClock) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Animation didn't got a clock.");
+        return;
+    }
     mFrameIndex = 0;
     mTimeMult = time_mult;
 
@@ -12,8 +23,14 @@ void BigAnimation::start(float time_mult) {
         surf = SDL_ConvertSurface(muHandle.anim->frames[f], cPixelFormat);
         mapTextures[f] = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
 
-        if (mapTextures[f] && mAlpha != 255)
-            SDL_SetTextureAlphaMod(mapTextures[f], mAlpha);
+        if (mapTextures[f]) {
+            if (mAlpha != 255)
+                SDL_SetTextureAlphaMod(mapTextures[f], mAlpha);
+        }
+        else {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "Convertion to texture was failed.");
+        }
 
         SDL_DestroySurface(surf);
     }

@@ -1,8 +1,12 @@
 #include "FilmScene.h"
 
 bool film::Scene::create(ScaleOption scr_res, Loader* loader) {
+    assert(loader);
     mpLoader = loader;
     mScaleOption = scr_res;
+    if (!loader->IsLoaded()) {
+
+    }
     mLayerist.setLoader(loader);
     mBackground.setLoader(loader);
     mBackground.setScaleOption(&mScaleOption);
@@ -40,11 +44,6 @@ void film::Scene::render() {
 
     mBackground.render();
     mLayerist.render();
-
-#if 0
-    SDL_SetTextureBlendMode(pTexMgr->GetLockerTexture(0).getTexture(), SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(pTexMgr->GetRenderer(), 0, 0, 0, 128);
-#endif
 }
 
 inline bool film::Scene::canTriggerNext() const {
@@ -141,5 +140,4 @@ void film::Scene::onNext() {
     if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
 
     mBackupTimer.action = timer.action;
-    clockfunc::SDL_Log_FilmTimer(mBackupTimer);
 }

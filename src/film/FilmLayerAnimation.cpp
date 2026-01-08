@@ -6,7 +6,9 @@ film::LayerAnimation::LayerAnimation(Clock* clock, AnimationManager* animmgr, An
 
     mAnimInd.elem_to = animind;
     pAnimation = animind != -1 ? pAnimMgr->GetLockerResource(animind) : nullptr;
-    mRect.elem_to = pAnimation ? pAnimation->getRectRes() : SDL_FRect{ 0.f };;
+    mRect.elem_to = pAnimation ? pAnimation->getRectRes() : SDL_FRect{ 0.f };
+    mAlpha.elem_to = 255;
+    mTimeMult.elem_to = 1.f;
 
     mRect.ease_tracker.setClock(clock);
     mAlpha.ease_tracker.setClock(clock);
@@ -115,7 +117,7 @@ bool film::LayerAnimation::onPushSetter(KeypointLayer* keypoint) {
         break;
     case KeypointLayer::InteractDefaultPos:     mRect.set_default(); break;
     case KeypointLayer::InteractSwap: pushAnimIndSetter(keypoint);   break;
-    case KeypointLayer::InteractAnimationStart: if (pAnimation) { if (pAnimation->isFreezed()) pAnimation->setFreeze(false); else pAnimation->start(mTimeMult.elem_to); } break;
+    case KeypointLayer::InteractAnimationStart: if (pAnimation->isFreezed()) pAnimation->setFreeze(false); break;
     case KeypointLayer::InteractAnimationStop:  pAnimation->setFreeze(true);    break;
     case KeypointLayer::InteractAnimationLoop:   pAnimation->setLooping(true);  break;
     case KeypointLayer::InteractAnimationUnloop: pAnimation->setLooping(false); break;

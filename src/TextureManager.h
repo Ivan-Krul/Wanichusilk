@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "IResourceManager.h"
-#include "LockerSimple.h"
 #include "Texture.h"
 
 using TextureIndex = LockerIndex;
@@ -26,7 +25,7 @@ public:
     }
 
     inline Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser; }
-
+    
 private:
     SDL_Renderer* mpRenderer = nullptr;
     LockerSimple<Texture> mTextureLocker;

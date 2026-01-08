@@ -19,6 +19,23 @@
             }
         },
         {
+            "name": "windows-base-ninja-mingw",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
             "name": "windows-base-vs2022",
             "hidden": true,
             "generator": "Visual Studio 17 2022",
@@ -56,6 +73,30 @@
             "name": "x64-debug-wn",
             "displayName": "x64 Debug",
             "inherits": "windows-base-ninja",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "x64-debug-ws",
+            "displayName": "x64 Debug",
+            "inherits": "windows-base-vs2022",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "x64-debug-wm",
+            "displayName": "x64 Debug",
+            "inherits": "windows-base-ninja-mingw",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
@@ -110,6 +151,28 @@
             "name": "default-build-windows",
             "displayName": "x64 Debug",
             "configurePreset": "x64-debug-wn",
+            "description": "Vanilla build",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "build-windows-vs2022",
+            "displayName": "x64 Debug",
+            "configurePreset": "x64-debug-ws",
+            "description": "Vanilla build",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "build-windows-mingw",
+            "displayName": "x64 Debug",
+            "configurePreset": "x64-debug-wm",
             "description": "Vanilla build",
             "condition": {
                 "type": "equals",

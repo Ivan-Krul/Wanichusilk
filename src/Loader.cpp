@@ -42,8 +42,8 @@ void Loader::loadMain() {
         li_res = res.mgr_ptr->RequestResourceLoad(res.path);
 
         if (li_res == -1) {
-            mProgress = -1;
             mLoadErrNum = mProgress;
+            mProgress = -1;
             return;
         }
 
