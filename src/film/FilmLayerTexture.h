@@ -12,7 +12,7 @@ public:
     LayerTexture(Clock* clock, TextureManager* texmgr, LockerIndex texind);
     void update() override;
     void render() const override;
-    inline void clear() override;
+    void clear() override;
     inline bool isWaiting() const noexcept override;
     inline TimerStep getLongestWaiting() const noexcept override;
 

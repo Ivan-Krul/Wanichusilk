@@ -36,7 +36,24 @@
             }
         },
         {
-            "name": "x64-debug",
+            "name": "linux-base-make",
+            "hidden": true,
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "x64-debug-wn",
             "displayName": "x64 Debug",
             "inherits": "windows-base-ninja",
             "architecture": {
@@ -48,15 +65,27 @@
             }
         },
         {
-            "name": "x64-release",
+            "name": "x64-debug-lm",
+            "displayName": "x64 Debug",
+            "inherits": "linux-base-make",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "x64-release-wn",
             "displayName": "x64 Release",
-            "inherits": "x64-debug",
+            "inherits": "x64-debug-wn",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
         },
         {
-            "name": "x86-debug",
+            "name": "x86-debug-wn",
             "displayName": "x86 Debug",
             "inherits": "windows-base-ninja",
             "architecture": {
@@ -68,9 +97,9 @@
             }
         },
         {
-            "name": "x86-release",
+            "name": "x86-release-wn",
             "displayName": "x86 Release",
-            "inherits": "x86-debug",
+            "inherits": "x86-debug-wn",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
@@ -80,8 +109,24 @@
         {
             "name": "default-build-windows",
             "displayName": "x64 Debug",
-            "configurePreset": "x64-debug",
-            "description": "Vanilla build"
+            "configurePreset": "x64-debug-wn",
+            "description": "Vanilla build",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "default-build-linux",
+            "displayName": "x64 Debug",
+            "configurePreset": "x64-debug-lm",
+            "description": "Vanilla build",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
         }
     ]
 }

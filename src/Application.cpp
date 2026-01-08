@@ -1,8 +1,15 @@
 #include "Application.h"
 #include "examples/ExampleFilmKeypoint2LayerSync.h"
 
+#ifdef DEBUG
+#include <stdio.h>
+#endif
+
 void Application::OnInit() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
+#ifdef DEBUG
+        printf("SDL failed to load: %s\n", SDL_GetError());
+#endif
         // the loading of SDL was failed: log
         exit(1);
     }
@@ -30,7 +37,7 @@ void Application::OnInit() {
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetClock(&mClock);
 
-    mLoader.PushResourcePathInQueue("./res/received_1095637438226501.gif", &mAnimMgr);
+    mLoader.PushResourcePathInQueue("./res/cat-runner-2049-cat-runner.gif", &mAnimMgr);
     mLoader.PushResourcePathInQueue("./res/lancer-spin-big.gif", &mAnimMgr);
 
     SCOPED_STOPWATCH("anim load");

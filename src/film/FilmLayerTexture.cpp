@@ -56,7 +56,7 @@ void film::LayerTexture::render() const {
         pTexture->renderRaw(res_part, res_rect, alpha);
 }
 
-inline void film::LayerTexture::clear() {
+void film::LayerTexture::clear() {
     maEases.clear();
     mPart.clear();
     mRect.clear();
@@ -177,8 +177,8 @@ inline void film::LayerTexture::renderSwap(const SDL_FRect* res_rect, const SDL_
     const auto tracked_kp = dynamic_cast<KeypointLayerInteractTransparentSwap*>(maEases.at(mTexInd.unused_padding).keypoint);
 
     switch (tracked_kp->swap) {
-    default:
-    case KeypointLayerSwap::KeepInAspect: _FALLTHROUGH
+    default: _FALLTHROUGH;
+    case KeypointLayerSwap::KeepInAspect:
         pTexture->renderRaw(res_part, res_rect, max_alpha * progress);
         break;
     case KeypointLayerSwap::KeepNotDeformed:

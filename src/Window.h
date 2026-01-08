@@ -11,7 +11,7 @@ class Window {
 public:
 	inline Window() noexcept = default;
 
-	bool create(const char* name, int width, int height, SDL_WindowFlags flags = NULL) noexcept;
+	bool create(const char* name, int width, int height, SDL_WindowFlags flags = 0) noexcept;
 
 	inline int getWidth() const noexcept { return mWindowWidth; }
 	inline int getHeight() const noexcept { return mWindowHeight; }

@@ -111,8 +111,8 @@ void film::Scene::onNext() {
 
     switch (timer.action) {
     case timer.First:
-    case timer.InInputOrFirst: _FALLTHROUGH
-    case timer.InInputAfterFirst: _FALLTHROUGH
+    case timer.InInputOrFirst:
+    case timer.InInputAfterFirst:
         mBackupTimer = clockfunc::min(backg_timer, layer_timer);
         if (!timer.is_zero()) { // precise copying
             mBackupTimer.frame_delay = std::min<>(mBackupTimer.frame_delay, timer.frame_delay);
@@ -123,8 +123,8 @@ void film::Scene::onNext() {
         break;
     
     case timer.Await:
-    case timer.InInputOrAwait: _FALLTHROUGH
-    case timer.InInputAfterAwait: _FALLTHROUGH
+    case timer.InInputOrAwait:
+    case timer.InInputAfterAwait:
         if (timer.is_zero()) {
             mBackupTimer = clockfunc::max(backg_timer, layer_timer);
         }

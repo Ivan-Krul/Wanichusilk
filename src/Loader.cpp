@@ -21,7 +21,7 @@ IResourceManager* Loader::GetRequiredInterface(ResourceManagerAttribute attr) co
 void Loader::Load() {
     mLoadErrNum = -2;
     mProgress = 0;
-    mLoadThread.swap(std::thread(&Loader::loadMain, this));
+    mLoadThread = std::thread(&Loader::loadMain, this);
     mLoadThread.detach();
 }
 

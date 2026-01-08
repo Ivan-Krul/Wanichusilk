@@ -38,7 +38,7 @@ public:
     inline size_t getCapacity() const { return maLockArray.size(); }
     inline ResBitset::IndexType getOccuipedLocks() const {
         ResBitset::IndexType count = 0;
-        for (IndexType i = 0; i < maLockArray.size(); i++) count += maOccupied.get(i);
+        for (ResBitset::IndexType i = 0; i < maLockArray.size(); i++) count += maOccupied.get(i);
         return count;
     }
 

@@ -1,9 +1,31 @@
 {
+    "name": "wanichusilk",
     "dependencies": [
-        "sdl3",
+        {
+            "name": "sdl3",
+            "features": [
+                {
+                    "name": "vulkan",
+                    "platform": "linux"
+                },
+                {
+                    "name": "ibus",
+                    "platform": "linux"
+                },
+                {
+                    "name": "wayland",
+                    "platform": "linux"
+                },
+                {
+                    "name": "x11",
+                    "platform": "linux"
+                }
+            ]
+        },
         {
             "name": "sdl3-image",
             "features": [ "png" ]
-        }
+        },
+        "sdl3-ttf"
     ]
 }

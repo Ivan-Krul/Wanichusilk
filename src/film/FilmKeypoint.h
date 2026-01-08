@@ -18,12 +18,15 @@ namespace film {
     };
 
     struct KeypointTypeStruct {
+        inline KeypointTypeStruct() = default;
+        inline KeypointTypeStruct(KeypointChangeType glob, short spec) : global_type(glob), specific_type(spec) {}
+
         KeypointChangeType global_type : 3;
         short specific_type : 13;
     };
 
     struct Keypoint : public TimerStep {
-        inline virtual KeypointTypeStruct type() const { return { KeypointChangeType::None, 0 }; }
+        inline virtual KeypointTypeStruct type() const { return KeypointTypeStruct{ KeypointChangeType::None, 0 }; }
         inline virtual bool has_ease() { return false; }
     };
 

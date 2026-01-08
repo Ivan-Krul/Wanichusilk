@@ -12,7 +12,7 @@ public:
     LayerAnimation(Clock* clock, AnimationManager* animmgr, AnimationIndex animind);
     void update() override;
     void render() const override;
-    inline void clear() override;
+    void clear() override;
     inline TimerStep getLongestWaiting() const noexcept override;
 
     virtual ~LayerAnimation() { clear(); }

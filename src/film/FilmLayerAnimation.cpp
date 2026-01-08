@@ -57,7 +57,7 @@ void film::LayerAnimation::render() const {
         pAnimation->renderRaw(res_rect, alpha, time_mult);
 }
 
-inline void film::LayerAnimation::clear() {
+void film::LayerAnimation::clear() {
     maEases.clear();
     mRect.clear();
     mAlpha.clear();
@@ -145,8 +145,8 @@ inline void film::LayerAnimation::renderSwap(const SDL_FRect* res_rect, uint8_t 
     const auto tracked_kp = dynamic_cast<KeypointLayerInteractTransparentSwap*>(maEases.at(mAnimInd.unused_padding).keypoint);
 
     switch (tracked_kp->swap) {
-    default:
-    case KeypointLayerSwap::KeepInAspect: _FALLTHROUGH
+    default: _FALLTHROUGH;
+    case KeypointLayerSwap::KeepInAspect:
         pAnimation->renderRaw(res_rect, max_alpha * progress, time_mult);
         break;
     case KeypointLayerSwap::KeepNotDeformed:
