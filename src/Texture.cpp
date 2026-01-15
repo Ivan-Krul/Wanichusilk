@@ -32,6 +32,19 @@ bool Texture::create(const char* src, SDL_Renderer* renderer) {
     return true;
 }
 
+bool Texture::create(SDL_Texture* tex, SDL_Renderer* renderer) {
+    if (mpTexture || !tex) return false;
+    mpRendererOrigin = renderer;
+
+    mpTexture = tex;
+    mRectRes.w = mpTexture->w;
+    mRectRes.h = mpTexture->h;
+
+    mHasAlpha = SDL_ISPIXELFORMAT_ALPHA(mpTexture->format);
+
+    return true;
+}
+
 void Texture::renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8_t alpha) const {
     if (mHasAlpha) {
         SDL_SetTextureAlphaMod(mpTexture, alpha);

@@ -1,12 +1,12 @@
 #include "Loader.h"
 #include "Loader.h"
 
-void Loader::PushResourcePathInQueue(const char* path, IResourceManager* manager) {
+void Loader::PushResourcePathInQueue(IResourceLoadParamConvertor* load, IResourceManager* manager) {
     mLoadErrNum = -2;
 
     ResourceIndexer ri;
     ri.mgr_ptr = manager;
-    ri.path = path;
+    ri.load = load->to_param();
 
     maResMgr.push_back(ri);
 }
@@ -39,7 +39,7 @@ void Loader::loadMain() {
     LockerIndex li_res;
     for (mProgress = 0; mProgress < maResMgr.size(); mProgress++) {
         auto& res = maResMgr[mProgress];
-        li_res = res.mgr_ptr->RequestResourceLoad(res.path);
+        li_res = res.mgr_ptr->RequestResourceLoad(res.load);
 
         if (li_res == -1) {
             mLoadErrNum = mProgress;

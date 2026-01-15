@@ -14,7 +14,7 @@ class Application {
 public:
     void OnInit();
     void OnLoop();
-
+    int  OnExit();
 
     inline bool IsRunning() { return !mNeedQuit; }
 private:
@@ -27,9 +27,12 @@ private:
     Window mMainWindow;
     SDL_Event mEvent; // want to make an event queuing
     bool mNeedQuit = false;
+    bool mIsCritical = false;
 
     TextureManager mTexMgr;
     AnimationManager mAnimMgr;
+    FontManager mFontMgr;
+    Texture mTextTex;
 
     Loader mLoader;
 

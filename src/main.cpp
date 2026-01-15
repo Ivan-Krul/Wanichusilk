@@ -7,5 +7,6 @@ int main(int args, char** argv) {
     while (App.IsRunning()) {
         App.OnLoop();
     }
-    return 0;
+
+    return App.OnExit();
 }

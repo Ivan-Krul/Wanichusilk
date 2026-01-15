@@ -5,7 +5,7 @@ bool film::Scene::create(ScaleOption scr_res, Loader* loader) {
     mpLoader = loader;
     mScaleOption = scr_res;
     if (!loader->IsLoaded()) {
-
+        return true;
     }
     mLayerist.setLoader(loader);
     mBackground.setLoader(loader);

@@ -49,9 +49,10 @@ void Animation::finish() {
 }
 
 void Animation::lockChange() {
-    if (muHandle.anim && mHasHead)
+    if (muHandle.anim && mHasHead) {
         IMG_FreeAnimation(muHandle.anim);
-    mHasHead = false;
+        mHasHead = false;
+    }
 }
 
 void Animation::clear() {

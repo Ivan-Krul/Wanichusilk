@@ -10,15 +10,21 @@ using AnimationIndex = LockerIndex;
 
 class AnimationManager : public IResourceManager, public IResourceAccesser<Animation>, public IRendererGiver {
 public:
+    struct LoadParamConvertor : public IResourceLoadParamConvertor {
+        const char* path;
+        inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ path, 0 }; }
+    };
+
+public:
     inline void SetClock(Clock* const clock) { mpClock = clock; }
     inline void SetRenderer(SDL_Renderer* renderer) noexcept override { mpRenderer = renderer; }
     inline SDL_Renderer* GetRenderer() const noexcept override { return mpRenderer; }
 
     LockerIndex RequestResourceCreate() override { return -1; };
     inline Animation* GetLockerResource(LockerIndex index) override { assert(index != -1);  return mAnimationLocker[index].get(); }
-    LockerIndex RequestResourceLoad(const char* path) {
+    LockerIndex RequestResourceLoad(ResourceLoadParams load) {
         Animation anim;
-        bool ret = anim.create(path, mpRenderer);
+        bool ret = anim.create(load.path, mpRenderer);
         if (!ret) return -1;
 
         AnimationIndex indx;

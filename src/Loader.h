@@ -9,9 +9,9 @@
 
 class Loader {
 public:
-    void PushResourcePathInQueue(const char* path, IResourceManager* manager);
+    void PushResourcePathInQueue(IResourceLoadParamConvertor* load, IResourceManager* manager);
 
-    inline const char* GetResourcePath(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).path : ""; }
+    inline const char* GetResourcePath(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).load.path : ""; }
     inline IResourceManager* GetManager(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).mgr_ptr : nullptr; }
     LockerIndex GetTranscription(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).index : -1; }
 
@@ -31,7 +31,7 @@ public:
 
 private:
     struct ResourceIndexer {
-        const char* path;
+        ResourceLoadParams load;
         IResourceManager* mgr_ptr;
         LockerIndex index;
     };

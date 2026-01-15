@@ -9,13 +9,17 @@ void Application::OnInit() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         Logger log(DEFAULT_LOG_SDL_PATH);
         log.logCritical("SDL failed to initialize: %s.", SDL_GetError());
-        exit(1);
+        mNeedQuit = true;
+        mIsCritical = true;
+        return;
     }
 
     if (!TTF_Init()) {
         Logger log(DEFAULT_LOG_SDL_PATH);
         log.logCritical("SDL_ttf failed to initialize: %s.", SDL_GetError());
-        exit(1);
+        mNeedQuit = true;
+        mIsCritical = true;
+        return;
     }
 
     OpenWindow();
@@ -38,9 +42,16 @@ void Application::OnInit() {
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetClock(&mClock);
 
-    mLoader.PushResourcePathInQueue("./res/cat-runner-2049-cat-runner.gif", &mAnimMgr);
-    mLoader.PushResourcePathInQueue("./res/lancer-spin-big.gif", &mAnimMgr);
-
+    AnimationManager::LoadParamConvertor ap;
+    ap.path = "./res/cat-runner-2049-cat-runner.gif";
+    mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
+    ap.path = "./res/lancer-spin-big.gif";
+    mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
+    FontManager::LoadParamConvertor fp;
+    fp.path = "./res/TerminusTTF-Bold.ttf";
+    fp.size = 50.f;
+    mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
+    
     SCOPED_STOPWATCH("anim load");
 
     mLoader.Load();
@@ -53,12 +64,16 @@ void Application::OnInit() {
     if (mLoader.IsFailed()) {
         Logger log(DEFAULT_LOG_PATH);
         log.logError("Resource wasn't loaded properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
-        exit(1);
+        mNeedQuit = true;
+        mIsCritical = true;
+        return;
     }
     assert(mLoader.GetTranscription(0) == 0);
     assert(mLoader.GetTranscription(1) == 1);
 
-    mScene.create(ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), &mLoader);
+    ScaleOption so;
+    so.p_wind = mMainWindow.getWindow();
+    mScene.create(so, &mLoader);
     mScene.setClock(&mClock);
 
     film::KeypointLayerAddAnimation a;
@@ -103,6 +118,20 @@ void Application::OnInit() {
     mScene.addKeypoint(ts);
 
     mScene.start();
+
+    auto font = mFontMgr.GetLockerResource(mLoader.GetTranscription(2));
+    const auto surf = TTF_RenderText_Blended(font, "Gifs and Text exist", 0, SDL_Color{ 255,255,255, 255 });
+    
+    if (!surf) {
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logError("%s.", SDL_GetError());
+        mIsCritical = true;
+        mNeedQuit = true;
+    }
+
+    mTextTex.create(SDL_CreateTextureFromSurface(mMainWindow.getWindowRenderer(), surf), mMainWindow.getWindowRenderer());
+    
+    SDL_DestroySurface(surf);
 }
 
 void Application::OnLoop() {
@@ -121,9 +150,13 @@ void Application::OnLoop() {
     //SDL_Log("dt %zu: %.2fms (%.1f FPS)", mCount++, delta * 1000.0f, 1.0f / delta);
 }
 
+int Application::OnExit() {
+    return mIsCritical;
+}
+
 void Application::OpenWindow() {
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
-    if (!mMainWindow.create("Wanichusilk", DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y)) {
+    if (!mMainWindow.create("Wanichusilk", DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y, SDL_WINDOW_RESIZABLE)) {
         Logger log(DEFAULT_LOG_PATH);
         log.logCritical("Couldn't create main window");
         exit(1);
@@ -141,8 +174,15 @@ void Application::PullEvents() {
             mNeedQuit = true;
             break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            mNeedQuit = true;
+            break;
+        case SDL_EVENT_KEY_DOWN:
+            mNeedQuit = mEvent.key.key == SDLK_ESCAPE || mNeedQuit;
+            break;
+        case SDL_EVENT_WINDOW_RESIZED:
+            SDL_RenderViewportSet(mMainWindow.getWindowRenderer());
+            break;
         default:
+
             break;
         }
     }
@@ -155,4 +195,5 @@ void Application::OnUpdate() {
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100 + 100, 200, 255);
     mScene.render();
+    mTextTex.render();
 }

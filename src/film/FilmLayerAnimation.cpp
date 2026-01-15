@@ -6,6 +6,7 @@ film::LayerAnimation::LayerAnimation(Clock* clock, AnimationManager* animmgr, An
 
     mAnimInd.elem_to = animind;
     pAnimation = animind != -1 ? pAnimMgr->GetLockerResource(animind) : nullptr;
+    if (pAnimation) pAnimation->lockChange();
     mRect.elem_to = pAnimation ? pAnimation->getRectRes() : SDL_FRect{ 0.f };
     mAlpha.elem_to = 255;
     mTimeMult.elem_to = 1.f;

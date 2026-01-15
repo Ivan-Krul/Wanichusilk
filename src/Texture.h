@@ -11,6 +11,7 @@ public:
     Texture(Texture&& tex) noexcept;
     inline Texture(const char* src, SDL_Renderer* renderer) { create(src, renderer); }
     bool   create(const char* src, SDL_Renderer* renderer);
+    bool   create(SDL_Texture* tex, SDL_Renderer* renderer);
 
     inline void setAlpha(uint8_t alpha) { if (mHasAlpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); } else { SDL_Log("Warning: the texture doesn't have alpha channel"); } }
     inline void setWidth(float w) { mRectRes.w = w; }
