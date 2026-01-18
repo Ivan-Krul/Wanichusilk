@@ -6,6 +6,9 @@ public:
     using TexTileAmount = uint8_t;
 
 public:
+    inline SmallAnimation() = default;
+    inline SmallAnimation(Animation&& inst) { create(std::move(inst)); }
+
     inline bool    isBig() const noexcept override { return false; }
 
     void start(float time_mult = 1.f) override;

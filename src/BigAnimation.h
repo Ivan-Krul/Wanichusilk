@@ -3,6 +3,8 @@
 
 class BigAnimation : public Animation {
 public:
+    inline BigAnimation() = default;
+    inline BigAnimation(Animation&& inst) { create(std::move(inst)); }
     inline bool    isBig() const noexcept override { return true; }
 
     void start(float time_mult = 1.f) override;
