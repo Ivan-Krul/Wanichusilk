@@ -27,14 +27,16 @@ public:
         bool ret = anim.create(load.path, mpRenderer);
         if (!ret) return -1;
 
-        AnimationIndex indx;
-        if (anim.isBig())
-            indx = mAnimationLocker.pushInLocker(std::make_unique<BigAnimation>());
-        else
-            indx = mAnimationLocker.pushInLocker(std::make_unique<SmallAnimation>());
-
         anim.setClock(mpClock);
-        mAnimationLocker[indx]->create(std::move(anim));
+
+        AnimationIndex indx;
+        if (anim.isBig()) {
+            indx = mAnimationLocker.pushInLocker(std::make_unique<BigAnimation>(std::move(anim)));
+        }
+        else {
+            indx = mAnimationLocker.pushInLocker(std::make_unique<SmallAnimation>(std::move(anim)));
+        }
+
         mAnimationLocker[indx]->start(1.f);
         return indx;
     }

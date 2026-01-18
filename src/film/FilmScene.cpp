@@ -56,7 +56,6 @@ inline bool film::Scene::canTriggerNext() const {
 }
 
 void film::Scene::clear() {
-    mpLoader->Clean();
     maKeypoints.clear();
 }
 

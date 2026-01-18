@@ -28,15 +28,19 @@ bool Animation::create(const char* path, SDL_Renderer* renderer) {
 }
 
 bool Animation::create(Animation&& instance) noexcept {
-    mpRendererOrigin = instance.mpRendererOrigin;
     muHandle = instance.muHandle;
-    mDelaySum = instance.mDelaySum;
-    mDelays_ms = instance.mDelays_ms;
+    mpRendererOrigin = instance.mpRendererOrigin;
+
     mRect = instance.mRect;
+    mDelays_ms = instance.mDelays_ms;
+    mDelaySum = instance.mDelaySum;
     mFrameIndex = instance.mFrameIndex;
-    mTimeMult = instance.mTimeMult;
+    mTimeMult = mTimeMult;
+    mAlpha = instance.mAlpha;
     mIsLoop = instance.mIsLoop;
     mHasHead = instance.mHasHead;
+    mIsFreezed = instance.mIsFreezed;
+    mCurrentDelay = instance.mCurrentDelay;
     if(!pClock) pClock = instance.pClock;
 
     instance.mpRendererOrigin = nullptr;

@@ -41,4 +41,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 # Include modules
 include(IncludeModules)
 
-#add_subdirectory ("src" "./bin/")
+# Move Resources
+add_custom_target(CopyResources
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res
+)
+add_dependencies(${PROJECT_NAME} CopyResources)

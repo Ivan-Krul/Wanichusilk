@@ -43,7 +43,7 @@ public:
     void lockChange();
 
     void   clear();
-    inline virtual ~Animation() { if (muHandle.anim && mHasHead) IMG_FreeAnimation(muHandle.anim); }
+    inline virtual ~Animation() { if (muHandle.anim && mHasHead) IMG_FreeAnimation(muHandle.anim);}
 
 protected:
     inline int16_t getSizeWidth() const noexcept { return mHasHead ? muHandle.anim->w : muHandle.size.width; }

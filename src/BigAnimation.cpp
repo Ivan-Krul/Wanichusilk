@@ -4,13 +4,14 @@
 void BigAnimation::start(float time_mult) {
     if (!muHandle.anim || !mHasHead) {
         Logger log(DEFAULT_LOG_PATH);
-        log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
-        log.logInfoIn(__FUNCTION__, "has_head: %d.", mHasHead);
+        log.logWarningIn(__PRETTY_FUNCTION__, "Animation won't start because of miss-match of heads.");
+        if(!mHasHead) log.logInfo("^ It mark as no head");
+        if(!muHandle.anim) log.logInfo("^ It has no ptr");
         return;
     }
     if (!pClock) {
         Logger log(DEFAULT_LOG_PATH);
-        log.logWarningIn(__FUNCTION__, "Animation didn't got a clock.");
+        log.logWarningIn(__PRETTY_FUNCTION__, "Animation didn't got a clock.");
         return;
     }
     mFrameIndex = 0;
@@ -21,6 +22,13 @@ void BigAnimation::start(float time_mult) {
     mapTextures.resize(mDelays_ms.size());
     for (auto f = 0; f < mapTextures.size(); f++) {
         surf = SDL_ConvertSurface(muHandle.anim->frames[f], cPixelFormat);
+        if(!surf) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__PRETTY_FUNCTION__, "Convertion surfaces was failed.");
+            Logger log_sdl(DEFAULT_LOG_SDL_PATH);
+            log_sdl.logErrorIn(__PRETTY_FUNCTION__, "%s.", SDL_GetError());
+            return;
+        }
         mapTextures[f] = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
 
         if (mapTextures[f]) {
@@ -28,8 +36,10 @@ void BigAnimation::start(float time_mult) {
                 SDL_SetTextureAlphaMod(mapTextures[f], mAlpha);
         }
         else {
-            Logger log(DEFAULT_LOG_PATH);
-            log.logWarningIn(__FUNCTION__, "Convertion to texture was failed.");
+            Logger log(DEFAULT_LOG_SDL_PATH);
+            log.logWarningIn(__PRETTY_FUNCTION__, "Convertion to texture was failed.");
+            Logger log_sdl(DEFAULT_LOG_SDL_PATH);
+            log_sdl.logErrorIn(__PRETTY_FUNCTION__, "%s.", SDL_GetError());
         }
 
         SDL_DestroySurface(surf);

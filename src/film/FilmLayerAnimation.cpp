@@ -39,6 +39,7 @@ void film::LayerAnimation::update() {
 }
 
 void film::LayerAnimation::render() const {
+    assert(pAnimation);
     SDL_FRect rect = { 0.f };
     uint8_t alpha = 0;
     float time_mult = 0.f;

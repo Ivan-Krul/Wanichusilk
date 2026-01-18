@@ -51,13 +51,13 @@ inline Logger::Logger(const char* logname) {
 \
     va_list args;\
     va_start(args, text);\
-    vsprintf_s(mTextBuffer, 256, text, args);\
+    vsnprintf(mTextBuffer, 256, text, args);\
     va_end(args);\
 \
     time_t now = time(0);\
-    tm timeinfo;\
-    localtime_s(&timeinfo, &now);\
-    strftime(mTimeBuffer, sizeof(mTimeBuffer), "%Y.%m.%d %H:%M:%S", &timeinfo)
+    tm *timeinfo;\
+    timeinfo = std::localtime(&now);\
+    strftime(mTimeBuffer, sizeof(mTimeBuffer), "%Y.%m.%d %H:%M:%S", timeinfo)
 
 inline void Logger::logDebug(const char* text, ...) {
 #ifdef ENABLE_DEBUG_LOG

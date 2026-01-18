@@ -24,20 +24,6 @@ void Application::OnInit() {
 
     OpenWindow();
 
-    //std::vector<std::string> vec {
-    //    "./res/Stefan chill emoji.png",
-    //    "./res/Stefan is laying.png",
-    //    "./res/Stefan wah.png",
-    //    "./res/B.png"
-    //};
-    //
-    //assert(mScene.create(&mTexMgr, ScaleOption({ DEFAULT_SCR_RES_X, DEFAULT_SCR_RES_Y }), vec));
-    //mScene.setClock(&mClock);
-    //
-    //PushExampleFilmKeypoint2LayerSync(mScene);
-    //
-    //mScene.start();
-
     mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetClock(&mClock);
@@ -45,14 +31,14 @@ void Application::OnInit() {
     AnimationManager::LoadParamConvertor ap;
     ap.path = "./res/cat-runner-2049-cat-runner.gif";
     mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
-    ap.path = "./res/lancer-spin-big.gif";
-    mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
+    //ap.path = "./res/lancer-spin-big.gif";
+    //mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
     FontManager::LoadParamConvertor fp;
     fp.path = "./res/TerminusTTF-Bold.ttf";
     fp.size = 50.f;
     mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
     
-    SCOPED_STOPWATCH("anim load");
+    SCOPED_STOPWATCH("load");
 
     mLoader.Load();
 
@@ -69,24 +55,25 @@ void Application::OnInit() {
         return;
     }
     assert(mLoader.GetTranscription(0) == 0);
-    assert(mLoader.GetTranscription(1) == 1);
+    //assert(mLoader.GetTranscription(1) == 1);
 
     ScaleOption so;
     so.p_wind = mMainWindow.getWindow();
-    mScene.create(so, &mLoader);
+
+    assert(!mScene.create(so, &mLoader));
     mScene.setClock(&mClock);
 
     film::KeypointLayerAddAnimation a;
     a.loaderind = mLoader.GetTranscription(0);
     mScene.addKeypoint(a);
-    a.loaderind = mLoader.GetTranscription(1);
-    mScene.addKeypoint(a);
+    //a.loaderind = mLoader.GetTranscription(1);
+    //mScene.addKeypoint(a);
 
-    film::KeypointLayerInteractPos p;
-    p.layerindx = 1;
-    p.rect.x = 200;
-    p.rect.y = 200;
-    mScene.addKeypoint(p);
+    //film::KeypointLayerInteractPos p;
+    //p.layerindx = 1;
+    //p.rect.x = 200;
+    //p.rect.y = 200;
+    //mScene.addKeypoint(p);
 
     film::KeypointLayerInteractAlpha ana;
     ana.layerindx = 0;
@@ -96,20 +83,20 @@ void Application::OnInit() {
     film::KeypointLayerInteractAnimationLoop anl;
     anl.layerindx = 0;
     mScene.addKeypoint(anl);
-    anl.layerindx = 1;
-    mScene.addKeypoint(anl);
+    //anl.layerindx = 1;
+    //mScene.addKeypoint(anl);
 
     film::KeypointLayerInteractAnimationStart ans;
     ans.layerindx = 0;
     mScene.addKeypoint(ans);
-    ans.layerindx = 1;
-    mScene.addKeypoint(ans);
+    //ans.layerindx = 1;
+    //mScene.addKeypoint(ans);
 
     film::KeypointLayerEnable e;
     e.layerindx = 0;
     mScene.addKeypoint(e);
-    e.layerindx = 1;
-    mScene.addKeypoint(e);
+    //e.layerindx = 1;
+    //mScene.addKeypoint(e);
 
 
     film::Keypoint ts;
@@ -117,9 +104,10 @@ void Application::OnInit() {
     ts.frame_delay = 100;
     mScene.addKeypoint(ts);
 
+    mAnimMgr.GetLockerResource(0)->start(1.f);
     mScene.start();
 
-    auto font = mFontMgr.GetLockerResource(mLoader.GetTranscription(2));
+    auto font = mFontMgr.GetLockerResource(mLoader.GetTranscription(0));
     const auto surf = TTF_RenderText_Blended(font, "Gifs and Text exist", 0, SDL_Color{ 255,255,255, 255 });
     
     if (!surf) {
@@ -132,6 +120,10 @@ void Application::OnInit() {
     mTextTex.create(SDL_CreateTextureFromSurface(mMainWindow.getWindowRenderer(), surf), mMainWindow.getWindowRenderer());
     
     SDL_DestroySurface(surf);
+
+    //mAnimMgr.GetLockerResource(0)->setAlpha(128);
+    //mAnimMgr.GetLockerResource(0)->setLooping(true);
+    //mAnimMgr.GetLockerResource(0)->setFreeze(false);
 }
 
 void Application::OnLoop() {
@@ -194,6 +186,9 @@ void Application::OnUpdate() {
 
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100 + 100, 200, 255);
+    //mAnimMgr.GetLockerResource(0)->render();
+    //mAnimMgr.GetLockerResource(1)->render();
     mScene.render();
+    //mAnimMgr.GetLockerResource(0)->render();
     mTextTex.render();
 }
