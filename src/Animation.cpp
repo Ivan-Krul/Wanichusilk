@@ -1,14 +1,14 @@
 #include "Animation.h"
 #include "Logger.h"
 
-bool Animation::create(const char* path, SDL_Renderer* renderer) {
-    if (mHasHead && muHandle.anim) return false;
+bool Animation::baseCreate(const char* path, SDL_Renderer* renderer) {
+    if (mHasHead && muHandle.anim) return true;
     mpRendererOrigin = renderer;
     muHandle.anim = IMG_LoadAnimation(path);
     if (muHandle.anim == NULL) {
         Logger log(DEFAULT_LOG_SDL_PATH);
         log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
-        return false;
+        return true;
     }
     mHasHead = true;
     mIsLoop = false;
@@ -24,7 +24,7 @@ bool Animation::create(const char* path, SDL_Renderer* renderer) {
         mDelaySum += mDelays_ms[i];
     }
 
-    return true;
+    return false;
 }
 
 bool Animation::create(Animation&& instance) noexcept {
@@ -46,6 +46,18 @@ bool Animation::create(Animation&& instance) noexcept {
     instance.mpRendererOrigin = nullptr;
     instance.muHandle.anim = nullptr;
     return muHandle.anim;
+}
+
+void Animation::start(float time_mult) {
+    if (!pClock) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Animation didn't got a clock.");
+        return;
+    }
+
+    mCurrentDelay = std::chrono::milliseconds(mDelays_ms[0]);
+    mFrameIndex = 0;
+    mTimeMult = time_mult;
 }
 
 void Animation::finish() {

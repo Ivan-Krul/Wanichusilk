@@ -4,7 +4,11 @@
 class BigAnimation : public Animation {
 public:
     inline BigAnimation() = default;
-    inline BigAnimation(Animation&& inst) { create(std::move(inst)); }
+    inline BigAnimation(Animation&& inst);
+    bool create(const char* path, SDL_Renderer* renderer) override;
+
+    void preprocess() override;
+
     inline bool    isBig() const noexcept override { return true; }
 
     void start(float time_mult = 1.f) override;
@@ -15,10 +19,13 @@ public:
 
     ~BigAnimation() {
         for (auto frame : mapTextures)
-            SDL_DestroyTexture(frame);
+            if(frame.tex) SDL_DestroyTexture(frame);
     }
 private:
     void childClean() override;
+    void convertSurfaces();
 
-    std::vector<SDL_Texture*> mapTextures;
+    std::vector<PictureMap> mapTextures;
+
+
 };

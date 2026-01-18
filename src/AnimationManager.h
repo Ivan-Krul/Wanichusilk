@@ -23,6 +23,7 @@ public:
     LockerIndex RequestResourceCreate() override { return -1; };
     inline Animation* GetLockerResource(LockerIndex index) override { assert(index != -1);  return mAnimationLocker[index].get(); }
     LockerIndex RequestResourceLoad(ResourceLoadParams load) {
+        assert(false); // not updated
         Animation anim;
         bool ret = anim.create(load.path, mpRenderer);
         if (!ret) return -1;

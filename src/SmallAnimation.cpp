@@ -1,83 +1,97 @@
 #include "SmallAnimation.h"
 #include "Logger.h"
 
-void SmallAnimation::start(float time_mult) {
-    if (!muHandle.anim || !mHasHead) {
-        Logger log(DEFAULT_LOG_PATH);
-        log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
-        log.logInfoIn(__FUNCTION__, "has_head: %d.", mHasHead);
-        return;
-    }
-    if (!pClock) {
-        Logger log(DEFAULT_LOG_PATH);
-        log.logWarningIn(__FUNCTION__, "Animation didn't got a clock.");
-        return;
-    }
-    mFrameIndex = 0;
-    mTimeMult = time_mult;
+SmallAnimation::SmallAnimation(Animation&& inst) {
+    create(std::move(inst));
 
-    if (!packAnimationInRendTexture()) {
+    packAnimationInSingleSurface();
+}
+
+bool SmallAnimation::create(const char* path, SDL_Renderer* renderer) {
+    if(baseCreate()) return true;
+
+    packAnimationInSingleSurface();
+    return false;
+}
+
+void SmallAnimation::preprocess() {
+    SDL_Surface* surf = mpTiles.surf;
+    mpTiles.tex = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
+    if (!mpTiles.tex) {
         Logger log(DEFAULT_LOG_SDL_PATH);
-        log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
+        log.logWarningIn(__FUNCTION__, "Convertion to texture was failed.");
+        Logger log_sdl(DEFAULT_LOG_SDL_PATH);
+        log_sdl.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
         return;
     }
 
-    mSrcRect.w = muHandle.anim->w;
-    mSrcRect.h = muHandle.anim->h;
-    mCurrentDelay = std::chrono::milliseconds(mDelays_ms[0]);
+    SDL_DestroySurface(surf);
+
+    if (mpTiles && mAlpha != 255)
+        SDL_SetTextureAlphaMod(mpTiles, mAlpha);
 }
 
 void SmallAnimation::render() {
     if (preRender()) return;
-    if (mpRenderTextureTile == nullptr) {
+    if (mpTiles.tex == nullptr) {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "Texture tile wasn't initialised.");
         return;
     }
 
     // render here
-    mSrcRect.x = (mFrameIndex % mRenderTexTileWidth) * mSrcRect.w;
-    mSrcRect.y = (mFrameIndex / mRenderTexTileWidth) * mSrcRect.h;
+    mSrcRect.x = (mFrameIndex % mTileWidth) * mSrcRect.w;
+    mSrcRect.y = (mFrameIndex / mTileWidth) * mSrcRect.h;
 
-    SDL_RenderTexture(mpRendererOrigin, mpRenderTextureTile, &mSrcRect, &mRect);
+    SDL_RenderTexture(mpRendererOrigin, mpTiles.tex, &mSrcRect, &mRect);
 }
 
 void SmallAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const float time_mult) {
     const float time_mult_was = mTimeMult;
     mTimeMult = time_mult;
 
-    if (preRender()) return;
-    if (mpRenderTextureTile == nullptr) {
+    if (preRender()) {
+        mTimeMult = time_mult_was;
+        return;
+    }
+    if (mpTiles.tex == nullptr) {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "Texture tile wasn't initialised.");
+        mTimeMult = time_mult_was;
         return;
     }
 
-    mSrcRect.x = (mFrameIndex % mRenderTexTileWidth) * mSrcRect.w;
-    mSrcRect.y = (mFrameIndex / mRenderTexTileWidth) * mSrcRect.h;
+    mSrcRect.x = (mFrameIndex % mTileWidth) * mSrcRect.w;
+    mSrcRect.y = (mFrameIndex / mTileWidth) * mSrcRect.h;
 
-    SDL_SetTextureAlphaMod(mpRenderTextureTile, alpha);
+    SDL_SetTextureAlphaMod(mpTiles.tex, alpha);
 
-    SDL_RenderTexture(mpRendererOrigin, mpRenderTextureTile, &mSrcRect, rect);
+    SDL_RenderTexture(mpRendererOrigin, mpTiles.tex, &mSrcRect, rect);
 
-    SDL_SetTextureAlphaMod(mpRenderTextureTile, mAlpha);
+    SDL_SetTextureAlphaMod(mpTiles.tex, mAlpha);
     mTimeMult = time_mult_was;
 }
 
 void SmallAnimation::setAlpha(uint8_t alpha) noexcept {
     mAlpha = alpha;
-    if (mpRenderTextureTile)
-        SDL_SetTextureAlphaMod(mpRenderTextureTile, mAlpha);
+    if (mpTiles.tex) SDL_SetTextureAlphaMod(mpTiles.tex, mAlpha);
 }
 
 void SmallAnimation::childClean() {
-    SDL_DestroyTexture(mpRenderTextureTile);
+    if(mpTiles.tex) SDL_DestroyTexture(mpTiles.tex);
 }
 
-bool SmallAnimation::packAnimationInRendTexture() {
+bool SmallAnimation::packAnimationInSingleSurface() {
+    if (!muHandle.anim || !mHasHead) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
+        log.logInfoIn(__FUNCTION__, "has_head: %d.", mHasHead);
+        return;
+    }
+
     findTileResolution();
-    SDL_Surface* surf = SDL_CreateSurface(muHandle.anim->w * mRenderTexTileWidth, muHandle.anim->h * mRenderTexTileHeight, cPixelFormat);
-    if (!surf) {
+    mpTiles.surf = SDL_CreateSurface(muHandle.anim->w * mTileWidth, muHandle.anim->h * mTileHeight, cPixelFormat);
+    if (!mpTiles.surf) {
         Logger log(DEFAULT_LOG_SDL_PATH);
         log.logErrorIn(__FUNCTION__,  "Error with surface %s.", SDL_GetError());
         return false;
@@ -85,6 +99,9 @@ bool SmallAnimation::packAnimationInRendTexture() {
 
     const auto ox = muHandle.anim->w;
     const auto oy = muHandle.anim->h;
+
+    mSrcRect.w = ox
+    mSrcRect.h = oy;
 
     char tx = 0;
     char ty = 0;
@@ -95,26 +112,18 @@ bool SmallAnimation::packAnimationInRendTexture() {
     Uint8 a = 0;
 
     for (int f = 0; f < mDelays_ms.size(); f++) {
-        tx = f % mRenderTexTileWidth;
-        ty = f / mRenderTexTileWidth;
+        tx = f % mTileWidth;
+        ty = f / mTileWidth;
         for (int x = 0; x < ox; x++) {
             for (int y = 0; y < oy; y++) {
                 if (!SDL_ReadSurfacePixel((muHandle.anim->frames)[f], x, y, &r, &g, &b, &a))
                     return false;
 
-                if (!SDL_WriteSurfacePixel(surf, tx * ox + x, ty * oy + y, r, g, b, a))
+                if (!SDL_WriteSurfacePixel(mpTiles.surf , tx * ox + x, ty * oy + y, r, g, b, a))
                     return false;
             }
         }
     }
-
-    mpRenderTextureTile = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
-    SDL_DestroySurface(surf);
-
-    if(mpRenderTextureTile && mAlpha != 255)
-        SDL_SetTextureAlphaMod(mpRenderTextureTile, mAlpha);
-
-    return mpRenderTextureTile;
 }
 
 void SmallAnimation::findTileResolution() {
@@ -125,11 +134,11 @@ void SmallAnimation::findTileResolution() {
             side++;
         }
         else {
-            mRenderTexTileWidth = mDelays_ms.size() / side;
-            mRenderTexTileHeight = side;
+            mTileWidth = mDelays_ms.size() / side;
+            mTileHeight = side;
             return;
         }
     }
-    mRenderTexTileHeight = side;
-    mRenderTexTileWidth = 1;
+    mTileHeight = side;
+    mTileWidth = 1;
 }

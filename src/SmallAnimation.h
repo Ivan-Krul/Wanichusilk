@@ -7,7 +7,10 @@ public:
 
 public:
     inline SmallAnimation() = default;
-    inline SmallAnimation(Animation&& inst) { create(std::move(inst)); }
+    inline SmallAnimation(Animation&& inst);
+    bool create(const char* path, SDL_Renderer* renderer) override;
+
+    void preprocess() override;
 
     inline bool    isBig() const noexcept override { return false; }
 
@@ -18,16 +21,16 @@ public:
     void setAlpha(uint8_t alpha) noexcept override;
 
     ~SmallAnimation() {
-        SDL_DestroyTexture(mpRenderTextureTile);
+        if(mpTiles.tex) SDL_DestroyTexture(mpTiles.tex);
     }
 
 private:
     void childClean() override;
-    bool packAnimationInRendTexture();
+    bool packAnimationInSingleSurface();
     inline void findTileResolution();
 
-    SDL_Texture* mpRenderTextureTile = nullptr;
+    PictureMap mpTiles = nullptr;
     SDL_FRect mSrcRect = { 0.f };
-    TexTileAmount mRenderTexTileWidth = 0;
-    TexTileAmount mRenderTexTileHeight = 0;
+    TexTileAmount mTileWidth = 0;
+    TexTileAmount mTileHeight = 0;
 };

@@ -13,8 +13,8 @@ public:
     inline Animation() = default;
     inline Animation(Animation&& instance) noexcept { create(std::move(instance)); }
     inline Animation(const char* path, SDL_Renderer* renderer) { create(path, renderer); }
-    bool   create(Animation&& instance) noexcept;
-    bool   create(const char* path, SDL_Renderer* renderer);
+            bool create(Animation&& instance) noexcept;
+    virtual bool create(const char* path, SDL_Renderer* renderer) { return baseCreate(path, renderer); }
 
     inline IMG_Animation* getAnimationPtr()      const noexcept { return mHasHead ? muHandle.anim : nullptr; }
     inline size_t          getFrameCount()        const noexcept { return mDelays_ms.size(); }
@@ -29,10 +29,11 @@ public:
     inline bool            isLoop()               const noexcept { return mIsLoop; }
     inline bool            isFreezed()            const noexcept { return mIsFreezed; }
 
-    virtual void start(float time_mult = 1.f) {}
+    virtual void preprocess() { assert("false"); }
+    inline void start(float time_mult = 1.f);
     virtual void render() {}
     virtual void renderRaw(const SDL_FRect* rect, const uint8_t alpha = 255, const float time_mult = 1.f) {}
-    void finish();
+    inline void finish();
 
     inline void setFrameMult(float time_mult = 1.f) noexcept { mTimeMult = time_mult; }
     inline void setRectRes(SDL_FRect rect)          noexcept { mRect = rect; }
@@ -52,11 +53,17 @@ protected:
     bool preRender();
 
     inline virtual void childClean() {}
+    bool baseCreate(const char* path, SDL_Renderer* renderer);
 
 protected:
     static const SDL_PixelFormat cPixelFormat = SDL_PIXELFORMAT_RGBA32;
 
 protected:
+    union PictureMap {
+        SDL_Surface* surf = nullptr;
+        SDL_Texture* tex;
+    };
+
     union {
         IMG_Animation* anim = NULL;
         struct {
@@ -64,7 +71,6 @@ protected:
             int16_t height;
         } size;
     } muHandle;
-    //IMG_Animation* mpAnimation = NULL;
     SDL_Renderer* mpRendererOrigin = NULL;
 
     SDL_FRect mRect = { 0.f };
