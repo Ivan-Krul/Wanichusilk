@@ -30,8 +30,8 @@ public:
 private:
     std::ofstream mFoutStream;
 
-    char mTextBuffer[256];
-    char mTimeBuffer[20];
+    char mTextBuffer[256] = { 0 };
+    char mTimeBuffer[20] = { 0 };
 };
 
 inline Logger::Logger(const char* logname) {
@@ -46,6 +46,17 @@ inline Logger::Logger(const char* logname) {
 #define _LOGGER_GENERATE_LOG_PRINT_IN(PREFIX, FUNCTION)
 #endif
 
+#ifdef COMPILER_MSVC
+#define _LOGGER_LOCALTIME_WRITE(timet) \
+    tm timeinfo;\
+    localtime_s(&timeinfo, &timet);\
+    strftime(mTimeBuffer, sizeof(mTimeBuffer), "%Y.%m.%d %H:%M:%S", &timeinfo)
+#else
+#define _LOGGER_LOCALTIME_WRITE(timet)\
+    tm* timeinfo = std::localtime(&timet);\
+    strftime(mTimeBuffer, sizeof(mTimeBuffer), "%Y.%m.%d %H:%M:%S", timeinfo)
+#endif
+
 #define _LOGGER_GENERATE_LOG_FUNC \
     assert(sizeof(text) <= 128);\
 \
@@ -55,9 +66,8 @@ inline Logger::Logger(const char* logname) {
     va_end(args);\
 \
     time_t now = time(0);\
-    tm *timeinfo;\
-    timeinfo = std::localtime(&now);\
-    strftime(mTimeBuffer, sizeof(mTimeBuffer), "%Y.%m.%d %H:%M:%S", timeinfo)
+    _LOGGER_LOCALTIME_WRITE(now);\
+    
 
 inline void Logger::logDebug(const char* text, ...) {
 #ifdef ENABLE_DEBUG_LOG

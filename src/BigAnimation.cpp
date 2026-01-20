@@ -8,9 +8,10 @@ BigAnimation::BigAnimation(Animation&& inst) {
 }
 
 bool BigAnimation::create(const char* path, SDL_Renderer* renderer) {
-    if(baseCreate()) return true;
+    if(baseCreate(path, renderer)) return true;
 
-    convertSurfaces();
+    if (convertSurfaces()) return true;
+    return false;
 }
 
 void BigAnimation::preprocess() {
@@ -76,13 +77,13 @@ void BigAnimation::childClean() {
     mapTextures.clear();
 }
 
-void BigAnimation::convertSurfaces() {
+bool BigAnimation::convertSurfaces() {
     if (!muHandle.anim || !mHasHead) {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
         if(!mHasHead) log.logInfo("^ It mark as no head");
         if(!muHandle.anim) log.logInfo("^ It has no ptr");
-        return;
+        return true;
     }
 
     mapTextures.resize(mDelays_ms.size());
@@ -93,8 +94,10 @@ void BigAnimation::convertSurfaces() {
             log.logWarningIn(__FUNCTION__, "Convertion surfaces was failed.");
             Logger log_sdl(DEFAULT_LOG_SDL_PATH);
             log_sdl.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
-            return;
+            return true;
         }
     }
+
+    return false;
 }
 

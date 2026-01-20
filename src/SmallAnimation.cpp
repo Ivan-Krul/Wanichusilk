@@ -8,9 +8,10 @@ SmallAnimation::SmallAnimation(Animation&& inst) {
 }
 
 bool SmallAnimation::create(const char* path, SDL_Renderer* renderer) {
-    if(baseCreate()) return true;
+    if(baseCreate(path, renderer)) return true;
 
-    packAnimationInSingleSurface();
+    if (packAnimationInSingleSurface()) return true;
+
     return false;
 }
 
@@ -27,8 +28,8 @@ void SmallAnimation::preprocess() {
 
     SDL_DestroySurface(surf);
 
-    if (mpTiles && mAlpha != 255)
-        SDL_SetTextureAlphaMod(mpTiles, mAlpha);
+    if (mpTiles.tex && mAlpha != 255)
+        SDL_SetTextureAlphaMod(mpTiles.tex, mAlpha);
 }
 
 void SmallAnimation::render() {
@@ -86,7 +87,7 @@ bool SmallAnimation::packAnimationInSingleSurface() {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
         log.logInfoIn(__FUNCTION__, "has_head: %d.", mHasHead);
-        return;
+        return true;
     }
 
     findTileResolution();
@@ -94,13 +95,13 @@ bool SmallAnimation::packAnimationInSingleSurface() {
     if (!mpTiles.surf) {
         Logger log(DEFAULT_LOG_SDL_PATH);
         log.logErrorIn(__FUNCTION__,  "Error with surface %s.", SDL_GetError());
-        return false;
+        return true;
     }
 
     const auto ox = muHandle.anim->w;
     const auto oy = muHandle.anim->h;
 
-    mSrcRect.w = ox
+    mSrcRect.w = ox;
     mSrcRect.h = oy;
 
     char tx = 0;
@@ -117,13 +118,15 @@ bool SmallAnimation::packAnimationInSingleSurface() {
         for (int x = 0; x < ox; x++) {
             for (int y = 0; y < oy; y++) {
                 if (!SDL_ReadSurfacePixel((muHandle.anim->frames)[f], x, y, &r, &g, &b, &a))
-                    return false;
+                    return true;
 
                 if (!SDL_WriteSurfacePixel(mpTiles.surf , tx * ox + x, ty * oy + y, r, g, b, a))
-                    return false;
+                    return true;
             }
         }
     }
+
+    return false;
 }
 
 void SmallAnimation::findTileResolution() {

@@ -41,6 +41,13 @@
 #define _MAYBE_UNUSED
 #endif
 
+#ifdef _MSC_VER
+#define COMPILER_MSVC
+// bad practice, but I know what what should I expect
+#pragma warning( disable : 4244 ) 
+#pragma warning( disable : 4267 ) 
+#endif
+
 #ifdef __cplusplus 
 #define NON_COPYABLE(ClassName)                  \
     ClassName(const ClassName&) = delete;        \

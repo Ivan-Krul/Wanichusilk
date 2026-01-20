@@ -2,15 +2,21 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "windows-base-ninja",
+            "name": "base",
             "hidden": true,
-            "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "cl",
-                "CMAKE_CXX_COMPILER": "cl",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
+        },
+        {
+            "name": "windows-base",
+            "hidden": true,
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl",
+                "CMAKE_CXX_COMPILER": "cl"
             },
             "condition": {
                 "type": "equals",
@@ -19,49 +25,57 @@
             }
         },
         {
+            "name": "x64-base",
+            "hidden": true,
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            }
+        },
+        {
+            "name": "debug",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "windows-base-ninja",
+            "hidden": true,
+            "inherits": "windows-base",
+            "generator": "Ninja"
+        },
+        {
             "name": "windows-base-ninja-mingw",
             "hidden": true,
+            "inherits": "windows-base",
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "g++",
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
+                "CMAKE_CXX_COMPILER": "g++"
             }
         },
         {
             "name": "windows-base-vs2022",
             "hidden": true,
-            "generator": "Visual Studio 17 2022",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "cl",
-                "CMAKE_CXX_COMPILER": "cl",
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-            },
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
+            "inherits": "windows-base",
+            "generator": "Visual Studio 17 2022"
         },
         {
             "name": "linux-base-make",
             "hidden": true,
+            "inherits": "base",
             "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "g++",
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_CXX_COMPILER": "g++"
             },
             "condition": {
                 "type": "equals",
@@ -70,121 +84,68 @@
             }
         },
         {
-            "name": "x64-debug-wn",
-            "displayName": "x64 Debug",
-            "inherits": "windows-base-ninja",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
+            "name": "debug-wn",
+            "displayName": "Debug Ninja",
+            "inherits": [ "windows-base-ninja", "x64-base" ],
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
-            "name": "x64-debug-ws",
-            "displayName": "x64 Debug",
-            "inherits": "windows-base-vs2022",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
+            "name": "debug-ws",
+            "displayName": "Debug MSVC",
+            "inherits": [ "windows-base-vs2022", "x64-base", "debug" ]
         },
         {
-            "name": "x64-debug-wm",
-            "displayName": "x64 Debug",
-            "inherits": "windows-base-ninja-mingw",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
+            "name": "debug-wm",
+            "displayName": "Debug MinGW",
+            "inherits": [ "windows-base-ninja-mingw", "x64-base", "debug" ]
         },
         {
-            "name": "x64-debug-lm",
-            "displayName": "x64 Debug",
-            "inherits": "linux-base-make",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
+            "name": "debug-lm",
+            "displayName": "Debug Make",
+            "inherits": [ "linux-base-make", "x64-base", "debug" ]
         },
         {
-            "name": "x64-release-wn",
-            "displayName": "x64 Release",
-            "inherits": "x64-debug-wn",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
+            "name": "release-wn",
+            "displayName": "Release",
+            "inherits": [ "debug-wn", "release" ]
         },
         {
             "name": "x86-debug-wn",
             "displayName": "x86 Debug",
-            "inherits": "windows-base-ninja",
+            "inherits": [ "windows-base-ninja", "debug" ],
             "architecture": {
                 "value": "x86",
                 "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
             "name": "x86-release-wn",
             "displayName": "x86 Release",
-            "inherits": "x86-debug-wn",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            }
+            "inherits": [ "x86-debug-wn", "release" ]
         }
     ],
     "buildPresets": [
         {
-            "name": "default-build-windows",
-            "displayName": "x64 Debug",
-            "configurePreset": "x64-debug-wn",
-            "description": "Vanilla build",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
+            "name": "debug-win-n",
+            "displayName": "Debug Ninja",
+            "configurePreset": "debug-wn"
         },
         {
-            "name": "build-windows-vs2022",
-            "displayName": "x64 Debug",
-            "configurePreset": "x64-debug-ws",
-            "description": "Vanilla build",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
+            "name": "debug-win-s",
+            "displayName": "Debug MSVC",
+            "configurePreset": "debug-ws"
         },
         {
-            "name": "build-windows-mingw",
-            "displayName": "x64 Debug",
-            "configurePreset": "x64-debug-wm",
-            "description": "Vanilla build",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
+            "name": "debug-win-m",
+            "displayName": "Debug MinGW",
+            "configurePreset": "debug-wm"
         },
         {
-            "name": "default-build-linux",
-            "displayName": "x64 Debug",
-            "configurePreset": "x64-debug-lm",
-            "description": "Vanilla build",
+            "name": "debug-lnx-m",
+            "displayName": "Debug Make",
+            "configurePreset": "debug-lm",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
