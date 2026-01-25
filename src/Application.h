@@ -5,6 +5,7 @@
 #include "TextureManager.h"
 #include "AnimationManager.h"
 #include "FontManager.h"
+#include "TextManager.h"
 #include "FilmScene.h"
 #include "Clock.h"
 #include "define.h"
@@ -32,7 +33,7 @@ private:
     TextureManager mTexMgr;
     AnimationManager mAnimMgr;
     FontManager mFontMgr;
-    Texture mTextTex;
+    TextManager mTextMgr;
 
     Loader mLoader;
 

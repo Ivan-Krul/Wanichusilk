@@ -2,7 +2,7 @@
 #include "Logger.h"
 
 bool Animation::baseCreate(const char* path, SDL_Renderer* renderer) {
-    if (mHasHead && muHandle.anim) return true;
+    if (mState.has_head && muHandle.anim) return true;
     mpRendererOrigin = renderer;
     muHandle.anim = IMG_LoadAnimation(path);
     if (muHandle.anim == NULL) {
@@ -10,9 +10,10 @@ bool Animation::baseCreate(const char* path, SDL_Renderer* renderer) {
         log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
         return true;
     }
-    mHasHead = true;
-    mIsLoop = false;
-    mIsFreezed = false;
+    mState.is_preprocessed = false;
+    mState.has_head = true;
+    mState.is_loop = false;
+    mState.is_freezed = false;
 
     mRect.w = muHandle.anim->w;
     mRect.h = muHandle.anim->h;
@@ -37,21 +38,25 @@ bool Animation::create(Animation&& instance) noexcept {
     mFrameIndex = instance.mFrameIndex;
     mTimeMult = mTimeMult;
     mAlpha = instance.mAlpha;
-    mIsLoop = instance.mIsLoop;
-    mHasHead = instance.mHasHead;
-    mIsFreezed = instance.mIsFreezed;
+    mState = instance.mState;
     mCurrentDelay = instance.mCurrentDelay;
     if(!pClock) pClock = instance.pClock;
 
     instance.mpRendererOrigin = nullptr;
     instance.muHandle.anim = nullptr;
-    return muHandle.anim;
+    return muHandle.anim == nullptr;
 }
 
 void Animation::start(float time_mult) {
     if (!pClock) {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "Animation didn't got a clock.");
+        return;
+    }
+
+    if (!mState.is_preprocessed) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "Animation wasn't preprocessed.");
         return;
     }
 
@@ -65,19 +70,19 @@ void Animation::finish() {
 }
 
 void Animation::lockChange() {
-    if (muHandle.anim && mHasHead) {
+    if (muHandle.anim && mState.has_head) {
         IMG_FreeAnimation(muHandle.anim);
-        mHasHead = false;
+        mState.has_head = false;
     }
 }
 
 void Animation::clear() {
-    if (muHandle.anim && mHasHead)
+    if (muHandle.anim && mState.has_head)
         IMG_FreeAnimation(muHandle.anim);
 
     mDelays_ms.clear();
 
-    mHasHead = true;
+    mState.has_head = true;
     muHandle.anim = NULL;
 
     childClean();
@@ -85,13 +90,13 @@ void Animation::clear() {
 
 bool Animation::preRender() {
     if (mFrameIndex >= mDelays_ms.size()) return true;
-    if (mIsFreezed) return false;
+    if (mState.is_freezed) return false;
     if (!(mTimeMult > 0.f)) return false;
     mCurrentDelay -= pClock->DeltaTime();
 
     while (mCurrentDelay.count() < 0.f) {
         mFrameIndex++;
-        if (mFrameIndex >= mDelays_ms.size() && !mIsLoop) return true;
+        if (mFrameIndex >= mDelays_ms.size() && !mState.is_loop) return true;
         mFrameIndex %= mDelays_ms.size();
         mCurrentDelay += std::chrono::milliseconds(mDelays_ms[mFrameIndex]) * mTimeMult;
     }

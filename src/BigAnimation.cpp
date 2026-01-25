@@ -32,6 +32,7 @@ void BigAnimation::preprocess() {
         }
         SDL_DestroySurface(surf);
     }
+    mState.is_preprocessed = true;
 }
 
 void BigAnimation::render() {
@@ -78,10 +79,10 @@ void BigAnimation::childClean() {
 }
 
 bool BigAnimation::convertSurfaces() {
-    if (!muHandle.anim || !mHasHead) {
+    if (!muHandle.anim || !mState.has_head) {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
-        if(!mHasHead) log.logInfo("^ It mark as no head");
+        if(!mState.has_head) log.logInfo("^ It mark as no head");
         if(!muHandle.anim) log.logInfo("^ It has no ptr");
         return true;
     }

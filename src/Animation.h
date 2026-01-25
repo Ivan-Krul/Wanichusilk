@@ -16,7 +16,7 @@ public:
             bool create(Animation&& instance) noexcept;
     virtual bool create(const char* path, SDL_Renderer* renderer) { return baseCreate(path, renderer); }
 
-    inline IMG_Animation* getAnimationPtr()      const noexcept { return mHasHead ? muHandle.anim : nullptr; }
+    inline IMG_Animation* getAnimationPtr()      const noexcept { return mState.has_head ? muHandle.anim : nullptr; }
     inline size_t          getFrameCount()        const noexcept { return mDelays_ms.size(); }
     inline float           getTimeMult()          const noexcept { return mTimeMult; }
     inline Clock::Duration getNextFrameDuration() const noexcept { return isGoing() ? Clock::Duration(std::chrono::milliseconds(mDelays_ms[mFrameIndex])) : Clock::Duration(0); }
@@ -26,8 +26,9 @@ public:
     inline uint8_t         getAlpha()             const noexcept { return mAlpha; }
     inline bool            isGoing()              const noexcept { return mFrameIndex != 1; }
     inline virtual bool    isBig()                const noexcept { return DEFAULT_ANIM_SLOT_USE_THRESHOLD < (muHandle.anim ? (mDelays_ms.size() * getSizeWidth() * getSizeHeight()) : 0); }
-    inline bool            isLoop()               const noexcept { return mIsLoop; }
-    inline bool            isFreezed()            const noexcept { return mIsFreezed; }
+    inline bool            isLoop()               const noexcept { return mState.is_loop; }
+    inline bool            isPreprocessed()       const noexcept { return mState.is_preprocessed; }
+    inline bool            isFreezed()            const noexcept { return mState.is_freezed; }
 
     virtual void preprocess() { assert("false"); }
     void start(float time_mult = 1.f);
@@ -37,18 +38,18 @@ public:
 
     inline void setFrameMult(float time_mult = 1.f) noexcept { mTimeMult = time_mult; }
     inline void setRectRes(SDL_FRect rect)          noexcept { mRect = rect; }
-    inline void setLooping(bool need_loop)          noexcept { mIsLoop = need_loop; }
-    inline void setFreeze(bool freeze)              noexcept { mIsFreezed = freeze; }
+    inline void setLooping(bool need_loop)          noexcept { mState.is_loop = need_loop; }
+    inline void setFreeze(bool freeze)              noexcept { mState.is_freezed = freeze; }
     inline virtual void setAlpha(uint8_t alpha)     noexcept {}
 
     void lockChange();
 
     void   clear();
-    inline virtual ~Animation() { if (muHandle.anim && mHasHead) IMG_FreeAnimation(muHandle.anim);}
+    inline virtual ~Animation() { if (muHandle.anim && mState.has_head) IMG_FreeAnimation(muHandle.anim);}
 
 protected:
-    inline int16_t getSizeWidth() const noexcept { return mHasHead ? muHandle.anim->w : muHandle.size.width; }
-    inline int16_t getSizeHeight() const noexcept { return mHasHead ? muHandle.anim->h : muHandle.size.height; }
+    inline int16_t getSizeWidth() const noexcept { return mState.has_head ? muHandle.anim->w : muHandle.size.width; }
+    inline int16_t getSizeHeight() const noexcept { return mState.has_head ? muHandle.anim->h : muHandle.size.height; }
 
     bool preRender();
 
@@ -80,9 +81,12 @@ protected:
     float mTimeMult = 1.f;
 
     uint8_t mAlpha = 255;
-    bool mIsLoop = false;
-    bool mHasHead = true;
-    bool mIsFreezed = true;
+    struct {
+        bool is_loop : 1;
+        bool has_head : 1;
+        bool is_freezed : 1;
+        bool is_preprocessed : 1;
+    } mState = { 0 };
 
     Clock::Duration mCurrentDelay = Clock::Duration::zero();
 

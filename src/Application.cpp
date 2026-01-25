@@ -24,8 +24,18 @@ void Application::OnInit() {
 
     OpenWindow();
 
+    //pTEngine = TTF_CreateRendererTextEngine(mMainWindow.getWindowRenderer());
+    //if (!pTEngine) {
+    //    Logger log(DEFAULT_LOG_SDL_PATH);
+    //    log.logCritical("SDL_ttf failed to create text engine: %s.", SDL_GetError());
+    //    mNeedQuit = true;
+    //    mIsCritical = true;
+    //}
+
     mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
+    mTextMgr.SetRenderer(mMainWindow.getWindowRenderer());
+    mTextMgr.SetFontManager(&mFontMgr);
     mAnimMgr.SetClock(&mClock);
 
     AnimationManager::LoadParamConvertor ap;
@@ -37,7 +47,11 @@ void Application::OnInit() {
     fp.path = "./res/TerminusTTF-Bold.ttf";
     fp.size = 50.f;
     mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
-    
+    TextManager::LoadParamConvertor tp;
+    tp.text = u8"what would you think? 🦅";
+    tp.font_indx = 0;
+    mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
+
     SCOPED_STOPWATCH("load");
 
     mLoader.Load();
@@ -106,20 +120,6 @@ void Application::OnInit() {
 
     mAnimMgr.GetLockerResource(0)->start(1.f);
     mScene.start();
-
-    auto font = mFontMgr.GetLockerResource(mLoader.GetTranscription(0));
-    const auto surf = TTF_RenderText_Blended(font, "Gifs and Text exist", 0, SDL_Color{ 255,255,255, 255 });
-    
-    if (!surf) {
-        Logger log(DEFAULT_LOG_SDL_PATH);
-        log.logError("%s.", SDL_GetError());
-        mIsCritical = true;
-        mNeedQuit = true;
-    }
-
-    mTextTex.create(SDL_CreateTextureFromSurface(mMainWindow.getWindowRenderer(), surf), mMainWindow.getWindowRenderer());
-    
-    SDL_DestroySurface(surf);
 
     //mAnimMgr.GetLockerResource(0)->setAlpha(128);
     //mAnimMgr.GetLockerResource(0)->setLooping(true);
@@ -190,5 +190,5 @@ void Application::OnRender() {
     //mAnimMgr.GetLockerResource(1)->render();
     mScene.render();
     //mAnimMgr.GetLockerResource(0)->render();
-    mTextTex.render();
+    mTextMgr.GetLockerResource(0)->render();
 }

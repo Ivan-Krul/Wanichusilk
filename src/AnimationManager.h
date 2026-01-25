@@ -8,7 +8,7 @@
 
 using AnimationIndex = LockerIndex;
 
-class AnimationManager : public IResourceManager, public IResourceAccesser<Animation>, public IRendererGiver {
+class AnimationManager : public IResourceManager, public IResourceAccesser<Animation>, public IRendererGiver, public IResourcePreprocesser {
 public:
     struct LoadParamConvertor : public IResourceLoadParamConvertor {
         const char* path;
@@ -22,29 +22,34 @@ public:
 
     LockerIndex RequestResourceCreate() override { return -1; };
     inline Animation* GetLockerResource(LockerIndex index) override { assert(index != -1);  return mAnimationLocker[index].get(); }
-    LockerIndex RequestResourceLoad(ResourceLoadParams load) {
-        assert(false); // not updated
+    LockerIndex RequestResourceLoad(ResourceLoadParams load) override {
         Animation anim;
-        bool ret = anim.create(load.path, mpRenderer);
-        if (!ret) return -1;
+        if (anim.create(load.path, mpRenderer)) return -1;
 
         anim.setClock(mpClock);
 
         AnimationIndex indx;
         if (anim.isBig()) {
-            indx = mAnimationLocker.pushInLocker(std::make_unique<BigAnimation>(std::move(anim)));
+            indx = mAnimationLocker.pushInLocker(std::make_unique<BigAnimation>());
         }
         else {
-            indx = mAnimationLocker.pushInLocker(std::make_unique<SmallAnimation>(std::move(anim)));
+            indx = mAnimationLocker.pushInLocker(std::make_unique<SmallAnimation>());
         }
-
-        mAnimationLocker[indx]->start(1.f);
+        if (mAnimationLocker[indx]->create(std::move(anim))) {
+            mAnimationLocker.popFromLocker(indx);
+            return -1;
+        }
+        
         return indx;
+    }
+    void RequestResourcePreprocess(LockerIndex index) override {
+        assert(index != -1);
+        mAnimationLocker[index]->preprocess();
     }
 
     inline void RequestResourceClean(LockerIndex index) { mAnimationLocker.popFromLocker(index); }
 
-    inline Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser; }
+    inline Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser | Attribute::Preprocesser; }
 
 private:
     SDL_Renderer* mpRenderer = nullptr;

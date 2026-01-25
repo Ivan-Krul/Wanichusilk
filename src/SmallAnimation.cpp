@@ -30,6 +30,8 @@ void SmallAnimation::preprocess() {
 
     if (mpTiles.tex && mAlpha != 255)
         SDL_SetTextureAlphaMod(mpTiles.tex, mAlpha);
+
+    mState.is_preprocessed = true;
 }
 
 void SmallAnimation::render() {
@@ -83,10 +85,10 @@ void SmallAnimation::childClean() {
 }
 
 bool SmallAnimation::packAnimationInSingleSurface() {
-    if (!muHandle.anim || !mHasHead) {
+    if (!muHandle.anim || !mState.has_head) {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "Animation won't start because of miss-match of heads.");
-        log.logInfoIn(__FUNCTION__, "has_head: %d.", mHasHead);
+        log.logInfoIn(__FUNCTION__, "has_head: %d.", mState.has_head);
         return true;
     }
 

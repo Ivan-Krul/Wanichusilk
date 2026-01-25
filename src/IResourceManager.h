@@ -1,11 +1,14 @@
 #pragma once
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_textengine.h>
 
 #include "LockerSimple.h"
 
 enum class ResourceManagerAttribute : short {
     Accesser = 1 << 0,
     RendererGiver = 1 << 1,
+    Preprocesser = 1 << 2
+
 };
 
 struct ResourceLoadParams {
@@ -44,6 +47,10 @@ struct IRendererGiver {
 template<typename T>
 struct IResourceAccesser {
     virtual inline T* GetLockerResource(LockerIndex index) = 0;
+};
+
+struct IResourcePreprocesser {
+    virtual void RequestResourcePreprocess(LockerIndex index) = 0;
 };
 
 
