@@ -4,6 +4,8 @@
 
 class Text {
 public:
+    inline Text() = default;
+    Text(Text&& inst) noexcept;
     inline bool create(TTF_TextEngine* engine, FontManager* pmgr, LockerIndex font_indx) noexcept { create(engine, pmgr, font_indx, ""); }
     bool create(TTF_TextEngine* engine, FontManager* pmgr, LockerIndex font_indx, const char* text);
 
@@ -15,6 +17,7 @@ public:
     inline int getWrapPxLimit() const noexcept { return mWrapPxLimit; }
     inline LockerIndex getFontIndex() const noexcept { return mFontIndex; }
     inline FontManager* getFontManager() const noexcept { return pFontMgr; }
+    inline TTF_Text* getTextInstance() const noexcept { return mpText; }
 
     inline void render() const { if (!mpText) return; TTF_DrawRendererText(mpText, mRect.x, mRect.y); }
 

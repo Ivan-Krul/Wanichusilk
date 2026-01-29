@@ -44,7 +44,7 @@ bool Animation::create(Animation&& instance) noexcept {
 
     instance.mpRendererOrigin = nullptr;
     instance.muHandle.anim = nullptr;
-    return muHandle.anim == nullptr;
+    return instance.muHandle.anim;
 }
 
 void Animation::start(float time_mult) {

@@ -6,7 +6,7 @@ public:
     using Animation::create;
 
     inline BigAnimation() = default;
-    BigAnimation(Animation&& inst);
+    BigAnimation(Animation&& inst, char& is_fail);
     bool create(const char* path, SDL_Renderer* renderer) override;
 
     void preprocess() override;

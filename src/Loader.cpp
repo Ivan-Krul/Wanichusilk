@@ -25,6 +25,14 @@ void Loader::Load() {
     mLoadThread.detach();
 }
 
+void Loader::Preprocess() {
+    for (auto i = 0; i < maResMgr.size(); i++) {
+        auto& res = maResMgr[i];
+        if (short((res.mgr_ptr->GetAttribute()) & ResourceManagerAttribute::Preprocesser))
+            dynamic_cast<IResourcePreprocesser*>(res.mgr_ptr)->RequestResourcePreprocess(res.index);
+    }
+}
+
 void Loader::Clean() {
     for (auto i = 0; i < maResMgr.size(); i++) {
         auto& res = maResMgr[i];

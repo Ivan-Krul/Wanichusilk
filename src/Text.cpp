@@ -1,6 +1,19 @@
 #include "Text.h"
 #include "Logger.h"
 
+#include <limits>
+
+Text::Text(Text&& inst) noexcept {
+    pEngine = inst.pEngine;
+    pFontMgr = inst.pFontMgr;
+    mFontIndex = inst.mFontIndex;
+    mRect = inst.mRect;
+    mpText = inst.mpText;
+    mWrapPxLimit = inst.mWrapPxLimit;
+
+    inst.mpText = nullptr;
+}
+
 bool Text::create(TTF_TextEngine* engine, FontManager* pmgr, LockerIndex font_indx, const char* text) {
     if (mpText) return true;
     pEngine = engine;

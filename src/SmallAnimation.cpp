@@ -1,10 +1,10 @@
 #include "SmallAnimation.h"
 #include "Logger.h"
 
-SmallAnimation::SmallAnimation(Animation&& inst) {
-    create(std::move(inst));
+SmallAnimation::SmallAnimation(Animation&& inst, char& is_fail) {
+    if (is_fail = create(std::move(inst))) return;
 
-    packAnimationInSingleSurface();
+    is_fail = packAnimationInSingleSurface();
 }
 
 bool SmallAnimation::create(const char* path, SDL_Renderer* renderer) {

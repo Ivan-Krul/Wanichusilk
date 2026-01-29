@@ -6,7 +6,11 @@ film::LayerAnimation::LayerAnimation(Clock* clock, AnimationManager* animmgr, An
 
     mAnimInd.elem_to = animind;
     pAnimation = animind != -1 ? pAnimMgr->GetLockerResource(animind) : nullptr;
-    if (pAnimation) pAnimation->lockChange();
+    if (pAnimation) {
+        pAnimation->lockChange();
+        pAnimation->setFreeze(true);
+        pAnimation->start(1.f);
+    }
     mRect.elem_to = pAnimation ? pAnimation->getRectRes() : SDL_FRect{ 0.f };
     mAlpha.elem_to = 255;
     mTimeMult.elem_to = 1.f;
@@ -88,6 +92,11 @@ void film::LayerAnimation::pushAnimIndSetter(KeypointLayer* keypoint) {
     mAnimInd.shift_elem();
     mAnimInd.elem_to = kp->indx;
     pAnimation = mAnimInd.elem_to != -1 ? pAnimMgr->GetLockerResource(mAnimInd.elem_to) : nullptr;
+    if (pAnimation) {
+        pAnimation->lockChange();
+        pAnimation->setFreeze(true);
+        pAnimation->start(1.f);
+    }
 
     switch (swapmode) {
     case KeypointLayerSwap::KeepNotDeformed:
@@ -207,6 +216,11 @@ bool film::LayerAnimation::onPushTracker(const LockerIndex ease_indx) {
         mAnimInd.elem_to = dynamic_cast<KeypointLayerInteractTransparentSwap*>(keypoint)->indx;
         mAnimInd.unused_padding = ease_indx;
         pAnimation = mAnimInd.elem_to != -1 ? pAnimMgr->GetLockerResource(mAnimInd.elem_to) : nullptr;
+        if (pAnimation) {
+            pAnimation->lockChange();
+            pAnimation->setFreeze(true);
+            pAnimation->start(1.f);
+        }
     }   break;
     default:
         return true;

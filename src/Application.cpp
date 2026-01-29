@@ -41,15 +41,30 @@ void Application::OnInit() {
     AnimationManager::LoadParamConvertor ap;
     ap.path = "./res/cat-runner-2049-cat-runner.gif";
     mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
-    //ap.path = "./res/lancer-spin-big.gif";
-    //mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
+    ap.path = "./res/lancer-spin-big.gif";
+    mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
     FontManager::LoadParamConvertor fp;
+    fp.size = 25.f;
     fp.path = "./res/TerminusTTF-Bold.ttf";
-    fp.size = 50.f;
+    mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
+    fp.path = "./res/Scheherazade-Regular.ttf";
+    mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
+    fp.path = "./res/wingding.ttf";
+    mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
+    fp.path = "./res/FSEX302.ttf";
     mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
     TextManager::LoadParamConvertor tp;
-    tp.text = u8"what would you think? 🦅";
+    tp.text = u8"What would you think?\nWorüber denkst du?\nПро що ти думаєш?\nO czym myślisz?\n¿En qué piensas?\nNe düşünüyorsun?\nApa pendapat Anda?";
     tp.font_indx = 0;
+    mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
+    tp.text = u8"يرحب بالمكان الهادئ بالإلهام";
+    tp.font_indx = 1;
+    mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
+    tp.text = u8"WHAT A QUIET PLACE HERE";
+    tp.font_indx = 2;
+    mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
+    tp.text = u8"A 也许，友谊是人生中最美好的东西";
+    tp.font_indx = 3;
     mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
 
     SCOPED_STOPWATCH("load");
@@ -68,8 +83,8 @@ void Application::OnInit() {
         mIsCritical = true;
         return;
     }
-    assert(mLoader.GetTranscription(0) == 0);
-    //assert(mLoader.GetTranscription(1) == 1);
+    
+    mLoader.Preprocess();
 
     ScaleOption so;
     so.p_wind = mMainWindow.getWindow();
@@ -80,14 +95,14 @@ void Application::OnInit() {
     film::KeypointLayerAddAnimation a;
     a.loaderind = mLoader.GetTranscription(0);
     mScene.addKeypoint(a);
-    //a.loaderind = mLoader.GetTranscription(1);
-    //mScene.addKeypoint(a);
+    a.loaderind = mLoader.GetTranscription(1);
+    mScene.addKeypoint(a);
 
-    //film::KeypointLayerInteractPos p;
-    //p.layerindx = 1;
-    //p.rect.x = 200;
-    //p.rect.y = 200;
-    //mScene.addKeypoint(p);
+    film::KeypointLayerInteractPos p;
+    p.layerindx = 1;
+    p.rect.x = 200;
+    p.rect.y = 200;
+    mScene.addKeypoint(p);
 
     film::KeypointLayerInteractAlpha ana;
     ana.layerindx = 0;
@@ -97,20 +112,20 @@ void Application::OnInit() {
     film::KeypointLayerInteractAnimationLoop anl;
     anl.layerindx = 0;
     mScene.addKeypoint(anl);
-    //anl.layerindx = 1;
-    //mScene.addKeypoint(anl);
+    anl.layerindx = 1;
+    mScene.addKeypoint(anl);
 
     film::KeypointLayerInteractAnimationStart ans;
     ans.layerindx = 0;
     mScene.addKeypoint(ans);
-    //ans.layerindx = 1;
-    //mScene.addKeypoint(ans);
+    ans.layerindx = 1;
+    mScene.addKeypoint(ans);
 
     film::KeypointLayerEnable e;
     e.layerindx = 0;
     mScene.addKeypoint(e);
-    //e.layerindx = 1;
-    //mScene.addKeypoint(e);
+    e.layerindx = 1;
+    mScene.addKeypoint(e);
 
 
     film::Keypoint ts;
@@ -118,8 +133,15 @@ void Application::OnInit() {
     ts.frame_delay = 100;
     mScene.addKeypoint(ts);
 
-    mAnimMgr.GetLockerResource(0)->start(1.f);
+    //mAnimMgr.GetLockerResource(0)->start(1.f);
     mScene.start();
+
+    mTextMgr.GetLockerResource(0)->setOffsetX(100);
+    mTextMgr.GetLockerResource(0)->setOffsetY(50);
+
+    mTextMgr.GetLockerResource(2)->setOffsetX(300);
+    TTF_SetTextColor(mTextMgr.GetLockerResource(3)->getTextInstance(), 255, 255, 0, 255);
+    mTextMgr.GetLockerResource(3)->setOffsetY(300);
 
     //mAnimMgr.GetLockerResource(0)->setAlpha(128);
     //mAnimMgr.GetLockerResource(0)->setLooping(true);
@@ -185,10 +207,13 @@ void Application::OnUpdate() {
 }
 
 void Application::OnRender() {
-    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100 + 100, 200, 255);
+    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100, 200, 255);
     //mAnimMgr.GetLockerResource(0)->render();
     //mAnimMgr.GetLockerResource(1)->render();
     mScene.render();
     //mAnimMgr.GetLockerResource(0)->render();
     mTextMgr.GetLockerResource(0)->render();
+    mTextMgr.GetLockerResource(1)->render();
+    mTextMgr.GetLockerResource(2)->render();
+    mTextMgr.GetLockerResource(3)->render();
 }

@@ -18,6 +18,7 @@ public:
     IResourceManager* GetRequiredInterface(ResourceManagerAttribute attr) const noexcept;
 
     void Load();
+    void Preprocess();
     void Clean();
 
     inline size_t Size() const noexcept { return maResMgr.size(); }

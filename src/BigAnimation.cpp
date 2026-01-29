@@ -1,10 +1,10 @@
 #include "BigAnimation.h"
 #include "Logger.h"
 
-BigAnimation::BigAnimation(Animation&& inst) {
-    create(std::move(inst));
+BigAnimation::BigAnimation(Animation&& inst, char& is_fail) {
+    if (is_fail = create(std::move(inst))) return;
 
-    convertSurfaces();
+    is_fail = convertSurfaces();
 }
 
 bool BigAnimation::create(const char* path, SDL_Renderer* renderer) {
@@ -32,7 +32,7 @@ void BigAnimation::preprocess() {
         }
         SDL_DestroySurface(surf);
     }
-    mState.is_preprocessed = true;
+    if(!mapTextures.empty()) mState.is_preprocessed = true;
 }
 
 void BigAnimation::render() {
@@ -51,7 +51,7 @@ void BigAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const f
     mTimeMult = time_mult;
 
     if (preRender()) return;
-    if (mapTextures[mFrameIndex].tex) {
+    if (!mapTextures[mFrameIndex].tex) {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "Texture wasn't initialised.");
         return;

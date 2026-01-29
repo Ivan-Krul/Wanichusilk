@@ -27,17 +27,22 @@ public:
         if (anim.create(load.path, mpRenderer)) return -1;
 
         anim.setClock(mpClock);
+        char fail = true;
 
         AnimationIndex indx;
         if (anim.isBig()) {
-            indx = mAnimationLocker.pushInLocker(std::make_unique<BigAnimation>());
+            indx = mAnimationLocker.pushInLocker(std::make_unique<BigAnimation>(std::move(anim), fail));
+            if (fail) {
+                mAnimationLocker.popFromLocker(indx);
+                return -1;
+            }
         }
         else {
-            indx = mAnimationLocker.pushInLocker(std::make_unique<SmallAnimation>());
-        }
-        if (mAnimationLocker[indx]->create(std::move(anim))) {
-            mAnimationLocker.popFromLocker(indx);
-            return -1;
+            indx = mAnimationLocker.pushInLocker(std::make_unique<SmallAnimation>(std::move(anim), fail));
+            if (fail) {
+                mAnimationLocker.popFromLocker(indx);
+                return -1;
+            }
         }
         
         return indx;
