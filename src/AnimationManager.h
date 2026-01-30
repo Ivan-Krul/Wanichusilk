@@ -47,9 +47,9 @@ public:
         
         return indx;
     }
-    void RequestResourcePreprocess(LockerIndex index) override {
+    bool RequestResourcePreprocess(LockerIndex index) override {
         assert(index != -1);
-        mAnimationLocker[index]->preprocess();
+        return mAnimationLocker[index]->preprocess();
     }
 
     inline void RequestResourceClean(LockerIndex index) { mAnimationLocker.popFromLocker(index); }

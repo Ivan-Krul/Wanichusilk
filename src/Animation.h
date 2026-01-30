@@ -30,7 +30,7 @@ public:
     inline bool            isPreprocessed()       const noexcept { return mState.is_preprocessed; }
     inline bool            isFreezed()            const noexcept { return mState.is_freezed; }
 
-    virtual void preprocess() { assert("false"); }
+    virtual bool preprocess() { return true; }
     void start(float time_mult = 1.f);
     virtual void render() {}
     virtual void renderRaw(const SDL_FRect* rect, const uint8_t alpha = 255, const float time_mult = 1.f) {}

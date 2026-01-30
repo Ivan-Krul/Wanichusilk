@@ -1,15 +1,20 @@
 #pragma once
 #include <SDL3_ttf/SDL_ttf.h>
+
 #include "FontManager.h"
+
+#include <limits>
 
 class Text {
 public:
     inline Text() = default;
     Text(Text&& inst) noexcept;
-    inline bool create(TTF_TextEngine* engine, FontManager* pmgr, LockerIndex font_indx) noexcept { create(engine, pmgr, font_indx, ""); }
+    inline bool create(TTF_TextEngine* engine, FontManager* pmgr, LockerIndex font_indx) noexcept { return create(engine, pmgr, font_indx, ""); }
     bool create(TTF_TextEngine* engine, FontManager* pmgr, LockerIndex font_indx, const char* text);
 
-    inline const char* getText() const noexcept { return mpText ? mpText->text : nullptr; }
+    bool preprocess();
+
+    inline const char* getText() const noexcept { return mRect.w < 0.f ? mText.text->text : nullptr; }
     inline float getOffsetX() const noexcept { return mRect.x; }
     inline float getOffsetY() const noexcept { return mRect.y; }
     inline float getWidth() const noexcept { return mRect.w; }
@@ -17,9 +22,9 @@ public:
     inline int getWrapPxLimit() const noexcept { return mWrapPxLimit; }
     inline LockerIndex getFontIndex() const noexcept { return mFontIndex; }
     inline FontManager* getFontManager() const noexcept { return pFontMgr; }
-    inline TTF_Text* getTextInstance() const noexcept { return mpText; }
+    inline TTF_Text* getTextInstance() const noexcept { return mText.text; }
 
-    inline void render() const { if (!mpText) return; TTF_DrawRendererText(mpText, mRect.x, mRect.y); }
+    inline void render() const { if (mRect.w < 0.f) return; TTF_DrawRendererText(mText.text, mRect.x, mRect.y); }
 
     void setText(const char* new_text) noexcept;
     void setFontMgrIndex(LockerIndex font_ind) noexcept;
@@ -29,17 +34,19 @@ public:
 
     void clear();
 
-    inline ~Text() { if(mpText) TTF_DestroyText(mpText); }
+    inline ~Text() { if(mRect.w < 0.f && mText.text) TTF_DestroyText(mText.text); }
 
 private:
     TTF_TextEngine* pEngine = nullptr;
-    TTF_Text* mpText = nullptr;
+    union {
+        TTF_Text* text;
+        const char* praw;
+    } mText = { nullptr };
     FontManager* pFontMgr = nullptr;
     LockerIndex mFontIndex = -1;
 
     int mWrapPxLimit = std::numeric_limits<int>::max();
 
-    SDL_FRect mRect;
-    
+    SDL_FRect mRect = { -1 };
 };
 

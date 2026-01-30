@@ -9,7 +9,7 @@ public:
     BigAnimation(Animation&& inst, char& is_fail);
     bool create(const char* path, SDL_Renderer* renderer) override;
 
-    void preprocess() override;
+    bool preprocess() override;
 
     inline bool    isBig() const noexcept override { return true; }
 

@@ -14,7 +14,7 @@ bool BigAnimation::create(const char* path, SDL_Renderer* renderer) {
     return false;
 }
 
-void BigAnimation::preprocess() {
+bool BigAnimation::preprocess() {
     SDL_Surface* surf;
     for (auto f = 0; f < mapTextures.size(); f++) {
         surf = mapTextures[f].surf;
@@ -29,10 +29,12 @@ void BigAnimation::preprocess() {
             log.logWarningIn(__FUNCTION__, "Convertion to texture was failed.");
             Logger log_sdl(DEFAULT_LOG_SDL_PATH);
             log_sdl.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
+            return true;
         }
         SDL_DestroySurface(surf);
     }
     if(!mapTextures.empty()) mState.is_preprocessed = true;
+    return !mState.is_preprocessed;
 }
 
 void BigAnimation::render() {

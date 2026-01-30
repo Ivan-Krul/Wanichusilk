@@ -50,7 +50,7 @@ struct IResourceAccesser {
 };
 
 struct IResourcePreprocesser {
-    virtual void RequestResourcePreprocess(LockerIndex index) = 0;
+    virtual bool RequestResourcePreprocess(LockerIndex index) = 0;
 };
 
 

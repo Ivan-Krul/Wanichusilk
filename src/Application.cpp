@@ -84,7 +84,13 @@ void Application::OnInit() {
         return;
     }
     
-    mLoader.Preprocess();
+    if (mLoader.Preprocess()) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logError("Resource wasn't preprocessed properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
+        mNeedQuit = true;
+        mIsCritical = true;
+        return;
+    }
 
     ScaleOption so;
     so.p_wind = mMainWindow.getWindow();

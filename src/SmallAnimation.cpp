@@ -15,7 +15,7 @@ bool SmallAnimation::create(const char* path, SDL_Renderer* renderer) {
     return false;
 }
 
-void SmallAnimation::preprocess() {
+bool SmallAnimation::preprocess() {
     SDL_Surface* surf = mpTiles.surf;
     mpTiles.tex = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
     if (!mpTiles.tex) {
@@ -23,7 +23,7 @@ void SmallAnimation::preprocess() {
         log.logWarningIn(__FUNCTION__, "Convertion to texture was failed.");
         Logger log_sdl(DEFAULT_LOG_SDL_PATH);
         log_sdl.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
-        return;
+        return true;
     }
 
     SDL_DestroySurface(surf);
@@ -32,6 +32,7 @@ void SmallAnimation::preprocess() {
         SDL_SetTextureAlphaMod(mpTiles.tex, mAlpha);
 
     mState.is_preprocessed = true;
+    return false;
 }
 
 void SmallAnimation::render() {

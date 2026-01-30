@@ -3,7 +3,7 @@
 #include "FontManager.h"
 #include "Text.h"
 
-class TextManager : public IResourceManager, public IResourceAccesser<Text>, public IRendererGiver {
+class TextManager : public IResourceManager, public IResourceAccesser<Text>, public IRendererGiver, public IResourcePreprocesser {
 public:
     struct LoadParamConvertor : public IResourceLoadParamConvertor {
         const char* text;
@@ -36,10 +36,14 @@ public:
         return mTextLocker.pushInLocker(std::move(text));
     }
 
+    bool RequestResourcePreprocess(LockerIndex index) override {
+        assert(index != -1);
+        return mTextLocker[index].preprocess();
+    }
 
     inline void RequestResourceClean(LockerIndex index) override { mTextLocker.popFromLocker(index); }
 
-    inline Attribute GetAttribute() const noexcept override { return Attribute::Accesser | Attribute::RendererGiver; }
+    inline Attribute GetAttribute() const noexcept override { return Attribute::Accesser | Attribute::RendererGiver | Attribute::Preprocesser; }
 
     inline ~TextManager() {
         if (!mTextLocker.isEmpty()) mTextLocker.clear();
