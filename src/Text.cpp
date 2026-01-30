@@ -77,6 +77,26 @@ void Text::setWrapPxLimit(int limit) {
     }
 }
 
+bool Text::appendText(const char* new_text) noexcept {
+    if (mRect.w < 0.f) return true;
+    if (!TTF_AppendTextString(mText.text, new_text, 0)) {
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
+        return true;
+    }
+    return false;
+}
+
+bool Text::insertText(size_t offset, const char* new_text) noexcept {
+    if (mRect.w < 0.f) return true;
+    if (!TTF_InsertTextString(mText.text, offset, new_text, 0)) {
+        Logger log(DEFAULT_LOG_SDL_PATH);
+        log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
+        return true;
+    }
+    return false;
+}
+
 void Text::clear() {
     if (mRect.w < 0.f) return;
     if(mText.text) TTF_DestroyText(mText.text);

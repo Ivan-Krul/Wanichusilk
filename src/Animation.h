@@ -40,6 +40,9 @@ public:
     inline void setRectRes(SDL_FRect rect)          noexcept { mRect = rect; }
     inline void setLooping(bool need_loop)          noexcept { mState.is_loop = need_loop; }
     inline void setFreeze(bool freeze)              noexcept { mState.is_freezed = freeze; }
+    inline void setOffsetX(float x) noexcept { mRect.x = x; }
+    inline void setOffsetY(float y) noexcept { mRect.y = y; }
+    inline void setOffset(float x, float y) { mRect.x = x; mRect.y = y; }
     inline virtual void setAlpha(uint8_t alpha)     noexcept {}
 
     void lockChange();

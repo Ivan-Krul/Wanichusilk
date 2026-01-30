@@ -31,6 +31,10 @@ public:
     void setWrapPxLimit(int limit = std::numeric_limits<int>::max());
     inline void setOffsetX(float x) noexcept { mRect.x = x; }
     inline void setOffsetY(float y) noexcept { mRect.y = y; }
+    inline void setOffset(float x, float y) { mRect.x = x; mRect.y = y; }
+
+    bool appendText(const char* new_text) noexcept;
+    bool insertText(size_t offset, const char* new_text) noexcept;
 
     void clear();
 
@@ -46,6 +50,9 @@ private:
     LockerIndex mFontIndex = -1;
 
     int mWrapPxLimit = std::numeric_limits<int>::max();
+    int mOutLine = 0;
+    SDL_Color mTColor = { 255 };
+
 
     SDL_FRect mRect = { -1 };
 };
