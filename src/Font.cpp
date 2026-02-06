@@ -3,7 +3,7 @@
 
 bool Font::create(const char* path, float size) {
     if (mpFont) return true;
-    mFallbackFont = { nullptr };
+    mFallbackFont = nullptr;
     mLanguageSet = nullptr;
     mSpacing = 0;
 
@@ -24,7 +24,7 @@ bool Font::create(const char* path, float size) {
 
 bool Font::create(const Font& font) {
     if (mpFont) return true;
-    mpFallbackFont = { nullptr };
+    mpFallbackFont = nullptr;
     mLanguageSet = nullptr;
     mSpacing = 0;
 
@@ -41,6 +41,84 @@ bool Font::create(const Font& font) {
     mFontSize = size;
 
     return false;
+}
+
+bool Font::create(Font&& inst) {
+    if (mpFont) return true;
+    mpFont = inst.mpFont;
+    mpFallbackFont = inst.mpFallbackFont;
+
+    mLanguageSet = inst.mLanguageSet;
+    mFontSize = inst.mFontSize;
+    mSpacing = inst.mSpacing;
+
+    mFlags = inst.mFlags;
+
+    inst.mpFont = nullptr;
+    return false;
+}
+
+void Font::setFallbackFont(Font* font) noexcept {
+    mpFallbackFont = font;
+    if (!TTF_AddFallbackFont(mpFont, mpFallbackFont->mpFont) logSDLErr(__FUNCTION__);
+}
+
+void Font::setLanguageSet(const char* lang) noexcept {
+    mLanguageSet = lang;
+    if (!TTF_SetFontLanguage(mpFont, mLanguageSet) logSDLErr(__FUNCTION__);
+}
+
+void Font::setFontSize(float font_px) {
+    mFontSize = font_px;
+    if(!TTF_SetFontSize(mFontSize)) logSDLErr(__FUNCTION__);
+}
+
+void Font::setSpacing(short spacing_px) {
+    mSpacing = spacing_px;
+    TTF_SetFontLineSkip(mSpacing);
+}
+
+void Font::setStyle(Style style) {
+    mFlags.style_flags = style;
+    TTF_SetFontStyle(mpFont, mFlags.style_flags);
+}
+
+void Font::setDirection(Direction direction) {
+    mFlags.direction = direction;
+    if (!TTF_SetFontDirection(mFlags.direction)) logSDLWrn(__FUNCTION__);
+}
+
+void Font::kernFont() {
+    mFlags.is_kerning = true;
+    TTF_SetFontKerning(true);
+}
+
+void Font::unkernFont() {
+    mFlags.is_kerning = false;
+    TTF_SetFontKerning(false);
+}
+
+void Font::addStyle(Style style) {
+    mFlags.style_flags |= style;
+    TTF_SetFontStyle(mpFont, mFlags.style_flags);
+}
+
+void Font::removeStyle(Style style) {
+    mFlags.style_flags = ~((~mFlags.style_flags) | style);
+    TTF_SetFontStyle(mpFont, mFlags.style_flags);
+}
+
+void Font::clear() {
+    if (mpFont)
+        TTF_CloseFont(mpFont);
+
+    mpFont = nullptr;
+    mpFallbackFont = nullptr;
+
+    mLanguageSet = nullptr;
+    mFontSize = -1.f;
+    mSpacing = 0;
+    mFlags = { TTF_STYLE_NORMAL, TTF_DIRECTION_INVALID, false };
 }
 
 Font::~Font() {

@@ -11,20 +11,20 @@ class Logger {
 public:
     Logger(const char* logname);
 
-    void logDebug(const char* text, ...);
-    void logDebugIn(const char* function, const char* text, ...);
+    inline void logDebug(const char* text, ...);
+    inline void logDebugIn(const char* function, const char* text, ...);
 
-    void logInfo(const char* text, ...);
-    void logInfoIn(const char* function, const char* text, ...);
+    inline void logInfo(const char* text, ...);
+    inline void logInfoIn(const char* function, const char* text, ...);
 
-    void logWarning(const char* text, ...);
-    void logWarningIn(const char* function, const char* text, ...);
+    inline void logWarning(const char* text, ...);
+    inline void logWarningIn(const char* function, const char* text, ...);
 
-    void logError(const char* text, ...);
-    void logErrorIn(const char* function, const char* text, ...);
+    inline void logError(const char* text, ...);
+    inline void logErrorIn(const char* function, const char* text, ...);
 
-    void logCritical(const char* text, ...);
-    void logCriticalIn(const char* function, const char* text, ...);
+    inline void logCritical(const char* text, ...);
+    inline void logCriticalIn(const char* function, const char* text, ...);
 
     ~Logger();
 private:
@@ -163,3 +163,5 @@ inline void Logger::logCriticalIn(const char* function, const char* text, ...) {
 inline Logger::~Logger() {
     mFoutStream.close();
 }
+
+#include "LoggerSMFunctions.h"

@@ -18,8 +18,7 @@ public:
     LockerIndex RequestResourceLoad(ResourceLoadParams load) override {
         TTF_Font* font = TTF_OpenFont(load.path, *reinterpret_cast<float*>(&load.extra));
         if (font == nullptr) {
-            Logger log(DEFAULT_LOG_SDL_PATH);
-            log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
+            logSDLErr(__FUNCTION__);
             return -1;
         }
         return mFontLocker.pushInLocker(font);
