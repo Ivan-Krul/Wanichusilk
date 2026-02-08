@@ -75,7 +75,7 @@ inline TimerStep film::LayerAnimation::getLongestWaiting() const noexcept {
 
 void film::LayerAnimation::pushAnimIndSetter(KeypointLayer* keypoint) {
     const auto kp = dynamic_cast<KeypointLayerInteractSwap*>(keypoint);
-    KeypointLayerSwap::SwapMode swapmode = kp->swap;
+    KeypointLayerInteractSwap::SwapMode swapmode = kp->swap;
 
     mRect.shift_elem();
 
@@ -88,14 +88,14 @@ void film::LayerAnimation::pushAnimIndSetter(KeypointLayer* keypoint) {
     }
 
     switch (swapmode) {
-    case KeypointLayerSwap::KeepNotDeformed:
+    case KeypointLayerInteractSwap::KeepNotDeformed:
         if (pAnimation == nullptr) break;
         mRect.elem_to = pAnimation->getRectRes();
         break;
-    case KeypointLayerSwap::SetDefault:
+    case KeypointLayerInteractSwap::SetDefault:
         mRect.set_default();
         break;
-    case KeypointLayerSwap::NewTransform:
+    case KeypointLayerInteractSwap::NewTransform:
         if (!kp->swap_rect_ptr) {
             mRect.elem_to = *kp->swap_rect_ptr;
             mRect.reset_tracker();

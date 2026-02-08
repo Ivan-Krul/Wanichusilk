@@ -3,6 +3,8 @@
 #include "FontManager.h"
 #include "Text.h"
 
+using TextIndex = LockerIndex;
+
 class TextManager : public IResourceManager, public IResourceAccesser<Text>, public IRendererGiver, public IResourcePreprocesser {
 public:
     struct LoadParamConvertor : public IResourceLoadParamConvertor {
@@ -24,9 +26,9 @@ public:
 
     void SetFontManager(FontManager* mgr) noexcept { pFontMgr = mgr; }
 
-    LockerIndex RequestResourceCreate() override { return -1; };
-    inline Text* GetLockerResource(LockerIndex index) override { assert(index != -1); return &(mTextLocker[index]); }
-    LockerIndex RequestResourceLoad(ResourceLoadParams load) override {
+    TextIndex RequestResourceCreate() override { return -1; };
+    inline Text* GetLockerResource(TextIndex index) override { assert(index != -1); return &(mTextLocker[index]); }
+    TextIndex RequestResourceLoad(ResourceLoadParams load) override {
         Text text;
         if (text.create(mpEngine, pFontMgr, load.extra, load.path)) {
             Logger log(DEFAULT_LOG_SDL_PATH);
@@ -36,7 +38,7 @@ public:
         return mTextLocker.pushInLocker(std::move(text));
     }
 
-    bool RequestResourcePreprocess(LockerIndex index) override {
+    bool RequestResourcePreprocess(TextIndex index) override {
         assert(index != -1);
         return mTextLocker[index].preprocess();
     }

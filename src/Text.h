@@ -2,6 +2,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "FontManager.h"
+#include "Texture.h"
 
 #include <limits>
 
@@ -20,7 +21,7 @@ public:
     inline float getWidth() const noexcept { return mRect.w; }
     inline float getHeight() const noexcept { return mRect.h; }
     inline int getWrapPxLimit() const noexcept { return mWrapPxLimit; }
-    inline LockerIndex getFontIndex() const noexcept { return mFontIndex; }
+    inline FontIndex getFontIndex() const noexcept { return mFontIndex; }
     inline FontManager* getFontManager() const noexcept { return pFontMgr; }
     inline TTF_Text* getTextInstance() const noexcept { return mText.text; }
     inline SDL_Color getColor() const noexcept { return mTColor; }
@@ -28,7 +29,7 @@ public:
     inline void render() const { if (mRect.w < 0.f) return; TTF_DrawRendererText(mText.text, mRect.x, mRect.y); }
 
     void setText(const char* new_text) noexcept;
-    void setFontMgrIndex(LockerIndex font_ind) noexcept;
+    void setFontMgrIndex(FontIndex font_ind) noexcept;
     void setWrapPxLimit(int limit = std::numeric_limits<int>::max());
     inline void setOffsetX(float x) noexcept { mRect.x = x; }
     inline void setOffsetY(float y) noexcept { mRect.y = y; }
@@ -44,17 +45,17 @@ public:
 
 private:
     TTF_TextEngine* pEngine = nullptr;
+    Font* pFont = nullptr;
     union {
         TTF_Text* text;
         const char* praw;
     } mText = { nullptr };
     FontManager* pFontMgr = nullptr;
-    LockerIndex mFontIndex = -1;
+    FontIndex mFontIndex = -1;
 
     int mWrapPxLimit = std::numeric_limits<int>::max();
     int mOutLine = 0;
     SDL_Color mTColor = { 255 };
-
 
     SDL_FRect mRect = { -1 };
 };

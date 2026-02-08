@@ -5,6 +5,7 @@ namespace film {
     struct KeypointLayer : public Keypoint {
         enum Type : short {
             Add = 1,
+
             InteractPos,
             InteractRectPos,
             InteractPartPos,
@@ -13,15 +14,22 @@ namespace film {
             InteractAlpha,
             InteractSwap,
             InteractColor,
+
             InteractAnimationStart,
             InteractAnimationStop,
             InteractAnimationLoop,
             InteractAnimationUnloop,
             InteractAnimationSpeed,
+
+            InteractTextWrap,
+            InteractTextNew,
+            InteractTextAppend,
+            InteractTextInsert,
+            InteractTextSwapFont,
+
             InteractDefault,
             Enable,
             Disable,
-            Await, // maybe unused
             Remove
         };
         LayerIndex layerindx = -1;
@@ -77,7 +85,7 @@ namespace film {
         inline bool has_ease() override { return true; }
     };
 
-    struct KeypointLayerSwap : public KeypointLayer {
+    struct KeypointLayerInteractSwap : public KeypointLayer {
         LockerIndex indx = -1;
 
         enum SwapMode : short {
@@ -91,21 +99,25 @@ namespace film {
         std::unique_ptr<SDL_FRect> swap_rect_ptr = nullptr;
         std::unique_ptr<SDL_FRect> swap_part_ptr = nullptr;
 
-        KeypointLayerSwap() = default;
-        KeypointLayerSwap(const KeypointLayerSwap& other)
+        KeypointLayerInteractSwap() = default;
+        KeypointLayerInteractSwap(const KeypointLayerInteractSwap& other)
             : KeypointLayer(other),
             indx(other.indx),
             swap(other.swap),
             swap_rect_ptr(other.swap_rect_ptr ? std::make_unique<SDL_FRect>(*other.swap_rect_ptr) : nullptr),
             swap_part_ptr(other.swap_part_ptr ? std::make_unique<SDL_FRect>(*other.swap_part_ptr) : nullptr) {
         }
-        KeypointLayerSwap& operator=(const KeypointLayerSwap& other);
-        KeypointLayerSwap(KeypointLayerSwap&&) noexcept = default;
-        KeypointLayerSwap& operator=(KeypointLayerSwap&&) noexcept = default;
-    };
-
-    struct KeypointLayerInteractSwap : public KeypointLayerSwap {
+        KeypointLayerInteractSwap& operator=(const KeypointLayerInteractSwap& other);
+        KeypointLayerInteractSwap(KeypointLayerInteractSwap&&) noexcept = default;
+        KeypointLayerInteractSwap& operator=(KeypointLayerInteractSwap&&) noexcept = default;
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractSwap }; }
+    };
+    
+    struct KeypointLayerInteractColor : public KeypointLayer, public KeypointEase {
+        SDL_Color color = { 255 };
+
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractColor }; }
+        inline bool has_ease() override { return true; }
     };
 
     struct KeypointLayerAddAnimation : public KeypointLayerAdd {
@@ -133,6 +145,32 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationStop }; }
     };
 
+    struct KeypointLayerInteractTextWrap : public KeypointLayer {
+        int wrap_limit_px = std::numeric_limits<int>::max();
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTextWrap }; }
+    };
+
+    struct KeypointLayerInteractTextNew : public KeypointLayer {
+        const char* new_text;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTextNew }; }
+    };
+
+    struct KeypointLayerInteractTextAppend : public KeypointLayer {
+        const char* text_at_end;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTextAppend }; }
+    };
+
+    struct KeypointLayerInteractTextInsert : public KeypointLayer {
+        size_t offset;
+        const char* text_at_insert;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTextInsert }; }
+    };
+
+    struct KeypointLayerInteractTextSwapFont : public KeypointLayer {
+        LockerIndex fontindx;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTextSwapFont }; }
+    };
+
     struct KeypointLayerInteractDefault : public KeypointLayer {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractDefault }; }
     };
@@ -157,7 +195,7 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::None, 2 }; }
     };
 
-    inline KeypointLayerSwap& KeypointLayerSwap::operator=(const KeypointLayerSwap& other) {
+    inline KeypointLayerInteractSwap& KeypointLayerInteractSwap::operator=(const KeypointLayerInteractSwap& other) {
         if (this == &other) return *this;
         KeypointLayer::operator=(other);
         indx = other.indx;

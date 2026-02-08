@@ -5,6 +5,8 @@
 #include "Font.h"
 #include "Logger.h"
 
+using FontIndex = LockerIndex;
+
 class FontManager : public IResourceManager, public IResourceAccesser<Font> {
 public:
     struct LoadParamConvertor : public IResourceLoadParamConvertor {
@@ -14,9 +16,9 @@ public:
     };
 
 public:
-    LockerIndex RequestResourceCreate() override { return -1; };
-    inline Font* GetLockerResource(LockerIndex index) override { assert(index != -1); return &(mFontLocker[index]); }
-    LockerIndex RequestResourceLoad(ResourceLoadParams load) override {
+    FontIndex RequestResourceCreate() override { return -1; };
+    inline Font* GetLockerResource(FontIndex index) override { assert(index != -1); return &(mFontLocker[index]); }
+    FontIndex RequestResourceLoad(ResourceLoadParams load) override {
         Font font;
         if (font.create(load.path, *reinterpret_cast<float*>(&load.extra))) {
             logSDLErr(__FUNCTION__);
@@ -25,7 +27,7 @@ public:
         return mFontLocker.pushInLocker(std::move(font));
     }
 
-    inline void RequestResourceClean(LockerIndex index) override {
+    inline void RequestResourceClean(FontIndex index) override {
         mFontLocker.popFromLocker(index);
     }
 

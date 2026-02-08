@@ -23,7 +23,6 @@ bool film::Layerist::registerLayerKeypoint(KeypointLayer* keypoint) {
         if (iter != maActiveLayerIndexes.end()) maActiveLayerIndexes.erase(iter);
         maLayers.erase(maLayers.begin() + li);
     }   break;
-    case KeypointLayer::Await: assert(false); break; // useless?
     default: assert(false); break;// return true;
     }
     return false;
@@ -86,7 +85,6 @@ inline bool film::Layerist::registerKeypointInteraction(LayerIndex li, KeypointL
     case KeypointLayer::InteractDefaultPos:      return iter->pushTracker(dynamic_cast<KeypointLayerInteractDefaultPos*>(keypoint));
     case KeypointLayer::InteractDefaultPartPos:  return iter->pushTracker(dynamic_cast<KeypointLayerInteractDefaultPartitionPos*>(keypoint));
     case KeypointLayer::InteractAlpha:           return iter->pushTracker(dynamic_cast<KeypointLayerInteractAlpha*>(keypoint));
-    case KeypointLayer::InteractTransparentSwap: return iter->pushTracker(dynamic_cast<KeypointLayerInteractTransparentSwap*>(keypoint));
     case KeypointLayer::InteractAnimationSpeed:  return iter->pushTracker(dynamic_cast<KeypointLayerInteractAnimationSpeed*>(keypoint));
     default: return true;
     }

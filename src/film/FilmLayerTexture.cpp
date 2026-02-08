@@ -71,7 +71,7 @@ inline TimerStep film::LayerTexture::getLongestWaiting() const noexcept {
 }
 
 void film::LayerTexture::pushTexIndSetter(KeypointLayerInteractSwap* keypoint) {
-    KeypointLayerSwap::SwapMode swapmode = keypoint->swap;
+    KeypointLayerInteractSwap::SwapMode swapmode = keypoint->swap;
 
     mRect.shift_elem();
     mPart.shift_elem();
@@ -80,16 +80,16 @@ void film::LayerTexture::pushTexIndSetter(KeypointLayerInteractSwap* keypoint) {
     pTexture = mTexInd != -1 ? pTexMgr->GetLockerResource(mTexInd) : nullptr;
 
     switch (swapmode) {
-    case KeypointLayerSwap::KeepNotDeformed:
+    case KeypointLayerInteractSwap::KeepNotDeformed:
         if (pTexture == nullptr) break;
         mRect.elem_to = pTexture->getRectRes();
         mPart.elem_to = pTexture->getRectPart();
         break;
-    case KeypointLayerSwap::SetDefault:
+    case KeypointLayerInteractSwap::SetDefault:
         mRect.set_default();
         mPart.set_default();
         break;
-    case KeypointLayerSwap::NewTransform:
+    case KeypointLayerInteractSwap::NewTransform:
         if (!keypoint->swap_rect_ptr) {
             mRect.elem_to = *keypoint->swap_rect_ptr;
             mRect.reset_tracker();
