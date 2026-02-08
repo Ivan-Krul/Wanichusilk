@@ -12,7 +12,7 @@ namespace film {
             InteractDefaultPartPos,
             InteractAlpha,
             InteractSwap,
-            InteractTransparentSwap,
+            InteractColor,
             InteractAnimationStart,
             InteractAnimationStop,
             InteractAnimationLoop,
@@ -106,11 +106,6 @@ namespace film {
 
     struct KeypointLayerInteractSwap : public KeypointLayerSwap {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractSwap }; }
-    };
-
-    struct KeypointLayerInteractTransparentSwap : public KeypointLayerSwap, public KeypointEase {
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTransparentSwap }; }
-        inline bool has_ease() override { return true; }
     };
 
     struct KeypointLayerAddAnimation : public KeypointLayerAdd {

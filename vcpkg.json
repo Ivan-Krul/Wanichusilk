@@ -26,6 +26,9 @@
             "name": "sdl3-image",
             "features": [ "png" ]
         },
-        "sdl3-ttf"
+        {
+            "name": "sdl3-ttf"
+        }
+        
     ]
 }

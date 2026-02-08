@@ -1,6 +1,7 @@
 #pragma once
-#include <SDL3_ttf/SDL_ttf.h>
+#include <utility>
 
+#include <SDL3_ttf/SDL_ttf.h>
 
 class Font {
 public:
@@ -24,14 +25,14 @@ public:
     Font() = default;
     inline Font(const char* path, float size) { create(path, size); }
     inline Font(const Font& font) { create(font); }
-    inline Font(Font&& font) { create(std::move(font)); }
+    inline Font(Font&& font) noexcept { create(std::move(font)); }
 
     bool create(const char* path, float size);
     bool create(const Font& font);
     bool create(Font&& inst);
 
     void setFallbackFont(Font* font) noexcept;
-    void setLanguageSet(const char* lang) noexcept;
+    void setLanguageSet(const char* lang_bcp47) noexcept;
     void setFontSize(float font_px);
     void setSpacing(short spacing_px);
     void setStyle(Style style);
@@ -68,3 +69,11 @@ private:
     } mFlags = {Normal, AnyDirection, false};
 
 };
+
+inline const Font::Style operator|(const Font::Style left, const Font::Style right) {
+    return static_cast<Font::Style>(static_cast<char>(left) | static_cast<char>(right));
+}
+
+inline const Font::Style operator~(const Font::Style value) {
+    return static_cast<Font::Style>(~static_cast<char>(value));
+}

@@ -26,7 +26,7 @@ bool Text::create(TTF_TextEngine* engine, FontManager* pmgr, LockerIndex font_in
 
 bool Text::preprocess() {
     const char* text = mText.praw;
-    mText.text = TTF_CreateText(pEngine, pFontMgr->GetLockerResource(mFontIndex), text, 0);
+    mText.text = TTF_CreateText(pEngine, pFontMgr->GetLockerResource(mFontIndex)->getFont(), text, 0);
 
     if (!mText.text) {
         Logger log(DEFAULT_LOG_SDL_PATH);
@@ -61,7 +61,7 @@ void Text::setFontMgrIndex(LockerIndex font_ind) noexcept {
     assert(font_ind != -1);
     if (mRect.w < 0.f) return;
     mFontIndex = font_ind;
-    if (!TTF_SetTextFont(mText.text, pFontMgr->GetLockerResource(mFontIndex))) {
+    if (!TTF_SetTextFont(mText.text, pFontMgr->GetLockerResource(mFontIndex)->getFont())) {
         Logger log(DEFAULT_LOG_SDL_PATH);
         log.logErrorIn(__FUNCTION__, "%s.", SDL_GetError());
         return;

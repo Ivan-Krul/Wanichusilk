@@ -2,9 +2,10 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "IResourceManager.h"
+#include "Font.h"
 #include "Logger.h"
 
-class FontManager : public IResourceManager, public IResourceAccesser<TTF_Font> {
+class FontManager : public IResourceManager, public IResourceAccesser<Font> {
 public:
     struct LoadParamConvertor : public IResourceLoadParamConvertor {
         const char* path;
@@ -14,30 +15,23 @@ public:
 
 public:
     LockerIndex RequestResourceCreate() override { return -1; };
-    inline TTF_Font* GetLockerResource(LockerIndex index) override { assert(index != -1); return mFontLocker[index]; }
+    inline Font* GetLockerResource(LockerIndex index) override { assert(index != -1); return &(mFontLocker[index]); }
     LockerIndex RequestResourceLoad(ResourceLoadParams load) override {
-        TTF_Font* font = TTF_OpenFont(load.path, *reinterpret_cast<float*>(&load.extra));
-        if (font == nullptr) {
+        Font font;
+        if (font.create(load.path, *reinterpret_cast<float*>(&load.extra))) {
             logSDLErr(__FUNCTION__);
             return -1;
         }
-        return mFontLocker.pushInLocker(font);
+        return mFontLocker.pushInLocker(std::move(font));
     }
 
     inline void RequestResourceClean(LockerIndex index) override {
-        TTF_CloseFont(mFontLocker[index]);
         mFontLocker.popFromLocker(index);
     }
 
     inline Attribute GetAttribute() const noexcept override { return Attribute::Accesser; }
-
-    inline ~FontManager() {
-        for (auto font : mFontLocker) {
-            TTF_CloseFont(font);
-        }
-    }
 private:
-    LockerSimple<TTF_Font*> mFontLocker;
+    LockerSimple<Font> mFontLocker;
 };
 
 

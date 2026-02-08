@@ -23,6 +23,7 @@ public:
     inline LockerIndex getFontIndex() const noexcept { return mFontIndex; }
     inline FontManager* getFontManager() const noexcept { return pFontMgr; }
     inline TTF_Text* getTextInstance() const noexcept { return mText.text; }
+    inline SDL_Color getColor() const noexcept { return mTColor; }
 
     inline void render() const { if (mRect.w < 0.f) return; TTF_DrawRendererText(mText.text, mRect.x, mRect.y); }
 
@@ -31,7 +32,8 @@ public:
     void setWrapPxLimit(int limit = std::numeric_limits<int>::max());
     inline void setOffsetX(float x) noexcept { mRect.x = x; }
     inline void setOffsetY(float y) noexcept { mRect.y = y; }
-    inline void setOffset(float x, float y) { mRect.x = x; mRect.y = y; }
+    inline void setOffset(float x, float y) noexcept { mRect.x = x; mRect.y = y; }
+    inline void setColor(SDL_Color color) noexcept { mTColor = color; }
 
     bool appendText(const char* new_text) noexcept;
     bool insertText(size_t offset, const char* new_text) noexcept;

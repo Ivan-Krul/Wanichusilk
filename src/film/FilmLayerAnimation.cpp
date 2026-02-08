@@ -4,7 +4,7 @@ film::LayerAnimation::LayerAnimation(Clock* clock, AnimationManager* animmgr, An
     pAnimMgr = animmgr;
     setClock(clock);
 
-    mAnimInd.elem_to = animind;
+    mAnimInd = animind;
     pAnimation = animind != -1 ? pAnimMgr->GetLockerResource(animind) : nullptr;
     if (pAnimation) {
         pAnimation->lockChange();
@@ -17,27 +17,21 @@ film::LayerAnimation::LayerAnimation(Clock* clock, AnimationManager* animmgr, An
 
     mRect.ease_tracker.setClock(clock);
     mAlpha.ease_tracker.setClock(clock);
-    mAnimInd.ease_tracker.setClock(clock);
     mTimeMult.ease_tracker.setClock(clock);
 
     mRect.reset_tracker();
-    mAnimInd.reset_tracker();
 }
 
 void film::LayerAnimation::update() {
     if (maEases.isEmpty()) return;
     mRect.ease_tracker.update();
     mAlpha.ease_tracker.update();
-    mAnimInd.ease_tracker.update();
     mTimeMult.ease_tracker.update();
 
     auto it = maEases.begin();
     while (it != maEases.end()) {
-        if (it->ease->isEnded()) {
-            if (it->ease == &(mAnimInd.ease_tracker)) // handle the swap logic
-                finalizeSwap(it);
+        if (it->ease->isEnded())
             it = maEases.popFromLocker(it);
-        }
         else it++;
     }
 }
@@ -57,9 +51,7 @@ void film::LayerAnimation::render() const {
         time_mult = lerp(mTimeMult.ease_tracker, mTimeMult.elem_from, mTimeMult.elem_to);
     else time_mult = mTimeMult.elem_to;
 
-    if (mAnimInd.is_progress())
-        renderSwap(res_rect, alpha, time_mult);
-    else if (areAllTransitParamDefault())
+    if (areAllTransitParamDefault())
         pAnimation->render();
     else
         pAnimation->renderRaw(res_rect, alpha, time_mult);
@@ -69,15 +61,14 @@ void film::LayerAnimation::clear() {
     maEases.clear();
     mRect.clear();
     mAlpha.clear();
-    mAnimInd.clear();
     mTimeMult.clear();
 
+    mAnimInd = -1;
     pAnimation = nullptr;
 }
 
 inline TimerStep film::LayerAnimation::getLongestWaiting() const noexcept {
     TimerStep longest = clockfunc::max(mAlpha.ease_tracker.getLimiter(), mRect.ease_tracker.getLimiter());
-    longest = clockfunc::max(mAnimInd.ease_tracker.getLimiter(), longest);
     longest = clockfunc::max(mTimeMult.ease_tracker.getLimiter(), longest);
     return longest;
 }
@@ -88,10 +79,8 @@ void film::LayerAnimation::pushAnimIndSetter(KeypointLayer* keypoint) {
 
     mRect.shift_elem();
 
-    mAnimInd.reset_tracker();
-    mAnimInd.shift_elem();
-    mAnimInd.elem_to = kp->indx;
-    pAnimation = mAnimInd.elem_to != -1 ? pAnimMgr->GetLockerResource(mAnimInd.elem_to) : nullptr;
+    mAnimInd = kp->indx;
+    pAnimation = mAnimInd != -1 ? pAnimMgr->GetLockerResource(mAnimInd) : nullptr;
     if (pAnimation) {
         pAnimation->lockChange();
         pAnimation->setFreeze(true);
@@ -140,7 +129,6 @@ bool film::LayerAnimation::onPushSetter(KeypointLayer* keypoint) {
     case KeypointLayer::InteractDefault:
         mRect.set_default();
         mAlpha.set_default();
-        mAnimInd.set_default();
         mTimeMult.set_default();
         break;
     default:
@@ -148,52 +136,6 @@ bool film::LayerAnimation::onPushSetter(KeypointLayer* keypoint) {
     }
 
     return false;
-}
-
-inline void film::LayerAnimation::renderSwap(const SDL_FRect* res_rect, uint8_t max_alpha, float time_mult) const {
-    const float progress = mAnimInd.ease_tracker;
-    if (mAnimInd.elem_from != -1) pAnimMgr->GetLockerResource(mAnimInd.elem_from)->renderRaw(res_rect, max_alpha * (1.f - progress), time_mult);
-    if (mAnimInd.elem_to == -1) return;
-
-    const auto tracked_kp = dynamic_cast<KeypointLayerInteractTransparentSwap*>(maEases.at(mAnimInd.unused_padding).keypoint);
-
-    switch (tracked_kp->swap) {
-    default: _FALLTHROUGH;
-    case KeypointLayerSwap::KeepInAspect:
-        pAnimation->renderRaw(res_rect, max_alpha * progress, time_mult);
-        break;
-    case KeypointLayerSwap::KeepNotDeformed:
-        pAnimation->render();
-        break;
-    case KeypointLayerSwap::SetDefault:
-        pAnimation->renderRaw(nullptr, max_alpha * progress, time_mult);
-        break;
-    case KeypointLayerSwap::NewTransform:
-        pAnimation->renderRaw(tracked_kp->swap_rect_ptr.get(), max_alpha * progress, time_mult);
-        break;
-    }
-}
-
-inline void film::LayerAnimation::finalizeSwap(LockerSimple<LayerBase::Tracker>::Iterator iter) {
-    const auto keypoint = dynamic_cast<KeypointLayerInteractTransparentSwap*>(iter->keypoint);
-    const auto swapmode = keypoint->swap;
-
-    mRect.shift_elem();
-
-    switch (swapmode) {
-    case KeypointLayerSwap::KeepNotDeformed:
-        if (pAnimation == nullptr) break;
-        mRect.elem_to = pAnimation->getRectRes();
-        break;
-    case KeypointLayerSwap::SetDefault:
-        mRect.set_default();
-        break;
-    case KeypointLayerSwap::NewTransform:
-        if (keypoint->swap_rect_ptr)
-            mRect.set_default();
-        else mRect.elem_to = *keypoint->swap_rect_ptr;
-        break;
-    }
 }
 
 bool film::LayerAnimation::onPushTracker(const LockerIndex ease_indx) {
@@ -210,18 +152,6 @@ bool film::LayerAnimation::onPushTracker(const LockerIndex ease_indx) {
         pushTransitTracker(tracker, mTimeMult);
         mTimeMult.elem_to = dynamic_cast<KeypointLayerInteractAnimationSpeed*>(keypoint)->speed;
         break;
-    case KeypointLayer::InteractTransparentSwap:
-    {
-        pushTransitTracker(tracker, mAnimInd);
-        mAnimInd.elem_to = dynamic_cast<KeypointLayerInteractTransparentSwap*>(keypoint)->indx;
-        mAnimInd.unused_padding = ease_indx;
-        pAnimation = mAnimInd.elem_to != -1 ? pAnimMgr->GetLockerResource(mAnimInd.elem_to) : nullptr;
-        if (pAnimation) {
-            pAnimation->lockChange();
-            pAnimation->setFreeze(true);
-            pAnimation->start(1.f);
-        }
-    }   break;
     default:
         return true;
     }

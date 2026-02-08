@@ -22,17 +22,15 @@ private:
     bool onPushSetter(KeypointLayer* keypoint) override;
     bool onPushTracker(const LockerIndex ease_indx) override;
 
-    inline void renderSwap(const SDL_FRect* res_rect, uint8_t max_alpha, float time_mult) const;
-    inline void finalizeSwap(LockerSimple<LayerBase::Tracker>::Iterator iter);
-
-    inline bool areAllTransitParamDefault() const noexcept { return mRect.is_default() && mAlpha.is_default() && mAnimInd.is_default() && mTimeMult.is_default(); }
+    inline bool areAllTransitParamDefault() const noexcept { return mRect.is_default() && mAlpha.is_default() && mTimeMult.is_default(); }
 
     AnimationManager* pAnimMgr;
 
     // no partition param btw
     TransitParam<uint8_t> mAlpha;
-    TransitParam<AnimationIndex> mAnimInd;
     TransitParam<float> mTimeMult;
+
+    AnimationIndex mAnimInd;
 
     Animation* pAnimation;
 };

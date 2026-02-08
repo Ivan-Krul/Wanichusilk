@@ -49,9 +49,7 @@ void Application::OnInit() {
     mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
     fp.path = "./res/Scheherazade-Regular.ttf";
     mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
-    fp.path = "./res/wingding.ttf";
-    mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
-    fp.path = "./res/FSEX302.ttf";
+    fp.path = "./res/unifont-17.0.03.otf";
     mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
     TextManager::LoadParamConvertor tp;
     tp.text = u8"What would you think?\nWorüber denkst du?\nПро що ти думаєш?\nO czym myślisz?\n¿En qué piensas?\nNe düşünüyorsun?\nApa pendapat Anda?";
@@ -60,11 +58,8 @@ void Application::OnInit() {
     tp.text = u8"يرحب بالمكان الهادئ بالإلهام";
     tp.font_indx = 1;
     mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
-    tp.text = u8"WHAT A QUIET PLACE HERE";
-    tp.font_indx = 2;
-    mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
     tp.text = u8"A 也许，友谊是人生中最美好的东西";
-    tp.font_indx = 3;
+    tp.font_indx = 2;
     mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
 
     SCOPED_STOPWATCH("load");
@@ -83,7 +78,7 @@ void Application::OnInit() {
         mIsCritical = true;
         return;
     }
-    
+
     if (mLoader.Preprocess()) {
         Logger log(DEFAULT_LOG_PATH);
         log.logError("Resource wasn't preprocessed properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
@@ -145,9 +140,8 @@ void Application::OnInit() {
     mTextMgr.GetLockerResource(0)->setOffsetX(100);
     mTextMgr.GetLockerResource(0)->setOffsetY(50);
 
-    mTextMgr.GetLockerResource(2)->setOffsetX(300);
-    TTF_SetTextColor(mTextMgr.GetLockerResource(3)->getTextInstance(), 255, 255, 0, 255);
-    mTextMgr.GetLockerResource(3)->setOffsetY(300);
+    TTF_SetTextColor(mTextMgr.GetLockerResource(2)->getTextInstance(), 255, 255, 0, 255);
+    mTextMgr.GetLockerResource(2)->setOffsetY(300);
 
     //mAnimMgr.GetLockerResource(0)->setAlpha(128);
     //mAnimMgr.GetLockerResource(0)->setLooping(true);
@@ -221,5 +215,4 @@ void Application::OnRender() {
     mTextMgr.GetLockerResource(0)->render();
     mTextMgr.GetLockerResource(1)->render();
     mTextMgr.GetLockerResource(2)->render();
-    mTextMgr.GetLockerResource(3)->render();
 }
