@@ -16,10 +16,10 @@ public:
     inline bool pushSetter(T* keypoint);
     template<typename T>
     inline bool pushTracker(T* keypoint);
+    inline bool isWaiting() const noexcept { return maEases.isEmpty(); }
 
     virtual void update() = 0;
     virtual void render() const = 0;
-    virtual inline bool isWaiting() const noexcept { return maEases.isEmpty(); }
     virtual inline TimerStep getLongestWaiting() const noexcept { return TimerStep(); }
     virtual inline void clear() { maEases.clear(); }
 

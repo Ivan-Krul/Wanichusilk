@@ -98,12 +98,33 @@ void Application::OnInit() {
     mScene.addKeypoint(a);
     a.loaderind = mLoader.GetTranscription(1);
     mScene.addKeypoint(a);
+    a.loaderind = mLoader.GetTranscription(6);
+    mScene.addKeypoint(a);
+    a.loaderind = mLoader.GetTranscription(7);
+    mScene.addKeypoint(a);
+    a.loaderind = mLoader.GetTranscription(8);
+    mScene.addKeypoint(a);
 
     film::KeypointLayerInteractPos p;
     p.layerindx = 1;
     p.rect.x = 200;
     p.rect.y = 200;
     mScene.addKeypoint(p);
+
+    p.layerindx = 2;
+    p.rect.x = 100;
+    p.rect.y = 50;
+    mScene.addKeypoint(p);
+
+    p.layerindx = 4;
+    p.rect.x = 0;
+    p.rect.y = 300;
+    mScene.addKeypoint(p);
+
+    film::KeypointLayerInteractColor c;
+    c.layerindx = 3;
+    c.color = { 255, 255, 0, 255 };
+    mScene.addKeypoint(c);
 
     film::KeypointLayerInteractAlpha ana;
     ana.layerindx = 0;
@@ -127,7 +148,12 @@ void Application::OnInit() {
     mScene.addKeypoint(e);
     e.layerindx = 1;
     mScene.addKeypoint(e);
-
+    e.layerindx = 2;
+    mScene.addKeypoint(e);
+    e.layerindx = 3;
+    mScene.addKeypoint(e);
+    e.layerindx = 4;
+    mScene.addKeypoint(e);
 
     film::Keypoint ts;
     ts.action = ts.InInputAfterAwait;
@@ -137,11 +163,6 @@ void Application::OnInit() {
     //mAnimMgr.GetLockerResource(0)->start(1.f);
     mScene.start();
 
-    mTextMgr.GetLockerResource(0)->setOffsetX(100);
-    mTextMgr.GetLockerResource(0)->setOffsetY(50);
-
-    TTF_SetTextColor(mTextMgr.GetLockerResource(2)->getTextInstance(), 255, 255, 0, 255);
-    mTextMgr.GetLockerResource(2)->setOffsetY(300);
 
     //mAnimMgr.GetLockerResource(0)->setAlpha(128);
     //mAnimMgr.GetLockerResource(0)->setLooping(true);
@@ -212,7 +233,7 @@ void Application::OnRender() {
     //mAnimMgr.GetLockerResource(1)->render();
     mScene.render();
     //mAnimMgr.GetLockerResource(0)->render();
-    mTextMgr.GetLockerResource(0)->render();
-    mTextMgr.GetLockerResource(1)->render();
-    mTextMgr.GetLockerResource(2)->render();
+    //mTextMgr.GetLockerResource(0)->render();
+    //mTextMgr.GetLockerResource(1)->render();
+    //mTextMgr.GetLockerResource(2)->render();
 }

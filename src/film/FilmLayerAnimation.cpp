@@ -69,8 +69,7 @@ void film::LayerAnimation::clear() {
 
 inline TimerStep film::LayerAnimation::getLongestWaiting() const noexcept {
     TimerStep longest = clockfunc::max(mAlpha.ease_tracker.getLimiter(), mRect.ease_tracker.getLimiter());
-    longest = clockfunc::max(mTimeMult.ease_tracker.getLimiter(), longest);
-    return longest;
+    return clockfunc::max(mTimeMult.ease_tracker.getLimiter(), longest);
 }
 
 void film::LayerAnimation::pushAnimIndSetter(KeypointLayer* keypoint) {

@@ -7,6 +7,7 @@
 #include "FilmKeypointLayer.h"
 #include "FilmLayerTexture.h"
 #include "FilmLayerAnimation.h"
+#include "FilmLayerText.h"
 #include "../LockerSimple.h"
 #include "../Clock.h"
 #include "../EaseTracker.h"

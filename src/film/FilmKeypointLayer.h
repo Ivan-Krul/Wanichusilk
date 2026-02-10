@@ -40,7 +40,8 @@ namespace film {
         enum LayerBuildType : char {
             None = 0,
             Texture,
-            Animation
+            Animation,
+            Text
         };
 
         LockerIndex loaderind = -1;

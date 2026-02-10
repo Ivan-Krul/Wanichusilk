@@ -48,6 +48,20 @@ bool Text::preprocess() {
     return false;
 }
 
+void Text::renderRaw(const SDL_FRect& rect, SDL_Color color) {
+    if (mRect.w < 0.f) return;
+    if (!TTF_SetTextColor(mText.text, color.r, color.g, color.b, color.a)) {
+        logSDLErr(__FUNCTION__);
+        return;
+    }
+    TTF_DrawRendererText(mText.text, rect.x, rect.y);
+    if (!TTF_SetTextColor(mText.text, mTColor.r, mTColor.g, mTColor.b, mTColor.a)) {
+        logSDLErr(__FUNCTION__);
+        return;
+    }
+
+}
+
 void Text::setText(const char* new_text) noexcept {
     if (mRect.w < 0.f) return;
     if (!TTF_SetTextString(mText.text, new_text, 0)) {
@@ -56,7 +70,7 @@ void Text::setText(const char* new_text) noexcept {
     }
 }
 
-void Text::setFontMgrIndex(LockerIndex font_ind) noexcept {
+void Text::setFontMgrIndex(FontIndex font_ind) noexcept {
     assert(font_ind != -1);
     if (mRect.w < 0.f) return;
     mFontIndex = font_ind;
@@ -76,6 +90,14 @@ void Text::setFontMgrIndex(LockerIndex font_ind) noexcept {
 void Text::setWrapPxLimit(int limit) {
     if (mRect.w < 0.f) return;
     if (!TTF_SetTextWrapWidth(mText.text, limit == std::numeric_limits<int>::max() ? 0 : limit)) {
+        logSDLErr(__FUNCTION__);
+        return;
+    }
+}
+
+void Text::setColor(SDL_Color color) noexcept {
+    mTColor = color;
+    if (!TTF_SetTextColor(mText.text, mTColor.r, mTColor.g, mTColor.b, mTColor.a)) {
         logSDLErr(__FUNCTION__);
         return;
     }

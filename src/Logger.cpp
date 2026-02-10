@@ -116,6 +116,10 @@ void Logger::logCritical(const char* text, ...) {
     mFoutStream << "[" << mTimeBuffer << "] CRITICAL: " << mTextBuffer << std::endl;
 
     _LOGGER_GENERATE_LOG_PRINT("CRITICAL");
+
+#ifdef ENABLE_LOG_ABORT
+    abort();
+#endif
 }
 
 void Logger::logCriticalIn(const char* function, const char* text, ...) {
@@ -124,6 +128,10 @@ void Logger::logCriticalIn(const char* function, const char* text, ...) {
     mFoutStream << "[" << mTimeBuffer << "] (" << function << ") CRITICAL: " << mTextBuffer << std::endl;
 
     _LOGGER_GENERATE_LOG_PRINT_IN("CRITICAL", function);
+    
+#ifdef ENABLE_LOG_ABORT
+    abort();
+#endif
 }
 
 Logger::~Logger() {

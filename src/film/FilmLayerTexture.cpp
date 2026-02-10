@@ -60,10 +60,6 @@ void film::LayerTexture::clear() {
     pTexture = nullptr;
 }
 
-inline bool film::LayerTexture::isWaiting() const noexcept {
-    return maEases.isEmpty();
-}
-
 inline TimerStep film::LayerTexture::getLongestWaiting() const noexcept {
     TimerStep longest = clockfunc::max(mPart.ease_tracker.getLimiter(), mRect.ease_tracker.getLimiter());
     longest = clockfunc::max(mAlpha.ease_tracker.getLimiter(), longest);

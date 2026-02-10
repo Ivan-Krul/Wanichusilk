@@ -63,5 +63,6 @@
 #define PLACE_ANIMATION_AS_IMAGE
 #define ENABLE_DEBUG_LOG
 #define ENABLE_CONSOLE_LOG
+#define ENABLE_LOG_ABORT
 
 #endif

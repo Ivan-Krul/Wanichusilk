@@ -23,7 +23,10 @@ bool film::Layerist::registerLayerKeypoint(KeypointLayer* keypoint) {
         if (iter != maActiveLayerIndexes.end()) maActiveLayerIndexes.erase(iter);
         maLayers.erase(maLayers.begin() + li);
     }   break;
-    default: assert(false); break;// return true;
+    default:
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "keypointer wasn't caught up with this change: %d.", keypoint->type().specific_type);
+        break;// return true;
     }
     return false;
 }
@@ -68,7 +71,13 @@ inline bool film::Layerist::registerLayerKeypointAdd(KeypointLayerAdd* keypoint)
     case KeypointLayerAdd::Animation:
         maLayers.emplace_back<LayerAnimation>(pClock, dynamic_cast<AnimationManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx));
         break;
-    default: return true;
+    case KeypointLayerAdd::Text:
+        maLayers.emplace_back<LayerText>(pClock, dynamic_cast<TextManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx));
+        break;
+    default:
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "layer wasn't added.");
+        return true;
     }
     return false;
 }
@@ -85,7 +94,11 @@ inline bool film::Layerist::registerKeypointInteraction(LayerIndex li, KeypointL
     case KeypointLayer::InteractDefaultPos:      return iter->pushTracker(dynamic_cast<KeypointLayerInteractDefaultPos*>(keypoint));
     case KeypointLayer::InteractDefaultPartPos:  return iter->pushTracker(dynamic_cast<KeypointLayerInteractDefaultPartitionPos*>(keypoint));
     case KeypointLayer::InteractAlpha:           return iter->pushTracker(dynamic_cast<KeypointLayerInteractAlpha*>(keypoint));
+    case KeypointLayer::InteractColor:           return iter->pushTracker(dynamic_cast<KeypointLayerInteractColor*>(keypoint));
     case KeypointLayer::InteractAnimationSpeed:  return iter->pushTracker(dynamic_cast<KeypointLayerInteractAnimationSpeed*>(keypoint));
-    default: return true;
+    default: 
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "keypointer wasn't caught up with this change: %d.", keypoint->type().specific_type);
+        return true;
     }
 }

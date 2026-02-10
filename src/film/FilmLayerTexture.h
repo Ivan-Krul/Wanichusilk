@@ -13,7 +13,6 @@ public:
     void update() override;
     void render() const override;
     void clear() override;
-    inline bool isWaiting() const noexcept override;
     inline TimerStep getLongestWaiting() const noexcept override;
 
     virtual ~LayerTexture() { clear(); }
