@@ -146,6 +146,10 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationStop }; }
     };
 
+    struct KeypointLayerAddText : public KeypointLayerAdd {
+        inline virtual LayerBuildType layertype() const { return Text; }
+    };
+
     struct KeypointLayerInteractTextWrap : public KeypointLayer {
         int wrap_limit_px = std::numeric_limits<int>::max();
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTextWrap }; }

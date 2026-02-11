@@ -24,28 +24,22 @@ void Application::OnInit() {
 
     OpenWindow();
 
-    //pTEngine = TTF_CreateRendererTextEngine(mMainWindow.getWindowRenderer());
-    //if (!pTEngine) {
-    //    Logger log(DEFAULT_LOG_SDL_PATH);
-    //    log.logCritical("SDL_ttf failed to create text engine: %s.", SDL_GetError());
-    //    mNeedQuit = true;
-    //    mIsCritical = true;
-    //}
-
     mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mTextMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mTextMgr.SetFontManager(&mFontMgr);
     mAnimMgr.SetClock(&mClock);
 
+    std::string str = "C:/Windows/Fonts";
+
     AnimationManager::LoadParamConvertor ap;
-    ap.path = "./res/cat-runner-2049-cat-runner.gif";
+    ap.path = "./res/niko paws.gif";
     mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
     ap.path = "./res/lancer-spin-big.gif";
     mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
     FontManager::LoadParamConvertor fp;
     fp.size = 25.f;
-    fp.path = "./res/TerminusTTF-Bold.ttf";
+    fp.path = (str = (str + "/comic.ttf")).c_str();
     mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
     fp.path = "./res/Scheherazade-Regular.ttf";
     mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
@@ -58,7 +52,7 @@ void Application::OnInit() {
     tp.text = u8"يرحب بالمكان الهادئ بالإلهام";
     tp.font_indx = 1;
     mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
-    tp.text = u8"A 也许，友谊是人生中最美好的东西";
+    tp.text = u8"也许，友谊是人生中最美好的东西";
     tp.font_indx = 2;
     mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
 
@@ -93,17 +87,19 @@ void Application::OnInit() {
     assert(!mScene.create(so, &mLoader));
     mScene.setClock(&mClock);
 
-    film::KeypointLayerAddAnimation a;
-    a.loaderind = mLoader.GetTranscription(0);
-    mScene.addKeypoint(a);
-    a.loaderind = mLoader.GetTranscription(1);
-    mScene.addKeypoint(a);
-    a.loaderind = mLoader.GetTranscription(6);
-    mScene.addKeypoint(a);
-    a.loaderind = mLoader.GetTranscription(7);
-    mScene.addKeypoint(a);
-    a.loaderind = mLoader.GetTranscription(8);
-    mScene.addKeypoint(a);
+    film::KeypointLayerAddAnimation aa;
+    aa.loaderind = 0;
+    mScene.addKeypoint(aa);
+    aa.loaderind = 1;
+    mScene.addKeypoint(aa);
+
+    film::KeypointLayerAddText at;
+    at.loaderind = 5;
+    mScene.addKeypoint(at);
+    at.loaderind = 6;
+    mScene.addKeypoint(at);
+    at.loaderind = 7;
+    mScene.addKeypoint(at);
 
     film::KeypointLayerInteractPos p;
     p.layerindx = 1;
@@ -122,7 +118,7 @@ void Application::OnInit() {
     mScene.addKeypoint(p);
 
     film::KeypointLayerInteractColor c;
-    c.layerindx = 3;
+    c.layerindx = 4;
     c.color = { 255, 255, 0, 255 };
     mScene.addKeypoint(c);
 
@@ -160,13 +156,16 @@ void Application::OnInit() {
     ts.frame_delay = 100;
     mScene.addKeypoint(ts);
 
-    //mAnimMgr.GetLockerResource(0)->start(1.f);
+    p.layerindx = 4;
+    p.rect.x = 200;
+    p.rect.y = 200;
+    p.ease_func = ease_cubic_out;
+    p.delay = std::chrono::seconds(2);
+    p.need_time_delay = true;
+    p.action = ts.InInputAfterAwait;
+    mScene.addKeypoint(p);
+
     mScene.start();
-
-
-    //mAnimMgr.GetLockerResource(0)->setAlpha(128);
-    //mAnimMgr.GetLockerResource(0)->setLooping(true);
-    //mAnimMgr.GetLockerResource(0)->setFreeze(false);
 }
 
 void Application::OnLoop() {
@@ -209,6 +208,8 @@ void Application::PullEvents() {
             mNeedQuit = true;
             break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            mScene.next();
+            mNeedQuit = mScene.isEnded();
             break;
         case SDL_EVENT_KEY_DOWN:
             mNeedQuit = mEvent.key.key == SDLK_ESCAPE || mNeedQuit;
@@ -229,11 +230,5 @@ void Application::OnUpdate() {
 
 void Application::OnRender() {
     SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100, 200, 255);
-    //mAnimMgr.GetLockerResource(0)->render();
-    //mAnimMgr.GetLockerResource(1)->render();
     mScene.render();
-    //mAnimMgr.GetLockerResource(0)->render();
-    //mTextMgr.GetLockerResource(0)->render();
-    //mTextMgr.GetLockerResource(1)->render();
-    //mTextMgr.GetLockerResource(2)->render();
 }

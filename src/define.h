@@ -41,6 +41,22 @@
 #define _MAYBE_UNUSED
 #endif
 
+#ifdef _WIN32
+#define OS_WINDOWS
+#elif __linux__
+#define OS_LINUX
+#elif __APPLE__
+#define OS_MACOS
+#elif __ANDROID__
+#define OS_ANDROID
+#elif __FreeBSD__
+#define OS_FREEBSD
+#elif __unix__
+#define OS_UNIX
+#else
+#define OS_UNDEFINED
+#endif
+
 #ifdef _MSC_VER
 #define COMPILER_MSVC
 // bad practice, but I know what what should I expect

@@ -3,17 +3,19 @@
 film::LayerText::LayerText(Clock* clock, TextManager* textmgr, LockerIndex textind) : pTextMgr(textmgr), mTextInd(textind) {
     setClock(clock);
 
-    pText = textind ? pTextMgr->GetLockerResource(textind) : nullptr;
+    pText = textind != -1 ? pTextMgr->GetLockerResource(textind) : nullptr;
     mRect.elem_to = { 0.f };
     if (pText) {
         mRect.elem_to.w = pText->getWidth();
         mRect.elem_to.h = pText->getHeight();
     }
-    mColor.elem_to = { 255 };
+    mColor.elem_to = { 255, 255, 255, 255 };
 
+    mRect.ease_tracker.setClock(clock);
     mColor.ease_tracker.setClock(clock);
 
     mRect.reset_tracker();
+    mColor.reset_tracker();
 }
 
 void film::LayerText::update() {
