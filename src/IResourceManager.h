@@ -31,7 +31,7 @@ inline const ResourceManagerAttribute operator&(const ResourceManagerAttribute l
 struct IResourceManager {
     using Attribute = ResourceManagerAttribute;
 
-    virtual LockerIndex RequestResourceCreate() = 0;
+    virtual LockerIndex RequestResourceCreate(ResourceCreateParams create) = 0;
     virtual LockerIndex RequestResourceLoad(ResourceLoadParams load) = 0;
 
     virtual inline void RequestResourceClean(LockerIndex index) = 0;
