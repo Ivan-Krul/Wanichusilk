@@ -33,7 +33,7 @@ public:
 
     inline Attribute GetAttribute() const noexcept override { return Attribute::Accesser; }
 private:
-    LockerSimple<Font> mFontLocker;
+    Locker<Font> mFontLocker;
 };
 
 

@@ -59,5 +59,5 @@ public:
 private:
     SDL_Renderer* mpRenderer = nullptr;
     Clock* mpClock = nullptr;
-    LockerSimple<std::unique_ptr<Animation>> mAnimationLocker;
+    Locker<std::unique_ptr<Animation>> mAnimationLocker; // lockersimple because of unreliable move operations, but wait, we move only pointers, so it's okay?
 };

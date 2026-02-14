@@ -34,5 +34,5 @@ public:
     
 private:
     SDL_Renderer* mpRenderer = nullptr;
-    LockerSimple<Texture> mTextureLocker;
+    Locker<Texture> mTextureLocker;
 };

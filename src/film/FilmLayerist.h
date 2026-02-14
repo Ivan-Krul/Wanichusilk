@@ -8,7 +8,7 @@
 #include "FilmLayerTexture.h"
 #include "FilmLayerAnimation.h"
 #include "FilmLayerText.h"
-#include "../LockerSimple.h"
+#include "../Locker.h"
 #include "../Clock.h"
 #include "../EaseTracker.h"
 #include "../rect_math.h"

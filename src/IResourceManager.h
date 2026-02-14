@@ -2,7 +2,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_textengine.h>
 
-#include "LockerSimple.h"
+#include "Locker.h"
 
 enum class ResourceManagerAttribute : short {
     Accesser = 1 << 0,
@@ -31,7 +31,7 @@ inline const ResourceManagerAttribute operator&(const ResourceManagerAttribute l
 struct IResourceManager {
     using Attribute = ResourceManagerAttribute;
 
-    virtual LockerIndex RequestResourceCreate(ResourceCreateParams create) = 0;
+    virtual LockerIndex RequestResourceCreate() = 0;
     virtual LockerIndex RequestResourceLoad(ResourceLoadParams load) = 0;
 
     virtual inline void RequestResourceClean(LockerIndex index) = 0;

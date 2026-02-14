@@ -3,7 +3,7 @@
 
 #include "FilmKeypointLayer.h"
 #include "../Clock.h"
-#include "../LockerSimple.h"
+#include "../Locker.h"
 #include "../EaseTracker.h"
 
 namespace film {
@@ -53,7 +53,7 @@ protected:
     template<typename T>
     inline void pushTransitTracker(Tracker& tracker, TransitParam<T>& param);
 
-    LockerSimple<Tracker> maEases;
+    Locker<Tracker> maEases;
 };
 
 template<typename T>

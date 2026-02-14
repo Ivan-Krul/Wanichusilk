@@ -53,7 +53,7 @@ public:
     }
 
 private:
-    LockerSimple<Text> mTextLocker;
+    Locker<Text> mTextLocker;
     SDL_Renderer* mpRenderer = nullptr;
     TTF_TextEngine* mpEngine = nullptr;
     FontManager* pFontMgr = nullptr;
