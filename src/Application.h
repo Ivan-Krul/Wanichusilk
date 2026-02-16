@@ -6,6 +6,7 @@
 #include "AnimationManager.h"
 #include "FontManager.h"
 #include "TextManager.h"
+#include "Drawer.h"
 #include "FilmScene.h"
 #include "Clock.h"
 #include "define.h"
@@ -29,11 +30,13 @@ private:
     SDL_Event mEvent; // want to make an event queuing
     bool mNeedQuit = false;
     bool mIsCritical = false;
+    bool mIsFullscreen = false;
 
     TextureManager mTexMgr;
     AnimationManager mAnimMgr;
     FontManager mFontMgr;
     TextManager mTextMgr;
+    Drawer mDrawer;
 
     Loader mLoader;
 

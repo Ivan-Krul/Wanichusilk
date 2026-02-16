@@ -21,6 +21,8 @@
 #define DEFAULT_LOG_SDL_PATH "./SDL3.log"
 #define DEFAULT_LOG_PATH "./Wanichusilk.log"
 
+#define MATH_PI 3.141592653589793
+
 #if __cplusplus >= 201703L
 #define _FALLTHROUGH [[fallthrough]]
 #else

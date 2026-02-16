@@ -22,11 +22,12 @@ void Application::OnInit() {
         return;
     }
 
-    OpenWindow();
+    OpenWindow(); // needs to add SDL_GetRenderSafeArea for future android support
 
     mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mTextMgr.SetRenderer(mMainWindow.getWindowRenderer());
+    mDrawer.setRenderer(mMainWindow.getWindowRenderer());
     mTextMgr.SetFontManager(&mFontMgr);
     mAnimMgr.SetClock(&mClock);
 
@@ -165,6 +166,9 @@ void Application::OnInit() {
     p.action = ts.InInputAfterAwait;
     mScene.addKeypoint(p);
 
+    mDrawer.addColorGroup(SDL_Color{ 200,200,100, 255 });
+    mDrawer.addCircle(0, SDL_FPoint{ 100, 100 }, SDL_FPoint{ 50,50 });
+
     mScene.start();
 }
 
@@ -174,6 +178,7 @@ void Application::OnLoop() {
     PullEvents();
     OnUpdate();
 
+    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100, 200, 255);
     SDL_RenderClear(mMainWindow.getWindowRenderer());
     OnRender();
     SDL_RenderPresent(mMainWindow.getWindowRenderer());
@@ -214,6 +219,13 @@ void Application::PullEvents() {
         case SDL_EVENT_KEY_DOWN:
             mNeedQuit = mEvent.key.key == SDLK_ESCAPE || mNeedQuit;
             break;
+        case SDL_EVENT_KEY_UP:
+            if (mEvent.key.key == SDLK_F11) {
+                SDL_SetWindowFullscreen(mMainWindow.getWindow(), mIsFullscreen);
+                mIsFullscreen = !mIsFullscreen;
+            }
+
+            break;
         case SDL_EVENT_WINDOW_RESIZED:
             SDL_RenderViewportSet(mMainWindow.getWindowRenderer());
             break;
@@ -229,6 +241,6 @@ void Application::OnUpdate() {
 }
 
 void Application::OnRender() {
-    SDL_SetRenderDrawColor(mMainWindow.getWindowRenderer(), 100, 100, 200, 255);
     mScene.render();
+    mDrawer.render();
 }
