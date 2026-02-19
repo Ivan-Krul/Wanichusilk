@@ -9,6 +9,11 @@ bool film::Layerist::registerLayerKeypoint(KeypointLayer* keypoint) {
     if (keypoint->type().specific_type >= KeypointLayer::InteractPos && keypoint->type().specific_type <= KeypointLayer::InteractDefault)
         return registerKeypointInteraction(li, keypoint);
 
+    if (keypoint->type().specific_type >= KeypointLayer::GroupJoin && keypoint->type().specific_type <= KeypointLayer::GroupRemove)
+        return registerKeypointGroup(li, keypoint);
+
+    if (keypoint->type().specific_type >= KeypointLayer::SpriteJoin && keypoint->type().specific_type <= KeypointLayer::SpriteRemove);
+
     switch (keypoint->type().specific_type) { // it's mess now, but I must go further
     case KeypointLayer::Add:     return registerLayerKeypointAdd(dynamic_cast<KeypointLayerAdd*>(keypoint));
     case KeypointLayer::Enable: maActiveLayerIndexes.push_back(maLayers.begin() + li); break;
@@ -42,10 +47,8 @@ TimerStep film::Layerist::getLongestWaiting() const {
 }
 
 void film::Layerist::update() {
-    auto it = maLayers.begin();
-    while (it != maLayers.end()) {
-        it->update();
-        it++;
+    for (auto layers : maLayers) {
+        layers->update();
     }
 }
 
@@ -101,4 +104,21 @@ inline bool film::Layerist::registerKeypointInteraction(LayerIndex li, KeypointL
         log.logWarningIn(__FUNCTION__, "keypointer wasn't caught up with this change: %d.", keypoint->type().specific_type);
         return true;
     }
+}
+
+inline bool film::Layerist::registerKeypointGroup(LayerIndex li, KeypointLayer* keypoint) {
+    auto group = dynamic_cast<LayerGroup*>((maLayers.begin() + li).get());
+    if (group) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "invalid layer or the layer is not a group");
+    }
+
+    switch (keypoint->type().specific_type) {
+    case KeypointLayer::GroupJoin:           return group->join(li);
+    case KeypointLayer::GroupInteract:       return false;
+    case KeypointLayer::GroupSharedInteract: return false;
+    case KeypointLayer::GroupRemove:         return false;
+    }
+
+    return false;
 }

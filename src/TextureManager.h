@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-
 #include "IResourceManager.h"
 #include "Texture.h"
 

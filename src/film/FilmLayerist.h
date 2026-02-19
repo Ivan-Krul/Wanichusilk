@@ -8,6 +8,7 @@
 #include "FilmLayerTexture.h"
 #include "FilmLayerAnimation.h"
 #include "FilmLayerText.h"
+#include "FilmLayerGroup.h"
 #include "../Locker.h"
 #include "../Clock.h"
 #include "../EaseTracker.h"
@@ -35,6 +36,7 @@ public:
 private:
     inline bool registerLayerKeypointAdd(KeypointLayerAdd* keypoint);
     inline bool registerKeypointInteraction(LayerIndex li, KeypointLayer* keypoint);
+    inline bool registerKeypointGroup(LayerIndex li, KeypointLayer* keypoint);
 
 private:
     PolyPointerList<LayerBase> maLayers;

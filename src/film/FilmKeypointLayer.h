@@ -6,6 +6,17 @@ namespace film {
         enum Type : short {
             Add = 1,
 
+            GroupJoin,
+            GroupSharedInteract,
+            GroupInteract,
+            GroupRemove,
+
+            SpriteJoin,
+            SpriteSwap,
+            SpriteSharedInteract,
+            SpriteInteract,
+            SpriteRemove,
+
             InteractPos,
             InteractRectPos,
             InteractPartPos,
@@ -39,6 +50,8 @@ namespace film {
     struct KeypointLayerAdd : public KeypointLayer {
         enum LayerBuildType : char {
             None = 0,
+            Group,
+            Sprite,
             Texture,
             Animation,
             Text
@@ -48,6 +61,61 @@ namespace film {
 
         inline virtual LayerBuildType layertype() const { return { None }; }
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, Add }; }
+    };
+
+    struct KeypointLayerAddGroup : public KeypointLayerAdd {
+        inline virtual LayerBuildType layertype() const { return Group; }
+    };
+
+    struct KeypointLayerGroupJoin : public KeypointLayer {
+        LockerIndex joining_layerindx = -1;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupJoin }; }
+    };
+
+    struct KeypointLayerGroupSharedInteract : public KeypointLayer {
+        std::shared_ptr<KeypointLayer> keypoint;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupSharedInteract }; }
+    };
+
+    struct KeypointLayerGroupInteract : public KeypointLayer {
+        LockerIndex sprite_nr = -1;
+        std::shared_ptr<KeypointLayer> keypoint;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupInteract }; }
+    };
+
+    struct KeypointLayerGroupRemove : public KeypointLayer {
+        LockerIndex removing_layerindx = -1;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupRemove }; }
+    };
+
+    struct KeypointLayerAddSprite : public KeypointLayerAdd {
+        inline virtual LayerBuildType layertype() const { return Sprite; }
+    };
+
+    struct KeypointLayerSpriteJoin : public KeypointLayer {
+        LockerIndex joining_layerindx = -1;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteJoin }; }
+    };
+
+    struct KeypointLayerSpriteSwap : public KeypointLayer {
+        LockerIndex sprite_nr = -1;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteSwap }; }
+    };
+
+    struct KeypointLayerSpriteSharedInteract : public KeypointLayer {
+        std::shared_ptr<KeypointLayer> keypoint;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteSharedInteract }; }
+    };
+
+    struct KeypointLayerSpriteInteract : public KeypointLayer {
+        LockerIndex sprite_nr = -1;
+        std::shared_ptr<KeypointLayer> keypoint;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteInteract }; }
+    };
+
+    struct KeypointLayerSpriteRemove : public KeypointLayer {
+        LockerIndex removing_layerindx = -1;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteRemove }; }
     };
 
     struct KeypointLayerAddTexture : public KeypointLayerAdd {

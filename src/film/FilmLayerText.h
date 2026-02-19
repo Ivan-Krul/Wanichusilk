@@ -26,10 +26,10 @@ private:
     inline bool areAllTransitParamDefault() const noexcept { return mColor.is_default() && mRect.is_default(); }
 
     TextManager* pTextMgr;
+    Text* pText;
     
     TransitParam<SDL_Color> mColor;
 
     TextIndex mTextInd;
 
-    Text* pText;
 };

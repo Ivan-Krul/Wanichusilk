@@ -25,6 +25,7 @@ private:
     inline bool areAllTransitParamDefault() const noexcept { return mRect.is_default() && mAlpha.is_default() && mTimeMult.is_default(); }
 
     AnimationManager* pAnimMgr;
+    Animation* pAnimation;
 
     // no partition param btw
     TransitParam<uint8_t> mAlpha;
@@ -32,5 +33,4 @@ private:
 
     AnimationIndex mAnimInd;
 
-    Animation* pAnimation;
 };

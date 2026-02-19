@@ -26,11 +26,11 @@ private:
     inline bool areAllTransitParamDefault() const noexcept { return mPart.is_default() && mRect.is_default() && mAlpha.is_default(); }
 
     TextureManager* pTexMgr;
+    Texture* pTexture;
 
     TransitParam<SDL_FRect> mPart;
     TransitParam<uint8_t> mAlpha;
     
     TextureIndex mTexInd;
 
-    Texture* pTexture;
 };
