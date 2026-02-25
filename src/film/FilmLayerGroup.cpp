@@ -1,39 +1,31 @@
 #include "FilmLayerGroup.h"
 
-film::LayerGroup::LayerGroup(Clock* clock, Layerist* layerist) {
-    setClock(clock);
-}
-
-bool film::LayerGroup::join(LockerIndex layerindex) {
-    mLockerLayers.push_back(layerindex);
+bool film::LayerGroup::join(PolyPointerList<LayerBase>::Iterator it) {
+    mLockerLayers.push_back(it);
     return false;
 }
 
-bool film::LayerGroup::onPushSetter(KeypointLayer* keypoint) {
-    switch (keypoint->type().specific_type) {
-    case KeypointLayer::InteractPos:     pushPosSetter<KeypointLayerInteractPos>(keypoint);                            break;
-    case KeypointLayer::InteractRectPos: pushPosSetter<KeypointLayerInteractRectPos>(keypoint);                        break;
-    case KeypointLayer::InteractPartPos: pushOtherPosSetter<film::KeypointLayerInteractPartitionPos>(keypoint, mPart); break;
-    case KeypointLayer::InteractAlpha:
-    {
-        const auto kp_alpha = dynamic_cast<KeypointLayerInteractAlpha*>(keypoint);
-        mAlpha.shift_elem();
-        mAlpha.ease_tracker.reset();
-        mAlpha.elem_to = kp_alpha->alpha;
-    }   break;
-    case KeypointLayer::InteractDefaultPos:     mRect.set_default(); break;
-    case KeypointLayer::InteractDefaultPartPos: mPart.set_default(); break;
-    case KeypointLayer::InteractSwap:
-        pushTexIndSetter(dynamic_cast<KeypointLayerInteractSwap*>(keypoint));
-        break;
-    case KeypointLayer::InteractDefault:
-        mRect.set_default();
-        mPart.set_default();
-        mAlpha.set_default();
-        break;
-    default:
-        return true;
+bool film::LayerGroup::interact(KeypointLayerGroupInteract* keypoint) {
+    if (!keypoint->has_ease()) return mLockerLayers[keypoint->group_nr]->pushSetter(keypoint);
+    return mLockerLayers[keypoint->group_nr]->pushTracker(dynamic_cast<KeypointLayerEase*>(keypoint));
+}
+
+bool film::LayerGroup::interactAll(KeypointLayerGroupSharedInteract* keypoint) {
+    for (auto layer : mLockerLayers) {
+        if (!keypoint->has_ease()) layer->pushSetter(keypoint);
+        layer->pushTracker(dynamic_cast<KeypointLayerEase*>(keypoint));
     }
-
     return false;
 }
+
+bool film::LayerGroup::detach(PolyPointerList<LayerBase>::Iterator it) {
+    auto iter = mLockerLayers.begin();
+    while (iter != mLockerLayers.end()) {
+        if (*iter == it) {
+            mLockerLayers.erase(iter);
+            return false;
+        }
+    }
+    return true;
+}
+

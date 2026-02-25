@@ -1,6 +1,6 @@
 #include "FilmLayerText.h"
 
-film::LayerText::LayerText(Clock* clock, TextManager* textmgr, LockerIndex textind) : pTextMgr(textmgr), mTextInd(textind) {
+film::LayerText::LayerText(Clock* clock, TextManager* textmgr, TextIndex textind) : pTextMgr(textmgr), mTextInd(textind) {
     setClock(clock);
 
     pText = textind != -1 ? pTextMgr->GetLockerResource(textind) : nullptr;

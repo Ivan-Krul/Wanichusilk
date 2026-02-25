@@ -12,10 +12,8 @@ namespace film {
 
 class film::LayerBase : public ClockHolder {
 public:
-    template<typename T>
-    inline bool pushSetter(T* keypoint);
-    template<typename T>
-    inline bool pushTracker(T* keypoint);
+    inline bool pushSetter(KeypointLayer* keypoint);
+    inline bool pushTracker(KeypointLayerEase* keypoint);
     inline bool isWaiting() const noexcept { return maEases.isEmpty(); }
 
     virtual void update() = 0;
@@ -56,20 +54,12 @@ protected:
     Locker<Tracker> maEases;
 };
 
-template<typename T>
-inline bool film::LayerBase::pushSetter(T* keypoint) {
-    static_assert(std::is_base_of<KeypointLayer, T>::value, "Tracker is based of KeypointLayer");
-    //static_assert(!std::is_base_of<KeypointEase, T>::value, "Tracker refuses to be derived from KeypointEase object, the push function is wrong");
-    return onPushSetter(dynamic_cast<KeypointLayer*>(keypoint));
+inline bool film::LayerBase::pushSetter(KeypointLayer* keypoint) {
+    return onPushSetter(keypoint);
 }
 
-template<typename T>
-inline bool film::LayerBase::pushTracker(T* keypoint) {
-    static_assert(std::is_base_of<KeypointLayer, T>::value, "Tracker is based of KeypointLayer");
-    static_assert(!std::is_same<KeypointLayer, T>::value, "Tracker is not a KeypointLayer");
-    static_assert(std::is_base_of<KeypointEase, T>::value, "Tracker requires derived from KeypointEase object, the push function is wrong");
-
-    if (!dynamic_cast<KeypointEase*>(keypoint)->ease_func || dynamic_cast<TimerStep*>(keypoint)->is_zero()) return onPushSetter(keypoint);
+inline bool film::LayerBase::pushTracker(KeypointLayerEase* keypoint) {
+    if (!keypoint->ease_func || keypoint->is_zero()) return onPushSetter(keypoint);
 
     Tracker tracker;
     tracker.keypoint = keypoint;

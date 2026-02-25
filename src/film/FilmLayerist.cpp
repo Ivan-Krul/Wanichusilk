@@ -9,10 +9,10 @@ bool film::Layerist::registerLayerKeypoint(KeypointLayer* keypoint) {
     if (keypoint->type().specific_type >= KeypointLayer::InteractPos && keypoint->type().specific_type <= KeypointLayer::InteractDefault)
         return registerKeypointInteraction(li, keypoint);
 
-    if (keypoint->type().specific_type >= KeypointLayer::GroupJoin && keypoint->type().specific_type <= KeypointLayer::GroupRemove)
+    if (keypoint->type().specific_type >= KeypointLayer::GroupJoin && keypoint->type().specific_type <= KeypointLayer::GroupDetach)
         return registerKeypointGroup(li, keypoint);
 
-    if (keypoint->type().specific_type >= KeypointLayer::SpriteJoin && keypoint->type().specific_type <= KeypointLayer::SpriteRemove);
+    //if (keypoint->type().specific_type >= KeypointLayer::SpriteJoin && keypoint->type().specific_type <= KeypointLayer::SpriteDetach);
 
     switch (keypoint->type().specific_type) { // it's mess now, but I must go further
     case KeypointLayer::Add:     return registerLayerKeypointAdd(dynamic_cast<KeypointLayerAdd*>(keypoint));
@@ -23,7 +23,7 @@ bool film::Layerist::registerLayerKeypoint(KeypointLayer* keypoint) {
         if(iter != maActiveLayerIndexes.end()) maActiveLayerIndexes.erase(iter);
     }   break;
     case KeypointLayer::Remove:
-    {
+    {   // messy
         auto iter = maActiveLayerIndexes.begin() + li;
         if (iter != maActiveLayerIndexes.end()) maActiveLayerIndexes.erase(iter);
         maLayers.erase(maLayers.begin() + li);
@@ -77,6 +77,8 @@ inline bool film::Layerist::registerLayerKeypointAdd(KeypointLayerAdd* keypoint)
     case KeypointLayerAdd::Text:
         maLayers.emplace_back<LayerText>(pClock, dynamic_cast<TextManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx));
         break;
+    case KeypointLayerAdd::Group:
+        maLayers.emplace_back<LayerGroup>();
     default:
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "layer wasn't added.");
@@ -88,24 +90,13 @@ inline bool film::Layerist::registerLayerKeypointAdd(KeypointLayerAdd* keypoint)
 inline bool film::Layerist::registerKeypointInteraction(LayerIndex li, KeypointLayer* keypoint) {
     auto iter = maLayers.begin() + li;
 
+    // if layerist knows that the class is easable, why layerbase should be bothered about it?
     if (!keypoint->has_ease()) return iter->pushSetter(keypoint);
 
-    switch (keypoint->type().specific_type) {
-    case KeypointLayer::InteractPos:             return iter->pushTracker(dynamic_cast<KeypointLayerInteractPos*>(keypoint));
-    case KeypointLayer::InteractRectPos:         return iter->pushTracker(dynamic_cast<KeypointLayerInteractRectPos*>(keypoint));
-    case KeypointLayer::InteractPartPos:         return iter->pushTracker(dynamic_cast<KeypointLayerInteractPartitionPos*>(keypoint));
-    case KeypointLayer::InteractDefaultPos:      return iter->pushTracker(dynamic_cast<KeypointLayerInteractDefaultPos*>(keypoint));
-    case KeypointLayer::InteractDefaultPartPos:  return iter->pushTracker(dynamic_cast<KeypointLayerInteractDefaultPartitionPos*>(keypoint));
-    case KeypointLayer::InteractAlpha:           return iter->pushTracker(dynamic_cast<KeypointLayerInteractAlpha*>(keypoint));
-    case KeypointLayer::InteractColor:           return iter->pushTracker(dynamic_cast<KeypointLayerInteractColor*>(keypoint));
-    case KeypointLayer::InteractAnimationSpeed:  return iter->pushTracker(dynamic_cast<KeypointLayerInteractAnimationSpeed*>(keypoint));
-    default: 
-        Logger log(DEFAULT_LOG_PATH);
-        log.logWarningIn(__FUNCTION__, "keypointer wasn't caught up with this change: %d.", keypoint->type().specific_type);
-        return true;
-    }
+    return iter->pushTracker(dynamic_cast<KeypointLayerEase*>(keypoint));
 }
 
+// because of advanced behaviour, layerist has to decipher all specific_type
 inline bool film::Layerist::registerKeypointGroup(LayerIndex li, KeypointLayer* keypoint) {
     auto group = dynamic_cast<LayerGroup*>((maLayers.begin() + li).get());
     if (group) {
@@ -114,10 +105,10 @@ inline bool film::Layerist::registerKeypointGroup(LayerIndex li, KeypointLayer* 
     }
 
     switch (keypoint->type().specific_type) {
-    case KeypointLayer::GroupJoin:           return group->join(li);
-    case KeypointLayer::GroupInteract:       return false;
-    case KeypointLayer::GroupSharedInteract: return false;
-    case KeypointLayer::GroupRemove:         return false;
+    case KeypointLayer::GroupJoin:           return group->join(maLayers.begin() + dynamic_cast<KeypointLayerGroupJoin*>(keypoint)->joining_layerindx);
+    case KeypointLayer::GroupInteract:       return group->interact(dynamic_cast<KeypointLayerGroupInteract*>(keypoint));
+    case KeypointLayer::GroupSharedInteract: return group->interactAll(dynamic_cast<KeypointLayerGroupSharedInteract*>(keypoint));
+    case KeypointLayer::GroupDetach:         return group->detach(maLayers.begin() + dynamic_cast<KeypointLayerGroupDetach*>(keypoint)->detaching_layerindx);
     }
 
     return false;

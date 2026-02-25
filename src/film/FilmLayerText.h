@@ -15,7 +15,7 @@ public:
     void clear() override;
     inline TimerStep getLongestWaiting() const noexcept override;
 
-    virtual ~LayerText() { clear(); }
+    virtual ~LayerText() = default;
 
 private:
     inline void pushTextIndSetter(KeypointLayerInteractSwap* keypoint);

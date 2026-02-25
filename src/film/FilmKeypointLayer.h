@@ -9,13 +9,13 @@ namespace film {
             GroupJoin,
             GroupSharedInteract,
             GroupInteract,
-            GroupRemove,
+            GroupDetach,
 
             SpriteJoin,
             SpriteSwap,
             SpriteSharedInteract,
             SpriteInteract,
-            SpriteRemove,
+            SpriteDetach,
 
             InteractPos,
             InteractRectPos,
@@ -45,6 +45,10 @@ namespace film {
         };
         LayerIndex layerindx = -1;
         virtual inline KeypointTypeStruct type() const { return { KeypointChangeType::Layer, 0 }; }
+    };
+
+    struct KeypointLayerEase : public KeypointLayer, public KeypointEase {
+        inline bool has_ease() override { return true; }
     };
 
     struct KeypointLayerAdd : public KeypointLayer {
@@ -78,14 +82,14 @@ namespace film {
     };
 
     struct KeypointLayerGroupInteract : public KeypointLayer {
-        LockerIndex sprite_nr = -1;
+        LockerIndex group_nr = -1;
         std::shared_ptr<KeypointLayer> keypoint;
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupInteract }; }
     };
 
-    struct KeypointLayerGroupRemove : public KeypointLayer {
-        LockerIndex removing_layerindx = -1;
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupRemove }; }
+    struct KeypointLayerGroupDetach : public KeypointLayer {
+        LockerIndex detaching_layerindx = -1;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupDetach }; }
     };
 
     struct KeypointLayerAddSprite : public KeypointLayerAdd {
@@ -113,18 +117,17 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteInteract }; }
     };
 
-    struct KeypointLayerSpriteRemove : public KeypointLayer {
-        LockerIndex removing_layerindx = -1;
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteRemove }; }
+    struct KeypointLayerSpriteDetach : public KeypointLayer {
+        LockerIndex detaching_layerindx = -1;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteDetach }; }
     };
 
     struct KeypointLayerAddTexture : public KeypointLayerAdd {
         inline virtual LayerBuildType layertype() const { return Texture; }
     };
 
-    struct KeypointLayerInteractRect : public KeypointLayer, public KeypointEase {
+    struct KeypointLayerInteractRect : public KeypointLayerEase {
         SDL_FRect rect = { 0.f };
-        inline bool has_ease() override { return true; }
     };
 
     struct KeypointLayerInteractPos : public KeypointLayerInteractRect {
@@ -147,11 +150,10 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractDefaultPartPos }; }
     };
 
-    struct KeypointLayerInteractAlpha : public KeypointLayer, public KeypointEase {
+    struct KeypointLayerInteractAlpha : public KeypointLayerEase {
         uint8_t alpha = 255;
 
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAlpha }; }
-        inline bool has_ease() override { return true; }
     };
 
     struct KeypointLayerInteractSwap : public KeypointLayer {
@@ -182,18 +184,17 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractSwap }; }
     };
     
-    struct KeypointLayerInteractColor : public KeypointLayer, public KeypointEase {
+    struct KeypointLayerInteractColor : public KeypointLayerEase {
         SDL_Color color = { 255 };
 
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractColor }; }
-        inline bool has_ease() override { return true; }
     };
 
     struct KeypointLayerAddAnimation : public KeypointLayerAdd {
         inline virtual LayerBuildType layertype() const { return Animation; }
     };
 
-    struct KeypointLayerInteractAnimationSpeed : public KeypointLayer, public KeypointEase {
+    struct KeypointLayerInteractAnimationSpeed : public KeypointLayerEase {
         float speed = 1.f;
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationSpeed }; }
     };

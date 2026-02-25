@@ -96,7 +96,10 @@ void film::Scene::onNext() {
     const TimerStep layer_timer = mLayerist.getLongestWaiting();
 
     if (pKeypoint->type().global_type == KeypointChangeType::Layer) {
-        mLayerist.registerLayerKeypoint(dynamic_cast<KeypointLayer*>(pKeypoint));
+        if (mLayerist.registerLayerKeypoint(dynamic_cast<KeypointLayer*>(pKeypoint))) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "Keypoint that was fed was in some sort incomprehendable");
+        }
     }
     if (pKeypoint->type().global_type == KeypointChangeType::Background) {
         mBackground.registerBackgroundKeypoint(dynamic_cast<KeypointBackground*>(pKeypoint));
