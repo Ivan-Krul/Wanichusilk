@@ -77,13 +77,13 @@ namespace film {
     };
 
     struct KeypointLayerGroupSharedInteract : public KeypointLayer {
-        std::shared_ptr<KeypointLayer> keypoint;
+        std::unique_ptr<KeypointLayer> keypoint{ nullptr };
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupSharedInteract }; }
     };
 
     struct KeypointLayerGroupInteract : public KeypointLayer {
         LockerIndex group_nr = -1;
-        std::shared_ptr<KeypointLayer> keypoint;
+        std::unique_ptr<KeypointLayer> keypoint{ nullptr };
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupInteract }; }
     };
 
@@ -107,13 +107,13 @@ namespace film {
     };
 
     struct KeypointLayerSpriteSharedInteract : public KeypointLayer {
-        std::shared_ptr<KeypointLayer> keypoint;
+        std::unique_ptr<KeypointLayer> keypoint{ nullptr };
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteSharedInteract }; }
     };
 
     struct KeypointLayerSpriteInteract : public KeypointLayer {
         LockerIndex sprite_nr = -1;
-        std::shared_ptr<KeypointLayer> keypoint;
+        std::unique_ptr<KeypointLayer> keypoint{ nullptr };
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteInteract }; }
     };
 

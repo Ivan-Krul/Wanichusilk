@@ -98,7 +98,13 @@ void film::Scene::onNext() {
     if (pKeypoint->type().global_type == KeypointChangeType::Layer) {
         if (mLayerist.registerLayerKeypoint(dynamic_cast<KeypointLayer*>(pKeypoint))) {
             Logger log(DEFAULT_LOG_PATH);
-            log.logWarningIn(__FUNCTION__, "Keypoint that was fed was in some sort incomprehendable");
+            log.logWarningIn(
+                __FUNCTION__,
+                "Keypoint that was fed was in some sort incomprehendable: [id: %d, tp: %d, li: %d].",
+                mKeypointIndex,
+                pKeypoint->type().specific_type,
+                dynamic_cast<KeypointLayer*>(pKeypoint)->layerindx
+            );
         }
     }
     if (pKeypoint->type().global_type == KeypointChangeType::Background) {

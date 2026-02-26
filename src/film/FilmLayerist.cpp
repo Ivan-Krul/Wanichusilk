@@ -79,6 +79,7 @@ inline bool film::Layerist::registerLayerKeypointAdd(KeypointLayerAdd* keypoint)
         break;
     case KeypointLayerAdd::Group:
         maLayers.emplace_back<LayerGroup>();
+        break;
     default:
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "layer wasn't added.");
@@ -99,17 +100,35 @@ inline bool film::Layerist::registerKeypointInteraction(LayerIndex li, KeypointL
 // because of advanced behaviour, layerist has to decipher all specific_type
 inline bool film::Layerist::registerKeypointGroup(LayerIndex li, KeypointLayer* keypoint) {
     auto group = dynamic_cast<LayerGroup*>((maLayers.begin() + li).get());
-    if (group) {
+    if (!group) {
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "invalid layer or the layer is not a group");
+        return true;
     }
 
     switch (keypoint->type().specific_type) {
-    case KeypointLayer::GroupJoin:           return group->join(maLayers.begin() + dynamic_cast<KeypointLayerGroupJoin*>(keypoint)->joining_layerindx);
-    case KeypointLayer::GroupInteract:       return group->interact(dynamic_cast<KeypointLayerGroupInteract*>(keypoint));
-    case KeypointLayer::GroupSharedInteract: return group->interactAll(dynamic_cast<KeypointLayerGroupSharedInteract*>(keypoint));
-    case KeypointLayer::GroupDetach:         return group->detach(maLayers.begin() + dynamic_cast<KeypointLayerGroupDetach*>(keypoint)->detaching_layerindx);
+    case KeypointLayer::GroupJoin: {
+        if (dynamic_cast<KeypointLayerGroupJoin*>(keypoint)->joining_layerindx == li) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "index for joining group and layer index are same");
+            return true;
+        }
+        return group->join(maLayers.begin() + dynamic_cast<KeypointLayerGroupJoin*>(keypoint)->joining_layerindx);
+    }
+    case KeypointLayer::GroupInteract: {
+        const auto kp = dynamic_cast<KeypointLayerGroupInteract*>(keypoint);
+        return group->interact(kp->group_nr, kp->keypoint.get());
+    }
+    case KeypointLayer::GroupSharedInteract:
+        return group->interactAll(dynamic_cast<KeypointLayerGroupSharedInteract*>(keypoint)->keypoint.get());
+    case KeypointLayer::GroupDetach:
+        if (dynamic_cast<KeypointLayerGroupDetach*>(keypoint)->detaching_layerindx == li) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "index for detaching group and layer index are same");
+            return true;
+        }
+        return group->detach(maLayers.begin() + dynamic_cast<KeypointLayerGroupDetach*>(keypoint)->detaching_layerindx);
     }
 
-    return false;
+    return true;
 }

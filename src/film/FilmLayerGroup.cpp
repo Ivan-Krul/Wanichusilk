@@ -5,17 +5,18 @@ bool film::LayerGroup::join(PolyPointerList<LayerBase>::Iterator it) {
     return false;
 }
 
-bool film::LayerGroup::interact(KeypointLayerGroupInteract* keypoint) {
-    if (!keypoint->has_ease()) return mLockerLayers[keypoint->group_nr]->pushSetter(keypoint);
-    return mLockerLayers[keypoint->group_nr]->pushTracker(dynamic_cast<KeypointLayerEase*>(keypoint));
+bool film::LayerGroup::interact(LockerIndex group_nr, KeypointLayer* keypoint) {
+    if (!keypoint->has_ease()) return mLockerLayers[group_nr]->pushSetter(keypoint);
+    return mLockerLayers[group_nr]->pushTracker(dynamic_cast<KeypointLayerEase*>(keypoint));
 }
 
-bool film::LayerGroup::interactAll(KeypointLayerGroupSharedInteract* keypoint) {
+bool film::LayerGroup::interactAll(KeypointLayer* keypoint) {
+    bool res = true; // if every layer goes wrong, then everything is wrong
     for (auto layer : mLockerLayers) {
-        if (!keypoint->has_ease()) layer->pushSetter(keypoint);
-        layer->pushTracker(dynamic_cast<KeypointLayerEase*>(keypoint));
+        if (!keypoint->has_ease()) res &= layer->pushSetter(keypoint);
+        else res &= layer->pushTracker(dynamic_cast<KeypointLayerEase*>(keypoint));
     }
-    return false;
+    return res;
 }
 
 bool film::LayerGroup::detach(PolyPointerList<LayerBase>::Iterator it) {

@@ -157,14 +157,29 @@ void Application::OnInit() {
     ts.frame_delay = 100;
     mScene.addKeypoint(ts);
 
-    p.layerindx = 4;
+    film::KeypointLayerAddGroup ag;
+    mScene.addKeypoint(ag);
+
+    film::KeypointLayerGroupJoin aj;
+    aj.layerindx = 5;
+    aj.joining_layerindx = 4;
+    mScene.addKeypoint(aj);
+    aj.joining_layerindx = 3;
+    mScene.addKeypoint(aj);
+
+    p.layerindx = 5;
     p.rect.x = 200;
     p.rect.y = 200;
     p.ease_func = ease_cubic_out;
     p.delay = std::chrono::seconds(2);
     p.need_time_delay = true;
     p.action = ts.InInputAfterAwait;
-    mScene.addKeypoint(p);
+
+    film::KeypointLayerGroupSharedInteract gsi;
+    gsi.layerindx = 5;
+    gsi.keypoint.reset(p); // new implementation of pointer here
+
+    mScene.addKeypoint(gsi);
 
     mDrawer.addColorGroup(SDL_Color{ 200,200,100, 255 });
     mDrawer.addCircle(0, SDL_FPoint{ 100, 100 }, SDL_FPoint{ 50,50 });

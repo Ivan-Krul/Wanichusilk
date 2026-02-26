@@ -13,13 +13,13 @@ namespace film {
 class film::LayerGroup : public LayerBase {
 public:
     void update() override {} // it's a void updater, because other stuff would be updated anyway
-    void render() const override {}
+    void render() const override {} // people would make this as an argument against inheritance
     void clear() override { mLockerLayers.clear(); }
     inline TimerStep getLongestWaiting() const noexcept override { return TimerStep{}; }
 
     bool join(PolyPointerList<LayerBase>::Iterator it);
-    bool interact(KeypointLayerGroupInteract* keypoint);
-    bool interactAll(KeypointLayerGroupSharedInteract* keypoint);
+    bool interact(LockerIndex group_nr, KeypointLayer* keypoint);
+    bool interactAll(KeypointLayer* keypoint);
     bool detach(PolyPointerList<LayerBase>::Iterator it);
 
     virtual ~LayerGroup() = default;
