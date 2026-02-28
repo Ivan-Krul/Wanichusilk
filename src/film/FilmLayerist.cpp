@@ -117,10 +117,10 @@ inline bool film::Layerist::registerKeypointGroup(LayerIndex li, KeypointLayer* 
     }
     case KeypointLayer::GroupInteract: {
         const auto kp = dynamic_cast<KeypointLayerGroupInteract*>(keypoint);
-        return group->interact(kp->group_nr, kp->keypoint.get());
+        return group->interact(kp->group_nr, *kp->keypoint);
     }
     case KeypointLayer::GroupSharedInteract:
-        return group->interactAll(dynamic_cast<KeypointLayerGroupSharedInteract*>(keypoint)->keypoint.get());
+        return group->interactAll(*dynamic_cast<KeypointLayerGroupSharedInteract*>(keypoint)->keypoint);
     case KeypointLayer::GroupDetach:
         if (dynamic_cast<KeypointLayerGroupDetach*>(keypoint)->detaching_layerindx == li) {
             Logger log(DEFAULT_LOG_PATH);

@@ -1,5 +1,6 @@
 #pragma once
 #include "FilmKeypoint.h"
+#include "../CopyPointer.h"
 
 namespace film {
     struct KeypointLayer : public Keypoint {
@@ -77,13 +78,13 @@ namespace film {
     };
 
     struct KeypointLayerGroupSharedInteract : public KeypointLayer {
-        std::unique_ptr<KeypointLayer> keypoint{ nullptr };
+        CopyPointer<KeypointLayer> keypoint{ nullptr };
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupSharedInteract }; }
     };
 
     struct KeypointLayerGroupInteract : public KeypointLayer {
         LockerIndex group_nr = -1;
-        std::unique_ptr<KeypointLayer> keypoint{ nullptr };
+        CopyPointer<KeypointLayer> keypoint{ nullptr };
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, GroupInteract }; }
     };
 
@@ -107,13 +108,13 @@ namespace film {
     };
 
     struct KeypointLayerSpriteSharedInteract : public KeypointLayer {
-        std::unique_ptr<KeypointLayer> keypoint{ nullptr };
+        CopyPointer<KeypointLayer> keypoint{ nullptr };
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteSharedInteract }; }
     };
 
     struct KeypointLayerSpriteInteract : public KeypointLayer {
         LockerIndex sprite_nr = -1;
-        std::unique_ptr<KeypointLayer> keypoint{ nullptr };
+        CopyPointer<KeypointLayer> keypoint{ nullptr };
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteInteract }; }
     };
 

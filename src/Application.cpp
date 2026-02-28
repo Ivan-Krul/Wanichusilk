@@ -177,7 +177,7 @@ void Application::OnInit() {
 
     film::KeypointLayerGroupSharedInteract gsi;
     gsi.layerindx = 5;
-    gsi.keypoint.reset(p); // new implementation of pointer here
+    gsi.keypoint = p; // new implementation of pointer here
 
     mScene.addKeypoint(gsi);
 

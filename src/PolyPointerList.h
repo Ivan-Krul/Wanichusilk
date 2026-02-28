@@ -1,6 +1,5 @@
 #pragma once
 #include <type_traits>
-#include <list>
 
 // structure, that let store huge variety of huge objects in heap
 
