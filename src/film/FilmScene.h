@@ -5,6 +5,7 @@
 #include "../Clock.h"
 #include "../FrameScaling.h"
 #include "../Loader.h"
+#include "../CopyPointer.h"
 
 #include <vector>
 #include <string>
@@ -69,7 +70,7 @@ inline void film::Scene::addKeypoint(T&& keypoint) {
     static_assert(std::is_base_of<Keypoint, KeypointType>::value, "you should add a derived struct Keypoint");
 
     auto ptr = std::make_shared<KeypointType>(std::forward<T>(keypoint));
-    maKeypoints.push_back(std::static_pointer_cast<Keypoint>(ptr));
+    maKeypoints.emplace_back(std::static_pointer_cast<Keypoint>(ptr));
 }
 
 template<typename T>

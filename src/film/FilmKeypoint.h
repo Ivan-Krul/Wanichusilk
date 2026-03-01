@@ -5,7 +5,7 @@
 
 #include "../define.h"
 #include "../Clock.h"
-#include "../TextureManager.h"
+#include "../Locker.h"
 
 namespace film {
     typedef int LayerIndex;

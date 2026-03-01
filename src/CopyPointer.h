@@ -1,7 +1,9 @@
 #pragma once
 #include <type_traits>
+#include <utility>
 
 // smart pointer, that copies stuff in it's instance and holds it
+// it's not friendly when the deal comes with copying instances which was derived
 
 template<typename T>
 class CopyPointer {
@@ -22,16 +24,16 @@ public:
     template<typename P>
     CopyPointer(P&& move);
     CopyPointer(CopyPointer&& inst);
-    CopyPointer(const CopyPointer&) = delete;
+    CopyPointer(const CopyPointer& inst) = delete;
 
-    template<typename P>
-    CopyPointer& operator=(const P& inst) noexcept;
-    template<typename P>
-    CopyPointer& operator=(P&& inst) noexcept;
     inline CopyPointer& operator=(CopyPointer<T>&& inst) noexcept { mpPtr = inst.mpPtr; inst.mpPtr = nullptr; return *this; }
     inline CopyPointer& operator=(std::nullptr_t) noexcept { if (mpPtr) delete mpPtr; mpPtr = nullptr; return *this; }
     inline CopyPointer& operator=(const CopyPointer<T>&) noexcept = delete;
 
+    inline typename std::enable_if<std::is_copy_constructible<T>::value>::type copy(const T& item) { if (mpPtr) delete mpPtr; mpPtr = new T(item); }
+    inline typename std::enable_if<std::is_move_constructible<T>::value>::type move(T&& item) { if (mpPtr) delete mpPtr; mpPtr = new T(std::move(item)); }
+    template<typename P> inline typename std::enable_if<std::is_copy_constructible<P>::value && std::is_base_of<T, P>::value>::type copy(const P& item) { if (mpPtr) delete mpPtr; mpPtr = new P(item); }
+    template<typename P> inline typename std::enable_if<std::is_move_constructible<P>::value && std::is_base_of<T, P>::value>::type move(P&& item) { if (mpPtr) delete mpPtr; mpPtr = new P(std::move(item)); }
     inline T* get() const noexcept { return mpPtr; }
     inline void swap(CopyPointer<T>& inst) { T* ptr = inst.mpPtr; inst.mpPtr = mpPtr; mpPtr = ptr; }
     inline T* release() noexcept { T* tmp = mpPtr; mpPtr = nullptr; return tmp; }
@@ -40,6 +42,7 @@ public:
     inline T* operator->() const noexcept { return mpPtr; }
     inline T* operator*() const noexcept { return mpPtr; }
     inline bool operator==(const CopyPointer<T>& comp) const noexcept { return mpPtr == comp.mpPtr; }
+    inline bool operator!=(const CopyPointer<T>& comp) const noexcept { return mpPtr != comp.mpPtr; }
 
     inline ~CopyPointer() { delete mpPtr; }
 
@@ -89,27 +92,8 @@ inline CopyPointer<T>::CopyPointer(P&& move) {
     mpPtr = new P(std::move(P));
 }
 
-template<typename T> template<typename P>
-inline CopyPointer<T>& CopyPointer<T>::operator=(P&& inst) noexcept {
-    static_assert(std::is_base_of<T, P>::value, "the pointer type has to be derived from base");
-    static_assert(std::is_move_constructible<T>::value, "the pointer type has to have a move constructor");
-
-    mpPtr = new P(std::move(inst));
-    return *this;
-}
-
-template<typename T> template<typename P>
-inline CopyPointer<T>& CopyPointer<T>::operator=(const P& inst) noexcept {
-    static_assert(std::is_base_of<T, P>::value, "the pointer type has to be derived from base");
-    static_assert(std::is_copy_constructible<T>::value, "the pointer type has to have a move constructor");
-
-    mpPtr = new P(inst);
-    return *this;
-}
-
 template<typename T>
 inline CopyPointer<T>::CopyPointer(CopyPointer&& inst) {
     mpPtr = inst.mpPtr;
     inst.mpPtr = nullptr;
 }
-

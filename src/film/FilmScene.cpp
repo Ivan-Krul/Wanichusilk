@@ -90,7 +90,7 @@ void film::Scene::onUpdate() {
 }
 
 void film::Scene::onNext() {
-    const auto timer = *dynamic_cast<TimerStep*>(pKeypoint);
+    auto timer = *dynamic_cast<TimerStep*>(pKeypoint);
 
     const TimerStep backg_timer = mBackground.getLongestWaiting();
     const TimerStep layer_timer = mLayerist.getLongestWaiting();

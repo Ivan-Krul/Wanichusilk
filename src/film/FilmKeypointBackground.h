@@ -26,12 +26,12 @@ namespace film {
 
         RenderMode rend_mode = blank;
 
-        TextureIndex to = -1;
+        LockerIndex to = -1;
         inline KeypointTypeStruct type() const { return { KeypointChangeType::Background, TextureSwap }; }
     };
 
     struct KeypointBgTransparentTexSwap : public KeypointBgTexSwap, public KeypointEase {
-        TextureIndex from;
+        LockerIndex from;
 
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Background, TransparentTextureSwap }; }
         inline bool has_ease() override { return true; }

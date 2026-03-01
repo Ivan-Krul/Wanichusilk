@@ -173,12 +173,13 @@ void Application::OnInit() {
     p.ease_func = ease_cubic_out;
     p.delay = std::chrono::seconds(2);
     p.need_time_delay = true;
-    p.action = ts.InInputAfterAwait;
 
     film::KeypointLayerGroupSharedInteract gsi;
     gsi.layerindx = 5;
-    gsi.keypoint = p; // new implementation of pointer here
-
+    gsi.delay = std::chrono::seconds(2);
+    gsi.need_time_delay = true;
+    gsi.action = gsi.InInputAfterAwait;
+    gsi.keypoint.copy(p);
     mScene.addKeypoint(gsi);
 
     mDrawer.addColorGroup(SDL_Color{ 200,200,100, 255 });
