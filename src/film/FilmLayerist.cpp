@@ -12,7 +12,8 @@ bool film::Layerist::registerLayerKeypoint(KeypointLayer* keypoint) {
     if (keypoint->type().specific_type >= KeypointLayer::GroupJoin && keypoint->type().specific_type <= KeypointLayer::GroupDetach)
         return registerKeypointGroup(li, keypoint);
 
-    //if (keypoint->type().specific_type >= KeypointLayer::SpriteJoin && keypoint->type().specific_type <= KeypointLayer::SpriteDetach);
+    if (keypoint->type().specific_type >= KeypointLayer::SpriteJoin && keypoint->type().specific_type <= KeypointLayer::SpriteDetach)
+        return registerKeypointSprite(li, keypoint);
 
     switch (keypoint->type().specific_type) { // it's mess now, but I must go further
     case KeypointLayer::Add:     return registerLayerKeypointAdd(dynamic_cast<KeypointLayerAdd*>(keypoint));
@@ -80,6 +81,9 @@ inline bool film::Layerist::registerLayerKeypointAdd(KeypointLayerAdd* keypoint)
     case KeypointLayerAdd::Group:
         maLayers.emplace_back<LayerGroup>();
         break;
+    case KeypointLayerAdd::Sprite:
+        maLayers.emplace_back<LayerSprite>();
+        break;
     default:
         Logger log(DEFAULT_LOG_PATH);
         log.logWarningIn(__FUNCTION__, "layer wasn't added.");
@@ -131,4 +135,42 @@ inline bool film::Layerist::registerKeypointGroup(LayerIndex li, KeypointLayer* 
     }
 
     return true;
+}
+
+inline bool film::Layerist::registerKeypointSprite(LayerIndex li, KeypointLayer* keypoint) {
+    auto sprite = dynamic_cast<LayerSprite*>((maLayers.begin() + li).get());
+    if (!sprite) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "invalid layer or the layer is not a sprite");
+        return true;
+    }
+
+    switch (keypoint->type().specific_type) {
+    case KeypointLayer::SpriteJoin:
+        if (dynamic_cast<KeypointLayerGroupJoin*>(keypoint)->joining_layerindx == li) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "index for joining sprite and layer index are same");
+            return true;
+        }
+        return sprite->join(maLayers.begin() + dynamic_cast<KeypointLayerSpriteJoin*>(keypoint)->joining_layerindx);
+    case KeypointLayer::SpriteInteract: {
+        const auto kp = dynamic_cast<KeypointLayerSpriteInteract*>(keypoint);
+        return sprite->interact(kp->sprite_nr, kp->keypoint.get());
+    }
+    case KeypointLayer::SpriteSwap: 
+        sprite->swap(dynamic_cast<KeypointLayerSpriteSwap*>(keypoint)->sprite_nr);
+        return false;
+    case KeypointLayer::SpriteSharedInteract:
+        return sprite->interactAll(dynamic_cast<KeypointLayerSpriteSharedInteract*>(keypoint)->keypoint.get());
+    case KeypointLayer::SpriteDetach:
+        if (dynamic_cast<KeypointLayerSpriteDetach*>(keypoint)->detaching_layerindx == li) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "index for detaching sprite and layer index are same");
+            return true;
+        }
+        if (dynamic_cast<KeypointLayerSpriteDetach*>(keypoint)->detaching_layerindx == sprite->getSwap()) sprite->swap(-1);
+        if (dynamic_cast<KeypointLayerSpriteDetach*>(keypoint)->detaching_layerindx < sprite->getSwap()) sprite->swap(sprite->getSwap() - 1);
+        return sprite->detach(maLayers.begin() + dynamic_cast<KeypointLayerSpriteDetach*>(keypoint)->detaching_layerindx);
+    }
+    return false;
 }

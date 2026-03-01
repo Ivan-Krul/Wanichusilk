@@ -166,6 +166,10 @@ void Application::OnInit() {
     mScene.addKeypoint(aj);
     aj.joining_layerindx = 3;
     mScene.addKeypoint(aj);
+    aj.joining_layerindx = 1;
+    mScene.addKeypoint(aj);
+    aj.joining_layerindx = 2;
+    mScene.addKeypoint(aj);
 
     p.layerindx = 5;
     p.rect.x = 200;
