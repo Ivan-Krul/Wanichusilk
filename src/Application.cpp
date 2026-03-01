@@ -179,7 +179,7 @@ void Application::OnInit() {
     gsi.delay = std::chrono::seconds(2);
     gsi.need_time_delay = true;
     gsi.action = gsi.InInputAfterAwait;
-    gsi.keypoint.copy(p);
+    gsi.keypoint = std::static_pointer_cast<film::KeypointLayer>(std::make_shared<decltype(p)>(p));
     mScene.addKeypoint(gsi);
 
     mDrawer.addColorGroup(SDL_Color{ 200,200,100, 255 });

@@ -5,7 +5,6 @@
 #include "../Clock.h"
 #include "../FrameScaling.h"
 #include "../Loader.h"
-#include "../CopyPointer.h"
 
 #include <vector>
 #include <string>
