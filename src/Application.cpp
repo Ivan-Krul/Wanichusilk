@@ -56,6 +56,8 @@ void Application::OnInit() {
     tp.text = u8"也许，友谊是人生中最美好的东西";
     tp.font_indx = 2;
     mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
+    ap.path = "./res/IMG_1079.gif";
+    mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
 
     SCOPED_STOPWATCH("load");
 
@@ -185,6 +187,36 @@ void Application::OnInit() {
     gsi.action = gsi.InInputAfterAwait;
     gsi.keypoint = std::static_pointer_cast<film::KeypointLayer>(std::make_shared<decltype(p)>(p));
     mScene.addKeypoint(gsi);
+
+    aa.loaderind = 8;
+    mScene.addKeypoint(aa);
+
+    film::KeypointLayerAddSprite as;
+    mScene.addKeypoint(as);
+
+    film::KeypointLayerSpriteJoin sj;
+    sj.layerindx = 7;
+    sj.joining_layerindx = 0;
+    mScene.addKeypoint(sj);
+    sj.joining_layerindx = 6;
+    mScene.addKeypoint(sj);
+
+    film::KeypointLayerSpriteSwap ss;
+    ss.layerindx = 7;
+    ss.sprite_nr = 0;
+    mScene.addKeypoint(ss);
+    ss.sprite_nr = 1;
+    mScene.addKeypoint(ss);
+
+    film::KeypointLayerSpriteInteract si;
+    si.layerindx = 7;
+    si.sprite_nr = 1;
+    si.keypoint = std::static_pointer_cast<film::KeypointLayer>(std::make_shared<decltype(anl)>(anl));
+    mScene.addKeypoint(si);
+    si.frame_delay = 500;
+    si.action = si.InInputAfterAwait;
+    si.keypoint = std::static_pointer_cast<film::KeypointLayer>(std::make_shared<decltype(ans)>(ans));
+    mScene.addKeypoint(si);
 
     mDrawer.addColorGroup(SDL_Color{ 200,200,100, 255 });
     mDrawer.addCircle(0, SDL_FPoint{ 100, 100 }, SDL_FPoint{ 50,50 });

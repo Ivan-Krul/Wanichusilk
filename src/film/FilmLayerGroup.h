@@ -17,6 +17,8 @@ public:
     void clear() override { mLockerLayers.clear(); }
     inline TimerStep getLongestWaiting() const noexcept override { return TimerStep{}; }
 
+    virtual bool registerKeypoint(PolyPointerList<LayerBase>& layers, std::vector<PolyPointerList<LayerBase>::Iterator>& ali, LayerIndex li, KeypointLayer* keypoint);
+
     bool join(PolyPointerList<LayerBase>::Iterator it);
     bool interact(LockerIndex group_nr, KeypointLayer* keypoint);
     bool interactAll(KeypointLayer* keypoint);

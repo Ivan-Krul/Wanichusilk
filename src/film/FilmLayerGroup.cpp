@@ -1,4 +1,5 @@
 #include "FilmLayerGroup.h"
+#include "../Logger.h"
 
 bool film::LayerGroup::join(PolyPointerList<LayerBase>::Iterator it) {
     mLockerLayers.push_back(it);
@@ -29,4 +30,33 @@ bool film::LayerGroup::detach(PolyPointerList<LayerBase>::Iterator it) {
     }
     return true;
 }
+
+bool film::LayerGroup::registerKeypoint(PolyPointerList<LayerBase>& layers, std::vector<PolyPointerList<LayerBase>::Iterator>& ali, LayerIndex li, KeypointLayer* keypoint) {
+    switch (keypoint->type().specific_type) {
+    case KeypointLayer::GroupJoin: {
+        if (dynamic_cast<KeypointLayerGroupJoin*>(keypoint)->joining_layerindx == li) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "index for joining group and layer index are same");
+            return true;
+        }
+        return join(layers.begin() + dynamic_cast<KeypointLayerGroupJoin*>(keypoint)->joining_layerindx);
+    }
+    case KeypointLayer::GroupInteract: {
+        const auto kp = dynamic_cast<KeypointLayerGroupInteract*>(keypoint);
+        return interact(kp->group_nr, kp->keypoint.get());
+    }
+    case KeypointLayer::GroupSharedInteract:
+        return interactAll(dynamic_cast<KeypointLayerGroupSharedInteract*>(keypoint)->keypoint.get());
+    case KeypointLayer::GroupDetach:
+        if (dynamic_cast<KeypointLayerGroupDetach*>(keypoint)->detaching_layerindx == li) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "index for detaching group and layer index are same");
+            return true;
+        }
+        return detach(layers.begin() + dynamic_cast<KeypointLayerGroupDetach*>(keypoint)->detaching_layerindx);
+    }
+
+    return true;
+}
+
 
