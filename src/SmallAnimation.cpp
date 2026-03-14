@@ -81,6 +81,17 @@ void SmallAnimation::setAlpha(uint8_t alpha) noexcept {
     if (mpTiles.tex) SDL_SetTextureAlphaMod(mpTiles.tex, mAlpha);
 }
 
+void SmallAnimation::setScaleMode(SDL_ScaleMode mode) noexcept {
+    if (!mState.is_preprocessed) return;
+
+    if (!SDL_SetTextureScaleMode(mpTiles.tex, mode)) {
+        Logger log(DEFAULT_LOG_PATH);
+        log.logWarningIn(__FUNCTION__, "SmallAnimation texture wasn't setted to valid scale mode");
+        logSDLErr(__FUNCTION__);
+        return;
+    }
+}
+
 void SmallAnimation::childClean() {
     if(mpTiles.tex) SDL_DestroyTexture(mpTiles.tex);
 }

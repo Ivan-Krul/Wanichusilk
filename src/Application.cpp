@@ -31,42 +31,47 @@ void Application::OnInit() {
     mTextMgr.SetFontManager(&mFontMgr);
     mAnimMgr.SetClock(&mClock);
 
-    std::string str = "C:/Windows/Fonts";
-
-    AnimationManager::LoadParamConvertor ap;
-    ap.path = "./res/niko paws.gif";
-    mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
-    ap.path = "./res/lancer-spin-big.gif";
-    mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
-    FontManager::LoadParamConvertor fp;
-    fp.size = 25.f;
-    fp.path = (str = (str + "/comic.ttf")).c_str();
-    mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
-    fp.path = "./res/Scheherazade-Regular.ttf";
-    mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
-    fp.path = "./res/unifont-17.0.03.otf";
-    mLoader.PushResourcePathInQueue(&fp, &mFontMgr);
-    TextManager::LoadParamConvertor tp;
-    tp.text = u8"What would you think?\nWorüber denkst du?\nПро що ти думаєш?\nO czym myślisz?\n¿En qué piensas?\nNe düşünüyorsun?\nApa pendapat Anda?";
-    tp.font_indx = 0;
-    mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
-    tp.text = u8"يرحب بالمكان الهادئ بالإلهام";
-    tp.font_indx = 1;
-    mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
-    tp.text = u8"也许，友谊是人生中最美好的东西";
-    tp.font_indx = 2;
-    mLoader.PushResourcePathInQueue(&tp, &mTextMgr);
-    ap.path = "./res/IMG_1079.gif";
-    mLoader.PushResourcePathInQueue(&ap, &mAnimMgr);
-
+    // resource loading here
+    TextureManager::LoadParamConvertor txtrload;
+    txtrload.path = "./res/character.png";
+    txtrload.scalemode = SDL_SCALEMODE_NEAREST;
+    mLoader.PushResourcePathInQueue(&txtrload, &mTexMgr);
+    //AnimationManager::LoadParamConvertor animload;
+    //animload.path = "./res/cat-runner-2049-cat-runner.gif";
+    //mLoader.PushResourcePathInQueue(&animload, &mAnimMgr);
+    //animload.path = "./res/received_1095637438226501.gif";
+    //mLoader.PushResourcePathInQueue(&animload, &mAnimMgr);
+    //FontManager::LoadParamConvertor fontload;
+    //fontload.path = "./res/unifont-17.0.03.otf";
+    //fontload.size = 32.f;
+    //mLoader.PushResourcePathInQueue(&fontload, &mFontMgr);
+    //TextManager::LoadParamConvertor textload;
+    //textload.font_indx = 0;
+    //textload.text = u8"Bunnies!!!";
+    //mLoader.PushResourcePathInQueue(&textload, &mTextMgr);
+ 
     SCOPED_STOPWATCH("load");
+ 
+    auto surf = SDL_GetWindowSurface(mMainWindow.getWindow());
+    mDrawer.addColorGroup(SDL_Color{ 255,255,255,255 });
+    SDL_Rect rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.h = 32;
 
     mLoader.Load();
 
     while (mLoader.IsProgress()) { // async loading
-        printf("\r%d%%", (int)((float)mLoader.GetProgress() / (float)mLoader.Size() * 100.f));
+        SDL_GetWindowSize(mMainWindow.getWindow(), &rect.w, nullptr);
+        rect.w *= ((float)mLoader.GetProgress() / (float)mLoader.Size());
+        PullEvents();
+        SDL_ClearSurface(surf, 0.f, 0.f, 0.f, 1.f);
+        SDL_FillSurfaceRect(surf, &rect, SDL_MapSurfaceRGB(surf, 255, 255, 255));
+        SDL_UpdateWindowSurface(mMainWindow.getWindow());
+        SDL_Delay(1);
     }
-    printf("\r100%%\n");
+    mDrawer.removeColorGroup(0);
+    SDL_DestroyWindowSurface(mMainWindow.getWindow());
 
     if (mLoader.IsFailed()) {
         Logger log(DEFAULT_LOG_PATH);
@@ -75,7 +80,7 @@ void Application::OnInit() {
         mIsCritical = true;
         return;
     }
-
+ 
     if (mLoader.Preprocess()) {
         Logger log(DEFAULT_LOG_PATH);
         log.logError("Resource wasn't preprocessed properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
@@ -83,143 +88,57 @@ void Application::OnInit() {
         mIsCritical = true;
         return;
     }
-
+ 
     ScaleOption so;
     so.p_wind = mMainWindow.getWindow();
-
+ 
     assert(!mScene.create(so, &mLoader));
     mScene.setClock(&mClock);
+ 
+    // all keypoints here
+    //film::KeypointLayerAddGroup addg;
+    //mScene.addKeypoint(addg); // l: 0
+    //mScene.addKeypoint(addg); // l: 1
 
-    film::KeypointLayerAddAnimation aa;
-    aa.loaderind = 0;
-    mScene.addKeypoint(aa);
-    aa.loaderind = 1;
-    mScene.addKeypoint(aa);
+    film::KeypointLayerAddTexture addt;
+    addt.loaderind = 0;
+    mScene.addKeypoint(addt); // l: 0
 
-    film::KeypointLayerAddText at;
-    at.loaderind = 5;
-    mScene.addKeypoint(at);
-    at.loaderind = 6;
-    mScene.addKeypoint(at);
-    at.loaderind = 7;
-    mScene.addKeypoint(at);
+    film::KeypointLayerInteractRectPos irep;
+    irep.layerindx = 0;
+    irep.rect.x = 16;
+    irep.rect.y = 16;
+    irep.rect.h = 64;
+    irep.rect.w = 64;
+    mScene.addKeypoint(irep);
 
-    film::KeypointLayerInteractPos p;
-    p.layerindx = 1;
-    p.rect.x = 200;
-    p.rect.y = 200;
-    mScene.addKeypoint(p);
+    film::KeypointLayerEnable enab;
+    enab.layerindx = 0;
+    mScene.addKeypoint(enab);
 
-    p.layerindx = 2;
-    p.rect.x = 100;
-    p.rect.y = 50;
-    mScene.addKeypoint(p);
+    film::KeypointLayerInteractPartitionPos ipap;
+    ipap.layerindx = 0;
+    ipap.rect.y = 0;
+    ipap.rect.x = 16;
+    ipap.rect.w = 16;
+    ipap.rect.h = 16;
+    ipap.set_delay_time(std::chrono::seconds(1));
+    ipap.action = ipap.Exact;
+    mScene.addKeypoint(ipap);
 
-    p.layerindx = 4;
-    p.rect.x = 0;
-    p.rect.y = 300;
-    mScene.addKeypoint(p);
+    ipap.rect.x = 0;
+    mScene.addKeypoint(ipap);
 
-    film::KeypointLayerInteractColor c;
-    c.layerindx = 4;
-    c.color = { 255, 255, 0, 255 };
-    mScene.addKeypoint(c);
+    ipap.rect.x = 16;
+    mScene.addKeypoint(ipap);
 
-    film::KeypointLayerInteractAlpha ana;
-    ana.layerindx = 0;
-    ana.alpha = 128;
-    mScene.addKeypoint(ana);
-
-    film::KeypointLayerInteractAnimationLoop anl;
-    anl.layerindx = 0;
-    mScene.addKeypoint(anl);
-    anl.layerindx = 1;
-    mScene.addKeypoint(anl);
-
-    film::KeypointLayerInteractAnimationStart ans;
-    ans.layerindx = 0;
-    mScene.addKeypoint(ans);
-    ans.layerindx = 1;
-    mScene.addKeypoint(ans);
-
-    film::KeypointLayerEnable e;
-    e.layerindx = 0;
-    mScene.addKeypoint(e);
-    e.layerindx = 1;
-    mScene.addKeypoint(e);
-    e.layerindx = 2;
-    mScene.addKeypoint(e);
-    e.layerindx = 3;
-    mScene.addKeypoint(e);
-    e.layerindx = 4;
-    mScene.addKeypoint(e);
+    ipap.rect.x = 0;
+    mScene.addKeypoint(ipap);
 
     film::Keypoint ts;
     ts.action = ts.InInputAfterAwait;
-    ts.frame_delay = 100;
     mScene.addKeypoint(ts);
 
-    film::KeypointLayerAddGroup ag;
-    mScene.addKeypoint(ag);
-
-    film::KeypointLayerGroupJoin aj;
-    aj.layerindx = 5;
-    aj.joining_layerindx = 4;
-    mScene.addKeypoint(aj);
-    aj.joining_layerindx = 3;
-    mScene.addKeypoint(aj);
-    aj.joining_layerindx = 1;
-    mScene.addKeypoint(aj);
-    aj.joining_layerindx = 2;
-    mScene.addKeypoint(aj);
-
-    p.layerindx = 5;
-    p.rect.x = 200;
-    p.rect.y = 200;
-    p.ease_func = ease_cubic_out;
-    p.delay = std::chrono::seconds(2);
-    p.need_time_delay = true;
-
-    film::KeypointLayerGroupSharedInteract gsi;
-    gsi.layerindx = 5;
-    gsi.delay = std::chrono::seconds(2);
-    gsi.need_time_delay = true;
-    gsi.action = gsi.InInputAfterAwait;
-    gsi.keypoint = std::static_pointer_cast<film::KeypointLayer>(std::make_shared<decltype(p)>(p));
-    mScene.addKeypoint(gsi);
-
-    aa.loaderind = 8;
-    mScene.addKeypoint(aa);
-
-    film::KeypointLayerAddSprite as;
-    mScene.addKeypoint(as);
-
-    film::KeypointLayerSpriteJoin sj;
-    sj.layerindx = 7;
-    sj.joining_layerindx = 0;
-    mScene.addKeypoint(sj);
-    sj.joining_layerindx = 6;
-    mScene.addKeypoint(sj);
-
-    film::KeypointLayerSpriteSwap ss;
-    ss.layerindx = 7;
-    ss.sprite_nr = 0;
-    mScene.addKeypoint(ss);
-    ss.sprite_nr = 1;
-    mScene.addKeypoint(ss);
-
-    film::KeypointLayerSpriteInteract si;
-    si.layerindx = 7;
-    si.sprite_nr = 1;
-    si.keypoint = std::static_pointer_cast<film::KeypointLayer>(std::make_shared<decltype(anl)>(anl));
-    mScene.addKeypoint(si);
-    si.frame_delay = 500;
-    si.action = si.InInputAfterAwait;
-    si.keypoint = std::static_pointer_cast<film::KeypointLayer>(std::make_shared<decltype(ans)>(ans));
-    mScene.addKeypoint(si);
-
-    mDrawer.addColorGroup(SDL_Color{ 200,200,100, 255 });
-    mDrawer.addCircle(0, SDL_FPoint{ 100, 100 }, SDL_FPoint{ 50,50 });
 
     mScene.start();
 }
@@ -235,7 +154,10 @@ void Application::OnLoop() {
     OnRender();
     SDL_RenderPresent(mMainWindow.getWindowRenderer());
 
-    mClock.FinishMeasure(50);
+    mClock.FinishMeasure();
+    if (!mClock.IsCounting()) {
+        SDL_SetWindowTitle(mMainWindow.getWindow(), (std::string("Wanichusilk: ") + std::to_string(mClock.GetFPS())).c_str());
+    }
 
     //float delta = mClock.DeltaTime().count();
     //SDL_Log("dt %zu: %.2fms (%.1f FPS)", mCount++, delta * 1000.0f, 1.0f / delta);
@@ -265,8 +187,8 @@ void Application::PullEvents() {
             mNeedQuit = true;
             break;
         case SDL_EVENT_MOUSE_BUTTON_DOWN:
-            mScene.next();
-            mNeedQuit = mScene.isEnded();
+            if (mLoader.IsLoaded()) mScene.next();
+            if (mLoader.IsLoaded()) mNeedQuit = mScene.isEnded();
             break;
         case SDL_EVENT_KEY_DOWN:
             mNeedQuit = mEvent.key.key == SDLK_ESCAPE || mNeedQuit;
@@ -279,7 +201,7 @@ void Application::PullEvents() {
 
             break;
         case SDL_EVENT_WINDOW_RESIZED:
-            SDL_RenderViewportSet(mMainWindow.getWindowRenderer());
+            if(mLoader.IsLoaded()) SDL_RenderViewportSet(mMainWindow.getWindowRenderer());
             break;
         default:
 

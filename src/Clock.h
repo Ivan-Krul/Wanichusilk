@@ -18,6 +18,11 @@ public:
     inline Duration DeltaTime() const { return mDeltaTime; }
     inline SteadyClock::time_point Now() const { return mBegin; }
 
+#ifdef CLOCK_MEASURE_FPS
+    inline short GetFPS() { return mSnapAmount; }
+    inline bool IsCounting() { return mAmount; }
+#endif
+
 #ifdef NO_CLOCK_TRACKING
     inline void DStep(Duration delta);
 #endif
@@ -25,11 +30,26 @@ private:
     Duration mDeltaTime = Duration::zero();
     SteadyClock::time_point mBegin = SteadyClock::now();
     SteadyClock::time_point mNow = SteadyClock::now();
+
+#ifdef CLOCK_MEASURE_FPS
+    Duration mSecondDuration = Duration::max();
+    short mAmount = 0;
+    short mSnapAmount = 0;
+#endif
 };
 
 inline void Clock::FinishMeasure() {
     mNow = SteadyClock::now();
     mDeltaTime = mNow - mBegin;
+#ifdef CLOCK_MEASURE_FPS
+    mAmount++;
+    mSecondDuration += mDeltaTime;
+    if (mSecondDuration.count() > 1.f) {
+        mSecondDuration = Duration::zero();
+        mSnapAmount = mAmount;
+        mAmount = 0;
+    }
+#endif
 }
 
 inline void Clock::FinishMeasure(float targetFps) {

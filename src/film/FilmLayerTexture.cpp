@@ -118,6 +118,7 @@ bool film::LayerTexture::onPushSetter(KeypointLayer* keypoint) {
     case KeypointLayer::InteractSwap:
         pushTexIndSetter(dynamic_cast<KeypointLayerInteractSwap*>(keypoint));
         break;
+    case KeypointLayer::InteractScaleMode: pTexture->setScaleMode(dynamic_cast<KeypointLayerInteractScaleMode*>(keypoint)->scale); break;
     case KeypointLayer::InteractDefault:
         mRect.set_default();
         mPart.set_default();

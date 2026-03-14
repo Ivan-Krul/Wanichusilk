@@ -73,6 +73,18 @@ void BigAnimation::setAlpha(uint8_t alpha) noexcept {
         SDL_SetTextureAlphaMod(frame.tex, mAlpha);
 }
 
+void BigAnimation::setScaleMode(SDL_ScaleMode mode) noexcept {
+    if (!mState.is_preprocessed) return;
+
+    for (auto frame : mapTextures)
+        if (!SDL_SetTextureScaleMode(frame.tex, mode)) {
+            Logger log(DEFAULT_LOG_PATH);
+            log.logWarningIn(__FUNCTION__, "BigAnimation texture wasn't setted to valid scale mode");
+            logSDLErr(__FUNCTION__);
+            return;
+        }
+}
+
 void BigAnimation::childClean() {
     for (auto frame : mapTextures)
         if(frame.tex) SDL_DestroyTexture(frame.tex);

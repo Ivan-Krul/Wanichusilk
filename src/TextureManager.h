@@ -8,7 +8,8 @@ class TextureManager : public IResourceManager, public IResourceAccesser<Texture
 public:
     struct LoadParamConvertor : public IResourceLoadParamConvertor {
         const char* path;
-        inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ path, 0 }; }
+        SDL_ScaleMode scalemode = SDL_SCALEMODE_NEAREST;
+        inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ path, (size_t)scalemode }; }
     };
 
 public:
@@ -21,6 +22,7 @@ public:
         Texture tex;
         bool ret = tex.create(load.path, mpRenderer);
         if (!ret) return -1;
+        tex.setScaleMode(SDL_SCALEMODE_NEAREST);
         return mTextureLocker.pushInLocker(std::move(tex));
     }
     

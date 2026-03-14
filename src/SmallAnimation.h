@@ -20,6 +20,7 @@ public:
     void renderRaw(const SDL_FRect* rect, const uint8_t alpha = 255, const float time_mult = 1.f) override;
 
     void setAlpha(uint8_t alpha) noexcept override;
+    void setScaleMode(SDL_ScaleMode mode) noexcept override;
 
     ~SmallAnimation() {
         if(mpTiles.tex) SDL_DestroyTexture(mpTiles.tex);

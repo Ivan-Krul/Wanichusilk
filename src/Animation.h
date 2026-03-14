@@ -44,6 +44,7 @@ public:
     inline void setOffsetY(float y) noexcept { mRect.y = y; }
     inline void setOffset(float x, float y) { mRect.x = x; mRect.y = y; }
     inline virtual void setAlpha(uint8_t alpha)     noexcept {}
+    inline virtual void setScaleMode(SDL_ScaleMode mode) noexcept {}
 
     void lockChange();
 

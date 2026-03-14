@@ -92,12 +92,15 @@ void film::Scene::onUpdate() {
 void film::Scene::onNext() {
     auto timer = *dynamic_cast<TimerStep*>(pKeypoint);
 
+    Logger log(DEFAULT_LOG_PATH);
+    log.logDebugIn(__FUNCTION__, "keypoint: [action: %d, delay: %d frames, %.3f sec]", timer.action, timer.frame_delay, timer.delay.count());
+
     const TimerStep backg_timer = mBackground.getLongestWaiting();
     const TimerStep layer_timer = mLayerist.getLongestWaiting();
 
     if (pKeypoint->type().global_type == KeypointChangeType::Layer) {
         if (mLayerist.registerLayerKeypoint(dynamic_cast<KeypointLayer*>(pKeypoint))) {
-            Logger log(DEFAULT_LOG_PATH);
+            //Logger log(DEFAULT_LOG_PATH);
             log.logWarningIn(
                 __FUNCTION__,
                 "Keypoint that was fed was in some sort incomprehendable: [id: %d, tp: %d, li: %d].",

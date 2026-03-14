@@ -89,6 +89,11 @@ void Drawer::render() const {
     }
 }
 
+void Drawer::clearGroup(size_t group) {
+    assert(group < maGroups.size());
+    maGroups[group].points.clear();
+}
+
 void Drawer::removeColorGroup(size_t group) {
     assert(group < maGroups.size());
     maGroups.erase(maGroups.begin() + group);

@@ -3,6 +3,7 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+#include "Logger.h"
 // needs rotation too
 
 class Texture {
@@ -13,13 +14,14 @@ public:
     bool   create(const char* src, SDL_Renderer* renderer);
     bool   create(SDL_Texture* tex, SDL_Renderer* renderer);
 
-    inline void setAlpha(uint8_t alpha) { if (mHasAlpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); } else { SDL_Log("Warning: the texture doesn't have alpha channel"); } }
+    inline void setAlpha(uint8_t alpha) { if (mHasAlpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); } else { Logger log(DEFAULT_LOG_PATH); log.logWarningIn(__FUNCTION__, "the texture doesn't have alpha channel."); } }
     inline void setWidth(float w) { mRectRes.w = w; }
     inline void setHeight(float h) { mRectRes.h = h; }
     inline void setResolution(float w, float h) { mRectRes.w = w; mRectRes.h = h; }
     inline void setOffsetX(float x) { mRectRes.x = x; }
     inline void setOffsetY(float y) { mRectRes.y = y; }
     inline void setOffset(float x, float y) { mRectRes.x = x; mRectRes.y = y; }
+    inline void setScaleMode(SDL_ScaleMode mode) { if(mpTexture) return; if (!SDL_SetTextureScaleMode(mpTexture, mode)) { logSDLErr(__FUNCTION__); } }
     inline void setPartialRenderingResolution(float x = 0, float y = 0, float w = 0, float h = 0) { mRectPart.x = x; mRectPart.y = y; mRectPart.w = w; mRectPart.h = h; }
     inline void setPartialRenderingUsage(bool use) { mUseRectPart = use; }
 

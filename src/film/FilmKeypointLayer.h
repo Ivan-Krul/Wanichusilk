@@ -26,6 +26,7 @@ namespace film {
             InteractAlpha,
             InteractSwap,
             InteractColor,
+            InteractScaleMode,
 
             InteractAnimationStart,
             InteractAnimationStop,
@@ -189,6 +190,12 @@ namespace film {
         SDL_Color color = { 255 };
 
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractColor }; }
+    };
+
+    struct KeypointLayerInteractScaleMode : public KeypointLayer {
+        SDL_ScaleMode scale = SDL_ScaleMode::SDL_SCALEMODE_NEAREST;
+
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractScaleMode }; }
     };
 
     struct KeypointLayerAddAnimation : public KeypointLayerAdd {

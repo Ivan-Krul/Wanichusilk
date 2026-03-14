@@ -116,6 +116,7 @@ bool film::LayerAnimation::onPushSetter(KeypointLayer* keypoint) {
         break;
     case KeypointLayer::InteractDefaultPos:     mRect.set_default(); break;
     case KeypointLayer::InteractSwap: pushAnimIndSetter(keypoint);   break;
+    case KeypointLayer::InteractScaleMode: pAnimation->setScaleMode(dynamic_cast<KeypointLayerInteractScaleMode*>(keypoint)->scale); break;
     case KeypointLayer::InteractAnimationStart: if (pAnimation->isFreezed()) pAnimation->setFreeze(false); break;
     case KeypointLayer::InteractAnimationStop:  pAnimation->setFreeze(true);    break;
     case KeypointLayer::InteractAnimationLoop:   pAnimation->setLooping(true);  break;

@@ -42,6 +42,7 @@ public:
     inline void render(size_t group) const;
     void render() const;
 
+    void clearGroup(size_t group);
     void removeColorGroup(size_t group);
 
 private:
