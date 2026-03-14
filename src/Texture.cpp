@@ -45,6 +45,13 @@ bool Texture::create(SDL_Texture* tex, SDL_Renderer* renderer) {
     return true;
 }
 
+void Texture::setScaleMode(SDL_ScaleMode mode) {
+	if(!mpTexture) return;
+	if (!SDL_SetTextureScaleMode(mpTexture, mode)) 
+		logSDLErr(__FUNCTION__);
+	
+}
+
 void Texture::renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8_t alpha) const {
     if (mHasAlpha) {
         SDL_SetTextureAlphaMod(mpTexture, alpha);

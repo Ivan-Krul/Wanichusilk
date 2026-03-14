@@ -61,13 +61,13 @@ public:
 	template<typename T, typename... Args>
 	typename std::enable_if<std::is_base_of<TBase, T>::value>::type emplace_back(Args&&... args);
 	template<typename T>
-	inline typename std::enable_if<std::is_base_of_v<TBase, T>>::type
+	inline typename std::enable_if<std::is_base_of<TBase, T>::value>::type
 		push_back(const T& value) { emplace_back<T>(value); }
 
 	template<typename T, typename... Args>
 	typename std::enable_if<std::is_base_of<TBase, T>::value>::type emplace_front(Args&&... args);
 	template<typename T>
-	inline typename std::enable_if<std::is_base_of_v<TBase, T>>::type
+	inline typename std::enable_if<std::is_base_of<TBase, T>::value>::type
 		push_front(const T& value) { emplace_front<T>(value); }
 
 	template<typename T>

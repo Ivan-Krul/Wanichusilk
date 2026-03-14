@@ -22,7 +22,7 @@ public:
         Texture tex;
         bool ret = tex.create(load.path, mpRenderer);
         if (!ret) return -1;
-        tex.setScaleMode(SDL_SCALEMODE_NEAREST);
+        tex.setScaleMode(*reinterpret_cast<SDL_ScaleMode*>(&load.extra));
         return mTextureLocker.pushInLocker(std::move(tex));
     }
     

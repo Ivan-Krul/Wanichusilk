@@ -76,6 +76,10 @@
 
 #define ENABLE_DEBUG_LOG
 
+#ifndef USE_THIRD_PARTY_MATH
+#include <math.h>
+#endif
+
 //#define USE_THIRD_PARTY_MATH
 //#define NO_CLOCK_TRACKING
 #define CLOCK_MEASURE_FPS

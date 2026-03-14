@@ -54,7 +54,7 @@ void Drawer::addCircle(size_t group, const SDL_FPoint& c, const SDL_FPoint& r) {
     ri &= 0x7fffffff;
     rad.y = *reinterpret_cast<float*>(&ri);
 #ifndef USE_THIRD_PARTY_MATH
-    const auto len = sqrtf(rad.x * rad.x + rad.y * rad.y);
+    const float len = sqrt(rad.x * rad.x + rad.y * rad.y);
     for (size_t i = 0; i < 16; i++) {
         float a = float(i) / 8.f * MATH_PI;
         maGroups[group].points.push_back(SDL_FPoint{ c.x + cosf(a) * len, c.y + sinf(a) * len });
@@ -73,7 +73,7 @@ inline void Drawer::render(size_t group) const {
     case DrawType::Point:
         SDL_RenderPoints(pRenderer, groupObj.points.data(), groupObj.points.size());
         break;
-    case DrawType::Circle: _FALLTHROUGH
+    case DrawType::Circle: _FALLTHROUGH;
     case DrawType::Line:
         SDL_RenderLines(pRenderer, groupObj.points.data(), groupObj.points.size());
         break;

@@ -20,7 +20,7 @@ bool film::Layerist::registerLayerKeypoint(KeypointLayer* keypoint) {
     case KeypointLayer::Enable: maActiveLayerIndexes.push_back(maLayers.begin() + li); break;
     case KeypointLayer::Remove:
         maLayers.erase(maLayers.begin() + li);
-        _FALLTHROUGH
+        _FALLTHROUGH;
     case KeypointLayer::Disable:
     {
         auto iter = maActiveLayerIndexes.begin() + li;

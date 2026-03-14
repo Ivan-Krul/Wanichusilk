@@ -10,7 +10,7 @@ if (POLICY CMP0141)
 endif()
 
 # Set a cache directory
-set(CMAKE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build")
+#set(CMAKE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build")
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -42,7 +42,9 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 # Include modules
 include(IncludeModules)
 
-# Move Resources
+
+
+# Copy Resources
 add_custom_target(CopyResources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res
 )

@@ -21,9 +21,9 @@ public:
     inline void setOffsetX(float x) { mRectRes.x = x; }
     inline void setOffsetY(float y) { mRectRes.y = y; }
     inline void setOffset(float x, float y) { mRectRes.x = x; mRectRes.y = y; }
-    inline void setScaleMode(SDL_ScaleMode mode) { if(mpTexture) return; if (!SDL_SetTextureScaleMode(mpTexture, mode)) { logSDLErr(__FUNCTION__); } }
     inline void setPartialRenderingResolution(float x = 0, float y = 0, float w = 0, float h = 0) { mRectPart.x = x; mRectPart.y = y; mRectPart.w = w; mRectPart.h = h; }
     inline void setPartialRenderingUsage(bool use) { mUseRectPart = use; }
+	       void setScaleMode(SDL_ScaleMode mode);
 
     inline SDL_Texture*  getTexture()        noexcept { return mpTexture; }
     inline SDL_FRect     getRectPart() const noexcept { return mRectPart; }

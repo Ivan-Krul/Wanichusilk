@@ -1,6 +1,8 @@
 #include "FilmLayerSprite.h"
 #include "../Logger.h"
 
+#include <algorithm>
+
 bool film::LayerSprite::registerKeypoint(PolyPointerList<LayerBase>& layers, std::vector<PolyPointerList<LayerBase>::Iterator>& ali, LayerIndex li, KeypointLayer* keypoint) {
     switch (keypoint->type().specific_type) {
     case KeypointLayer::SpriteJoin: {

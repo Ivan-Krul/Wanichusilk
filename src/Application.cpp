@@ -39,8 +39,6 @@ void Application::OnInit() {
     //AnimationManager::LoadParamConvertor animload;
     //animload.path = "./res/cat-runner-2049-cat-runner.gif";
     //mLoader.PushResourcePathInQueue(&animload, &mAnimMgr);
-    //animload.path = "./res/received_1095637438226501.gif";
-    //mLoader.PushResourcePathInQueue(&animload, &mAnimMgr);
     //FontManager::LoadParamConvertor fontload;
     //fontload.path = "./res/unifont-17.0.03.otf";
     //fontload.size = 32.f;
@@ -49,6 +47,8 @@ void Application::OnInit() {
     //textload.font_indx = 0;
     //textload.text = u8"Bunnies!!!";
     //mLoader.PushResourcePathInQueue(&textload, &mTextMgr);
+    //animload.path = "./res/received_1095637438226501.gif";
+    //mLoader.PushResourcePathInQueue(&animload, &mAnimMgr);
  
     SCOPED_STOPWATCH("load");
  
@@ -89,6 +89,8 @@ void Application::OnInit() {
         return;
     }
  
+	//SDL_SetTextureScaleMode(mTexMgr.GetLockerResource(0)->getTexture(), SDL_SCALEMODE_NEAREST);
+ 
     ScaleOption so;
     so.p_wind = mMainWindow.getWindow();
  
@@ -112,18 +114,26 @@ void Application::OnInit() {
     irep.rect.w = 64;
     mScene.addKeypoint(irep);
 
-    film::KeypointLayerEnable enab;
-    enab.layerindx = 0;
-    mScene.addKeypoint(enab);
-
     film::KeypointLayerInteractPartitionPos ipap;
     ipap.layerindx = 0;
     ipap.rect.y = 0;
     ipap.rect.x = 16;
     ipap.rect.w = 16;
     ipap.rect.h = 16;
+    mScene.addKeypoint(ipap);
+
+    film::KeypointLayerEnable enab;
+    enab.layerindx = 0;
+    mScene.addKeypoint(enab);
+
     ipap.set_delay_time(std::chrono::seconds(1));
     ipap.action = ipap.Exact;
+    mScene.addKeypoint(ipap);
+
+    ipap.rect.x = 0;
+    mScene.addKeypoint(ipap);
+
+    ipap.rect.x = 16;
     mScene.addKeypoint(ipap);
 
     ipap.rect.x = 0;
@@ -138,7 +148,6 @@ void Application::OnInit() {
     film::Keypoint ts;
     ts.action = ts.InInputAfterAwait;
     mScene.addKeypoint(ts);
-
 
     mScene.start();
 }
