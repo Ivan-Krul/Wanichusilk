@@ -1,16 +1,13 @@
 #include "Texture.h"
 #include "Logger.h"
 
-Texture::Texture(Texture&& tex) noexcept {
-    mpTexture = tex.mpTexture;
-
-    mRectPart = tex.mRectPart;
-    mRectRes = tex.mRectRes;
-    mpRendererOrigin = tex.mpRendererOrigin;
-    mAlpha = tex.mAlpha;
-    mUseRectPart = tex.mUseRectPart;
-    mHasAlpha = tex.mHasAlpha;
-
+Texture::Texture(Texture&& tex) noexcept : 
+							mpTexture(tex.mpTexture),
+							mRectRes(tex.mRectRes),
+							mRectPart(tex.mRectPart),
+							mpRendererOrigin(tex.mpRendererOrigin),
+							mState(tex.mState)
+							{
     tex.mpTexture = nullptr;
 }
 
@@ -32,9 +29,9 @@ bool Texture::create(const char* src, SDL_Renderer* renderer) {
     return true;
 }
 
-bool Texture::create(SDL_Texture* tex, SDL_Renderer* renderer) {
+bool Texture::create(SDL_Texture* tex) {
     if (mpTexture || !tex) return false;
-    mpRendererOrigin = renderer;
+    mpRendererOrigin = SDL_GetRendererFromTexture(tex);
 
     mpTexture = tex;
     mRectRes.w = mpTexture->w;
@@ -43,6 +40,19 @@ bool Texture::create(SDL_Texture* tex, SDL_Renderer* renderer) {
     mHasAlpha = SDL_ISPIXELFORMAT_ALPHA(mpTexture->format);
 
     return true;
+}
+
+void Texture::setColorAlpha(SDL_Color color) {
+	if(!mpTexture) return;
+	mState.color = color;
+	SDL_SetTextureColorMod(color.r, color.g, color.b);
+	
+	if (mState.has_alpha) {
+		SDL_SetTextureAlphaMod(mpTexture, color.a);
+	} else {
+		Logger log(DEFAULT_LOG_PATH);
+		log.logWarningIn(__FUNCTION__, "the texture doesn't have alpha channel.");
+	}
 }
 
 void Texture::setScaleMode(SDL_ScaleMode mode) {

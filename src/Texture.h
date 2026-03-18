@@ -5,6 +5,7 @@
 #include <SDL3_image/SDL_image.h>
 #include "Logger.h"
 // needs rotation too
+// and texture memory valve
 
 class Texture {
 public:
@@ -12,9 +13,9 @@ public:
     Texture(Texture&& tex) noexcept;
     inline Texture(const char* src, SDL_Renderer* renderer) { create(src, renderer); }
     bool   create(const char* src, SDL_Renderer* renderer);
-    bool   create(SDL_Texture* tex, SDL_Renderer* renderer);
+    bool   create(SDL_Texture* tex);
 
-    inline void setAlpha(uint8_t alpha) { if (mHasAlpha) { mAlpha = alpha; SDL_SetTextureAlphaMod(mpTexture, mAlpha); } else { Logger log(DEFAULT_LOG_PATH); log.logWarningIn(__FUNCTION__, "the texture doesn't have alpha channel."); } }
+	       void setColorAlpha(SDL_Color color);
     inline void setWidth(float w) { mRectRes.w = w; }
     inline void setHeight(float h) { mRectRes.h = h; }
     inline void setResolution(float w, float h) { mRectRes.w = w; mRectRes.h = h; }
@@ -28,7 +29,7 @@ public:
     inline SDL_Texture*  getTexture()        noexcept { return mpTexture; }
     inline SDL_FRect     getRectPart() const noexcept { return mRectPart; }
     inline SDL_FRect     getRectRes()  const noexcept { return mRectRes;  }
-    inline bool          hasAlpha()    const noexcept { return mHasAlpha; }
+    inline bool          hasAlpha()    const noexcept { return mState.has_alpha; }
 
     void renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8_t alpha = 255) const;
     void render() const;
@@ -43,8 +44,11 @@ protected:
 
     SDL_Renderer* mpRendererOrigin = NULL;
 
-    uint8_t mAlpha = 255;
-    bool mUseRectPart = false;
-    bool mHasAlpha = true;
-
+	struct {
+		SDL_Color color; // rgba
+		
+		uint8_t blendmode : 5;
+		uint8_t use_rectpart : 1;
+		uint8_t has_alpha : 1;
+	} mState = { SDL_Color{255, 255, 255, 255}, SDL_BLENDMODE_NONE, false, true };
 };
