@@ -17,7 +17,7 @@ namespace film {
 class film::Scene {
 public:
     bool create(ScaleOption scr_res, Loader* loader);
-    void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); mBackground.setClock(clock); }
+    void setClock(Clock* clock) { mpClock = clock; mLayerist.setClock(clock); }
 
     template<typename T>
     void addKeypoint(T&& keypoint);
@@ -34,7 +34,7 @@ public:
 
     void render();
 
-    inline bool isWaiting() const { return mLayerist.isWaiting() && mBackground.isWaiting(); }
+    inline bool isWaiting() const { return mLayerist.isWaiting(); }
     inline bool canTriggerNext() const;
     inline bool isGoing() const { return mKeypointIndex != -1 && mKeypointIndex < maKeypoints.size(); }
     inline bool isEnded() const { return mKeypointIndex >= maKeypoints.size(); }
@@ -51,7 +51,7 @@ private:
     Keypoint* pKeypoint;
 
     Layerist mLayerist;
-    Background mBackground;
+    //Background mBackground; // deprecated
     
     ScaleOption mScaleOption;
 

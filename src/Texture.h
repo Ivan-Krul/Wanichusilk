@@ -23,7 +23,7 @@ public:
     inline void setOffsetY(float y) { mRectRes.y = y; }
     inline void setOffset(float x, float y) { mRectRes.x = x; mRectRes.y = y; }
     inline void setPartialRenderingResolution(float x = 0, float y = 0, float w = 0, float h = 0) { mRectPart.x = x; mRectPart.y = y; mRectPart.w = w; mRectPart.h = h; }
-    inline void setPartialRenderingUsage(bool use) { mUseRectPart = use; }
+    inline void setPartialRenderingUsage(bool use) { mState.use_rectpart = use; }
 	       void setScaleMode(SDL_ScaleMode mode);
 
     inline SDL_Texture*  getTexture()        noexcept { return mpTexture; }

@@ -33,8 +33,8 @@ void film::Background::update() {
     if (pKeypoint->type().specific_type == KeypointBackground::TransparentTextureSwap) {
         const auto kp = dynamic_cast<KeypointBgTransparentTexSwap*>(pKeypoint);
 
-        if (kp->from != -1) pTexMgr->GetLockerResource(kp->from)->setAlpha(SDL_clamp((1.f - mEaseTimer) * 255, 0, 255));
-        if (kp->to != -1) pTexMgr->GetLockerResource(kp->to)->setAlpha(SDL_clamp(mEaseTimer * 255, 0, 255));
+        //if (kp->from != -1) pTexMgr->GetLockerResource(kp->from)->setAlpha(SDL_clamp((1.f - mEaseTimer) * 255, 0, 255));
+        //if (kp->to != -1) pTexMgr->GetLockerResource(kp->to)->setAlpha(SDL_clamp(mEaseTimer * 255, 0, 255));
     }
 }
 

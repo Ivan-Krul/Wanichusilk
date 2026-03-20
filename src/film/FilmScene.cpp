@@ -8,8 +8,8 @@ bool film::Scene::create(ScaleOption scr_res, Loader* loader) {
         return true;
     }
     mLayerist.setLoader(loader);
-    mBackground.setLoader(loader);
-    mBackground.setScaleOption(&mScaleOption);
+    //mBackground.setLoader(loader);
+    //mBackground.setScaleOption(&mScaleOption);
 
     return false;
 }
@@ -42,7 +42,7 @@ void film::Scene::finish() {
 void film::Scene::render() {
     if (!isGoing()) return;
 
-    mBackground.render();
+    //mBackground.render();
     mLayerist.render();
 }
 
@@ -70,7 +70,7 @@ inline void film::Scene::implicitNext() {
 }
 
 void film::Scene::onUpdate() {
-    mBackground.update();
+    //mBackground.update();
     mLayerist.update();
 
     mBackupTimer.decrement_time_frame(mpClock->DeltaTime());
@@ -95,7 +95,7 @@ void film::Scene::onNext() {
     Logger log(DEFAULT_LOG_PATH);
     log.logDebugIn(__FUNCTION__, "keypoint: [action: %d, delay: %d frames, %.3f sec]", timer.action, timer.frame_delay, timer.delay.count());
 
-    const TimerStep backg_timer = mBackground.getLongestWaiting();
+    //const TimerStep backg_timer = mBackground.getLongestWaiting();
     const TimerStep layer_timer = mLayerist.getLongestWaiting();
 
     if (pKeypoint->type().global_type == KeypointChangeType::Layer) {
@@ -111,7 +111,8 @@ void film::Scene::onNext() {
         }
     }
     if (pKeypoint->type().global_type == KeypointChangeType::Background) {
-        mBackground.registerBackgroundKeypoint(dynamic_cast<KeypointBackground*>(pKeypoint));
+		log.logErrorIn(__FUNCTION__, "The keypoint set \"FilmBackground\" was temporarely removed from support");
+        //mBackground.registerBackgroundKeypoint(dynamic_cast<KeypointBackground*>(pKeypoint));
     }
 
     if (timer.is_zero() && timer.action == timer.Instant) {
@@ -123,7 +124,7 @@ void film::Scene::onNext() {
     case timer.First:
     case timer.InInputOrFirst:
     case timer.InInputAfterFirst:
-        mBackupTimer = clockfunc::min(backg_timer, layer_timer);
+        mBackupTimer = layer_timer;//clockfunc::min(backg_timer, layer_timer);
         if (!timer.is_zero()) { // precise copying
             mBackupTimer.frame_delay = std::min<>(mBackupTimer.frame_delay, timer.frame_delay);
             if (timer.need_time_delay) {
@@ -136,11 +137,11 @@ void film::Scene::onNext() {
     case timer.InInputOrAwait:
     case timer.InInputAfterAwait:
         if (timer.is_zero()) {
-            mBackupTimer = clockfunc::max(backg_timer, layer_timer);
+            mBackupTimer = layer_timer;//clockfunc::max(backg_timer, layer_timer);
         }
         else { // whatever
-            mBackupTimer.frame_delay = std::max<>(std::max<>(backg_timer.frame_delay, layer_timer.frame_delay), timer.frame_delay);
-            mBackupTimer.delay = std::max<>(std::max<>(backg_timer.delay, layer_timer.delay), timer.delay);
+            mBackupTimer.frame_delay = std::max<>(layer_timer.frame_delay, timer.frame_delay);
+            mBackupTimer.delay = std::max<>(layer_timer.delay, timer.delay);
         }
         break;
     case timer.Exact:

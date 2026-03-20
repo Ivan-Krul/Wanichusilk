@@ -24,7 +24,8 @@ bool Texture::create(const char* src, SDL_Renderer* renderer) {
     mRectRes.w = mpTexture->w;
     mRectRes.h = mpTexture->h;
 
-    mHasAlpha = SDL_ISPIXELFORMAT_ALPHA(mpTexture->format);
+	mState.color = {255,255,255,255};
+    mState.has_alpha = SDL_ISPIXELFORMAT_ALPHA(mpTexture->format);
 
     return true;
 }
@@ -37,7 +38,8 @@ bool Texture::create(SDL_Texture* tex) {
     mRectRes.w = mpTexture->w;
     mRectRes.h = mpTexture->h;
 
-    mHasAlpha = SDL_ISPIXELFORMAT_ALPHA(mpTexture->format);
+	mState.color = {255,255,255,255};
+    mState.has_alpha = SDL_ISPIXELFORMAT_ALPHA(mpTexture->format);
 
     return true;
 }
@@ -45,7 +47,7 @@ bool Texture::create(SDL_Texture* tex) {
 void Texture::setColorAlpha(SDL_Color color) {
 	if(!mpTexture) return;
 	mState.color = color;
-	SDL_SetTextureColorMod(color.r, color.g, color.b);
+	SDL_SetTextureColorMod(mpTexture, color.r, color.g, color.b);
 	
 	if (mState.has_alpha) {
 		SDL_SetTextureAlphaMod(mpTexture, color.a);
@@ -63,10 +65,10 @@ void Texture::setScaleMode(SDL_ScaleMode mode) {
 }
 
 void Texture::renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8_t alpha) const {
-    if (mHasAlpha) {
+    if (mState.has_alpha) {
         SDL_SetTextureAlphaMod(mpTexture, alpha);
         SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
-        SDL_SetTextureAlphaMod(mpTexture, mAlpha);
+        SDL_SetTextureAlphaMod(mpTexture, mState.color.a);
     }
     else 
         SDL_RenderTexture(mpRendererOrigin, mpTexture, src, rect);
@@ -74,7 +76,7 @@ void Texture::renderRaw(const SDL_FRect* src, const SDL_FRect* rect, const uint8
 
 void Texture::render() const {
     if (mpTexture)
-        SDL_RenderTexture(mpRendererOrigin, mpTexture, mUseRectPart ? &mRectPart : NULL, &mRectRes);
+        SDL_RenderTexture(mpRendererOrigin, mpTexture, mState.use_rectpart ? &mRectPart : NULL, &mRectRes);
 }
 
 void Texture::clear() {

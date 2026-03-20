@@ -110,8 +110,8 @@ void Application::OnInit() {
     irep.layerindx = 0;
     irep.rect.x = 16;
     irep.rect.y = 16;
-    irep.rect.h = 64;
-    irep.rect.w = 64;
+    irep.rect.h = 128;
+    irep.rect.w = 128;
     mScene.addKeypoint(irep);
 
     film::KeypointLayerInteractPartitionPos ipap;
