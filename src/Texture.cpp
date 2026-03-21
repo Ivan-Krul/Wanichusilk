@@ -44,6 +44,12 @@ bool Texture::create(SDL_Texture* tex) {
     return true;
 }
 
+Texture Texture::clone() const {
+	if(!mpTexture) return Texture();
+	
+	
+}
+
 void Texture::setColorAlpha(SDL_Color color) {
 	if(!mpTexture) return;
 	mState.color = color;

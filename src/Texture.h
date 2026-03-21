@@ -14,6 +14,7 @@ public:
     inline Texture(const char* src, SDL_Renderer* renderer) { create(src, renderer); }
     bool   create(const char* src, SDL_Renderer* renderer);
     bool   create(SDL_Texture* tex);
+	Texture clone() const;
 
 	       void setColorAlpha(SDL_Color color);
     inline void setWidth(float w) { mRectRes.w = w; }
@@ -46,8 +47,8 @@ protected:
 
 	struct {
 		SDL_Color color; // rgba
-		
-		uint8_t blendmode : 5;
+		uint8_t blendmode;
+		uint8_t access : 2;
 		uint8_t use_rectpart : 1;
 		uint8_t has_alpha : 1;
 	} mState = { SDL_Color{255, 255, 255, 255}, SDL_BLENDMODE_NONE, false, true };

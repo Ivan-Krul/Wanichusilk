@@ -43,6 +43,7 @@ namespace film {
             InteractDefault,
             Enable,
             Disable,
+			Clone,
             Remove
         };
         LayerIndex layerindx = -1;
@@ -265,16 +266,12 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, Disable }; }
     };
 
+	struct KeypointLayerClone : public KeypointLayer {
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, Clone }; }
+    };
+
     struct KeypointLayerRemove : public KeypointLayer {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, Remove }; }
-    };
-
-    struct KeypointOccupyInput : public Keypoint {
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::None, 1 }; }
-    };
-
-    struct KeypointReleaseInput : public Keypoint {
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::None, 2 }; }
     };
 
     inline KeypointLayerInteractSwap& KeypointLayerInteractSwap::operator=(const KeypointLayerInteractSwap& other) {

@@ -11,6 +11,11 @@ public:
         SDL_ScaleMode scalemode = SDL_SCALEMODE_NEAREST;
         inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ path, (size_t)scalemode }; }
     };
+	
+	struct CloneParamConvertor : public IResourceLoadParamConvertor {
+        LockerIndex manager_index;
+        inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ nullptr, (size_t)manager_index }; }
+    };
 
 public:
     inline void SetRenderer(SDL_Renderer* renderer) noexcept override { mpRenderer = renderer; }
@@ -20,10 +25,15 @@ public:
     inline Texture* GetLockerResource(LockerIndex index) override { assert(index != -1);  return &mTextureLocker[index]; }
     LockerIndex RequestResourceLoad(ResourceLoadParams load) override {
         Texture tex;
-        bool ret = tex.create(load.path, mpRenderer);
-        if (!ret) return -1;
-        tex.setScaleMode(*reinterpret_cast<SDL_ScaleMode*>(&load.extra));
-        return mTextureLocker.pushInLocker(std::move(tex));
+		if(load.path) {
+			bool ret = tex.create(load.path, mpRenderer);
+			if (!ret) return -1;
+			tex.setScaleMode(*reinterpret_cast<SDL_ScaleMode*>(&load.extra));
+			return mTextureLocker.pushInLocker(std::move(tex));
+		}
+		else {
+			// cloning
+		}
     }
     
     inline void RequestResourceClean(LockerIndex index) override {
