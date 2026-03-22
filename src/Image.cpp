@@ -1,17 +1,25 @@
-#include "Texture.h"
+#include "Image.h"
 #include "Logger.h"
 
-Texture::Texture(Texture&& tex) noexcept : 
-							mpTexture(tex.mpTexture),
-							mRectRes(tex.mRectRes),
-							mRectPart(tex.mRectPart),
-							mpRendererOrigin(tex.mpRendererOrigin),
-							mState(tex.mState)
+Image::Image(Image&& img) noexcept : 
+							mImage(img.mpTexture),
+							mRectRes(img.mRectRes),
+							mRectPart(img.mRectPart),
+							mState(img.mState)
 							{
-    tex.mpTexture = nullptr;
+    img.mpTexture = nullptr;
 }
 
-bool Texture::create(const char* src, SDL_Renderer* renderer) {
+bool   Image::createEmpty(int w, int h) {
+	mImage.size.w = w;
+	mImage.size.h = h;
+	return false;
+}
+
+bool   createFillin(int w, int h);
+bool   createLoad(const char* src);
+
+bool create(const char* src, SDL_Renderer* renderer) {
     if (mpTexture) return false;
     mpRendererOrigin = renderer;
 
