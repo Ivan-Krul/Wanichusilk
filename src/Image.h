@@ -13,41 +13,51 @@ public:
 	bool   createFillin(int w, int h);
     bool   createLoad(const char* src);
 	
-    bool   preprocess(SDL_Renderer* renderer, SDL_TextureAccessMode access);
+    bool   preprocess(SDL_Renderer* renderer, SDL_TextureAccess access = SDL_TEXTUREACCESS_STATIC);
 	
-	       void setColorAlpha(SDL_Color color);
-    inline void setWidth(float w) { mRectRes.w = w; }
-    inline void setHeight(float h) { mRectRes.h = h; }
-    inline void setResolution(float w, float h) { mRectRes.w = w; mRectRes.h = h; }
-    inline void setOffsetX(float x) { mRectRes.x = x; }
-    inline void setOffsetY(float y) { mRectRes.y = y; }
-    inline void setOffset(float x, float y) { mRectRes.x = x; mRectRes.y = y; }
-    inline void setPartialRenderingResolution(float x = 0, float y = 0, float w = 0, float h = 0) { mRectPart.x = x; mRectPart.y = y; mRectPart.w = w; mRectPart.h = h; }
-    inline void setPartialRenderingUsage(bool use) { mState.use_rectpart = use; }
-	       void setScaleMode(SDL_ScaleMode mode);
+	void          setColorAlpha(SDL_Color color);
+	SDL_Color     getColorAlpha() const { return mState.color; }
+		   
+    void          setScaleMode(SDL_ScaleMode mode);
+    SDL_ScaleMode getScaleMode() const { return (mState.scale_mode == 0b11) ? SDL_SCALEMODE_INVALID : mState.scale_mode; }
 
-    inline SDL_FRect     getRectPart() const noexcept { return mRectPart; }
-    inline SDL_FRect     getRectRes()  const noexcept { return mRectRes;  }
+    void          setBlendMode(SDL_BlendMode mode);
+    SDL_BlendMode getBlendMode() const { return (mState.blendmode == 0b11111111) ? SDL_BLENDMODE_INVALID : mState.blendmode; }
+
+	inline void      turnOffSnap() { mState.use_rectsnap = false; }
+	inline void      setRectSnap(SDL_FRect snap) { mState.use_rectsnap = true; mRectSnap = snap; }
+    inline SDL_FRect getRectSnap() const { return mRectSnap; }
 	
-    void render() const;
+	inline void      setRectViewOffset(float x, float y) { mRectView.x = x; mRectView.y = y; }
+	inline void      setRectView(SDL_FRect view) { mRectView = view; }
+    inline SDL_FRect getRectView() const { return mRectView; }
+	
+	// function name for tracking in case of undefined behaviours
+	SDL_Surface* getSurface(const char* from_func);
+	SDL_Texture* getTexture(const char* from_func);
+	
+    void render() const; // render from texture buffer ONLY, let outer classes use surface how they intend
 
     void   clear();
     ~Texture();
 protected:
+	static const SDL_PixelFormat cPixelFormat = SDL_PIXELFORMAT_RGBA32;
+
 	union PictureMap {
         SDL_Surface* surf = nullptr;
         SDL_Texture* tex;
 		struct { int32_t w, int32_t h } size;
     } mImage;
 
-    SDL_FRect     mRectPart = { 0.f };
-    SDL_FRect     mRectRes = { 0.f };
+    SDL_FRect     mRectSnap = { 0.f };
+    SDL_FRect     mRectView = { 0.f };
 
 	struct {
 		SDL_Color color; // rgba
 		uint8_t blendmode;
 		uint8_t is_empty : 1;
 		uint8_t is_preprocessed : 1
-		uint8_t use_rectpart : 1;
-	} mState = { SDL_Color{255, 255, 255, 255}, SDL_BLENDMODE_NONE, true, false, false };
+		uint8_t use_rectsnap : 1;
+		uint8_t scale_mode : 2;
+	} mState = { SDL_Color{255, 255, 255, 255}, SDL_BLENDMODE_NONE, true, false, false, SDL_SCALEMODE_NEAREST };
 };
