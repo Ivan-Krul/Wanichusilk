@@ -1,7 +1,6 @@
 #pragma once
 #include "FilmLayerRect.h"
 #include "FilmKeypointLayer.h"
-#include "../TextureManager.h"
 #include "../PolyPointerList.h"
 
 #include <vector>

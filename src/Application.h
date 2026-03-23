@@ -2,7 +2,7 @@
 #include <SDL3/SDL.h>
 
 #include "Window.h"
-#include "TextureManager.h"
+#include "ImageManager.h"
 #include "AnimationManager.h"
 #include "FontManager.h"
 #include "TextManager.h"
@@ -32,7 +32,7 @@ private:
     bool mIsCritical = false;
     bool mIsFullscreen = false;
 
-    TextureManager mTexMgr;
+    ImageManager mImagMgr;
     AnimationManager mAnimMgr;
     FontManager mFontMgr;
     TextManager mTextMgr;

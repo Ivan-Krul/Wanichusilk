@@ -24,7 +24,7 @@ void Application::OnInit() {
 
     OpenWindow(); // needs to add SDL_GetRenderSafeArea for future android support
 
-    mTexMgr.SetRenderer(mMainWindow.getWindowRenderer());
+    mImagMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mAnimMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mTextMgr.SetRenderer(mMainWindow.getWindowRenderer());
     mDrawer.setRenderer(mMainWindow.getWindowRenderer());
@@ -32,10 +32,10 @@ void Application::OnInit() {
     mAnimMgr.SetClock(&mClock);
 
     // resource loading here
-    TextureManager::LoadParamConvertor txtrload;
-    txtrload.path = "./res/character.png";
-    txtrload.scalemode = SDL_SCALEMODE_NEAREST;
-    mLoader.PushResourcePathInQueue(&txtrload, &mTexMgr);
+    ImageManager::LoadParamConvertor imagload;
+    imagload.path = "./res/character.png";
+    imagload.scalemode = SDL_SCALEMODE_NEAREST;
+    mLoader.PushResourcePathInQueue(&imagload, &mImagMgr);
     //AnimationManager::LoadParamConvertor animload;
     //animload.path = "./res/cat-runner-2049-cat-runner.gif";
     //mLoader.PushResourcePathInQueue(&animload, &mAnimMgr);
@@ -75,7 +75,7 @@ void Application::OnInit() {
 
     if (mLoader.IsFailed()) {
         Logger log(DEFAULT_LOG_PATH);
-        log.logError("Resource wasn't loaded properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
+        log.logCritical("Resource wasn't loaded properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
         mNeedQuit = true;
         mIsCritical = true;
         return;
@@ -83,7 +83,7 @@ void Application::OnInit() {
  
     if (mLoader.Preprocess()) {
         Logger log(DEFAULT_LOG_PATH);
-        log.logError("Resource wasn't preprocessed properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
+        log.logCritical("Resource wasn't preprocessed properly: %s.", mLoader.GetResourcePath(mLoader.GetFailed()));
         mNeedQuit = true;
         mIsCritical = true;
         return;
@@ -102,9 +102,9 @@ void Application::OnInit() {
     //mScene.addKeypoint(addg); // l: 0
     //mScene.addKeypoint(addg); // l: 1
 
-    film::KeypointLayerAddTexture addt;
-    addt.loaderind = 0;
-    mScene.addKeypoint(addt); // l: 0
+    film::KeypointLayerAddImage addi;
+    addi.loaderind = 0;
+    mScene.addKeypoint(addi); // l: 0
 
     film::KeypointLayerInteractRectPos irep;
     irep.layerindx = 0;

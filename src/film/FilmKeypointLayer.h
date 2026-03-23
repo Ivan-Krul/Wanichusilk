@@ -59,7 +59,7 @@ namespace film {
             None = 0,
             Group,
             Sprite,
-            Texture,
+            Image,
             Animation,
             Text
         };
@@ -125,8 +125,8 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, SpriteDetach }; }
     };
 
-    struct KeypointLayerAddTexture : public KeypointLayerAdd {
-        inline virtual LayerBuildType layertype() const { return Texture; }
+    struct KeypointLayerAddImage : public KeypointLayerAdd {
+        inline virtual LayerBuildType layertype() const { return Image; }
     };
 
     struct KeypointLayerInteractRect : public KeypointLayerEase {
@@ -188,7 +188,7 @@ namespace film {
     };
     
     struct KeypointLayerInteractColor : public KeypointLayerEase {
-        SDL_Color color = { 255 };
+        SDL_Color color = { 255, 255, 255, 255 };
 
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractColor }; }
     };

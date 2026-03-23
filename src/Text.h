@@ -2,7 +2,6 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "FontManager.h"
-#include "Texture.h"
 
 #include <limits>
 

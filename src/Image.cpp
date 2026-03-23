@@ -3,11 +3,12 @@
 
 Image::Image(Image&& img) noexcept {
 	mImage = img.mImage;
-	mRectRes = img.mRectRes;
-	mRectPart = img.mRectPart;
+	mRectView = img.mRectView;
+	mRectSnap = img.mRectSnap;
 	mState = img.mState;
 	
-    img.mpTexture = nullptr;
+    img.mImage.tex = nullptr;
+	img.mState.is_empty = true;
 }
 
 bool Image::createEmpty(int w, int h) {
@@ -48,7 +49,7 @@ bool Image::createLoad(const char* src) {
         return true;
 	}
 	
-    SDL_Surface* surf = IMG_Load(mpRendererOrigin, src);
+    SDL_Surface* surf = IMG_Load(src);
     if (!surf) {
 		logSDLErr(__FUNCTION__);
         return true;
@@ -67,6 +68,13 @@ bool Image::createLoad(const char* src) {
 
 bool Image::preprocess(SDL_Renderer* renderer, SDL_TextureAccess access) {
 	if(mState.is_empty) {
+		if(mImage.size.w == 0 && mImage.size.w == mImage.size.h) {
+			Logger log(DEFAULT_LOG_PATH);
+			log.logErrorIn(__FUNCTION__, "Image for preprocessing is size 0");
+			return true;
+		}
+		mRectView.w = mImage.size.w;
+		mRectView.h = mImage.size.h;
 		SDL_Texture* tex = SDL_CreateTexture(renderer, cPixelFormat, access, mImage.size.w, mImage.size.h);
 		if(!tex) {
 			logSDLErr(__FUNCTION__);
@@ -75,6 +83,8 @@ bool Image::preprocess(SDL_Renderer* renderer, SDL_TextureAccess access) {
 		mImage.tex = tex;
 	}
 	else {
+		mRectView.w = mImage.surf->w;
+		mRectView.h = mImage.surf->h;
 		SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, mImage.surf);
 		if(!tex) {
 			logSDLErr(__FUNCTION__);
@@ -114,7 +124,7 @@ void Image::setScaleMode(SDL_ScaleMode mode) {
 		Logger log(DEFAULT_LOG_PATH);
 		log.logWarningIn(__FUNCTION__, "Image got scale mode but did not apply.");
 	}
-	if (!SDL_SetTextureScaleMode(mpTexture, mode)) 
+	if (!SDL_SetTextureScaleMode(mImage.tex, mode)) 
 		logSDLErr(__FUNCTION__);
 }
 
@@ -133,7 +143,7 @@ void Image::setBlendMode(SDL_BlendMode mode) {
 
 SDL_Surface* Image::getSurface(const char* from_func) {
 	Logger log(DEFAULT_LOG_PATH);
-	log.logInfoIn(__FUNCTION__, "Possibly unsafe call: %s.", from);
+	log.logInfoIn(__FUNCTION__, "Possibly unsafe call: %s.", from_func);
 	if(mState.is_empty) {
 		log.logError("Image is empty.");
 		return nullptr;
@@ -148,7 +158,7 @@ SDL_Surface* Image::getSurface(const char* from_func) {
 
 SDL_Texture* Image::getTexture(const char* from_func) {
 	Logger log(DEFAULT_LOG_PATH);
-	log.logInfoIn(__FUNCTION__, "Possibly unsafe call: %s.", from);
+	log.logInfoIn(__FUNCTION__, "Possibly unsafe call: %s.", from_func);
 	if(mState.is_empty) {
 		log.logError("Image is empty.");
 		return nullptr;
@@ -162,10 +172,10 @@ SDL_Texture* Image::getTexture(const char* from_func) {
 }
 
 void Image::render() const {
-    if (mState.is_preprocessed) SDL_RenderTexture(mpRendererOrigin, mImage.tex, mState.use_rectpart ? &mRectSnap : NULL, &mRectView);
+    if (mState.is_preprocessed) SDL_RenderTexture(SDL_GetRendererFromTexture(mImage.tex), mImage.tex, mState.use_rectsnap ? &mRectSnap : NULL, &mRectView);
 }
 
-void Texture::clear() {
+void Image::clear() {
 	if(!mState.is_empty) {
 		if(mState.is_preprocessed) SDL_DestroyTexture(mImage.tex);
 		else SDL_DestroySurface(mImage.surf);
@@ -178,7 +188,7 @@ void Texture::clear() {
 	mImage.surf = nullptr;
 }
 
-Texture::~Texture() {
+Image::~Image() {
 	if(mState.is_empty) return;
 	
 	if(mState.is_preprocessed) {
