@@ -33,11 +33,13 @@ void film::LayerImage::update() {
 void film::LayerImage::render() const {
 	if (mImgInd == -1) return;
 	
-    SDL_FRect rect = { 0.f };
+    SDL_FRect view = { 0.f };
     SDL_FRect snap = { 0.f };
 
-    const auto res_rect = computeRectRender(mRect, &rect);
+    const auto res_view = computeRectRender(mRect, &view);
     const auto res_snap = computeRectRender(mSnap, &snap);
+	
+	if(res_view) pImage->setRectView(*res_view);
 
 	if(res_snap) pImage->setRectSnap(*res_snap);
 	else         pImage->turnOffSnap();
@@ -70,7 +72,7 @@ inline TimerStep film::LayerImage::getLongestWaiting() const noexcept {
     return longest;
 }
 
-void film::LayerImage::pushTexIndSetter(KeypointLayerInteractSwap* keypoint) {
+void film::LayerImage::pushImgIndSetter(KeypointLayerInteractSwap* keypoint) {
     KeypointLayerInteractSwap::SwapMode swapmode = keypoint->swap;
 
     mRect.shift_elem();
@@ -109,7 +111,7 @@ bool film::LayerImage::onPushSetter(KeypointLayer* keypoint) {
     switch (keypoint->type().specific_type) {
     case KeypointLayer::InteractPos:     pushPosSetter<KeypointLayerInteractPos>(keypoint);                            break;
     case KeypointLayer::InteractRectPos: pushPosSetter<KeypointLayerInteractRectPos>(keypoint);                        break;
-    case KeypointLayer::InteractPartPos: pushOtherPosSetter<film::KeypointLayerInteractPartitionPos>(keypoint, mSnap); break;
+    case KeypointLayer::InteractSnapPos: pushOtherPosSetter<film::KeypointLayerInteractSnapPos>(keypoint, mSnap); break;
     case KeypointLayer::InteractAlpha:
     {
         const auto kp_alpha = dynamic_cast<KeypointLayerInteractAlpha*>(keypoint);
@@ -125,9 +127,9 @@ bool film::LayerImage::onPushSetter(KeypointLayer* keypoint) {
         mColorAlpha.elem_to = kp_color->color;
     }   break;
     case KeypointLayer::InteractDefaultPos:     mRect.set_default(); break;
-    case KeypointLayer::InteractDefaultPartPos: mSnap.set_default(); break;
+    case KeypointLayer::InteractDefaultSnapPos: mSnap.set_default(); break;
     case KeypointLayer::InteractSwap:
-        pushTexIndSetter(dynamic_cast<KeypointLayerInteractSwap*>(keypoint));
+        pushImgIndSetter(dynamic_cast<KeypointLayerInteractSwap*>(keypoint));
         break;
     case KeypointLayer::InteractScaleMode: pImage->setScaleMode(dynamic_cast<KeypointLayerInteractScaleMode*>(keypoint)->scale); break;
     case KeypointLayer::InteractDefault:
@@ -148,7 +150,7 @@ bool film::LayerImage::onPushTracker(LockerIndex ease_indx) {
     switch (keypoint->type().specific_type) {
     case KeypointLayer::InteractPos:     pushPosTracker<KeypointLayerInteractPos>(ease_indx);                      break;
     case KeypointLayer::InteractRectPos: pushPosTracker<KeypointLayerInteractRectPos>(ease_indx);                  break;
-    case KeypointLayer::InteractPartPos: pushOtherPosTracker<KeypointLayerInteractPartitionPos>(ease_indx, mSnap); break;
+    case KeypointLayer::InteractSnapPos: pushOtherPosTracker<KeypointLayerInteractSnapPos>(ease_indx, mSnap); break;
     case KeypointLayer::InteractAlpha:
         pushTransitTracker(tracker, mColorAlpha);
         mColorAlpha.elem_to.a = dynamic_cast<KeypointLayerInteractAlpha*>(keypoint)->alpha;

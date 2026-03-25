@@ -5,7 +5,7 @@
 #include <deque>
 
 #include "FilmKeypointLayer.h"
-#include "FilmLayerTexture.h"
+#include "FilmLayerImage.h"
 #include "FilmLayerAnimation.h"
 #include "FilmLayerText.h"
 #include "FilmLayerGroup.h"

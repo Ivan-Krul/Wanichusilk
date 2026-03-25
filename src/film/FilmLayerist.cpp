@@ -66,8 +66,8 @@ bool film::Layerist::isWaiting() const {
 inline bool film::Layerist::registerLayerKeypointAdd(KeypointLayerAdd* keypoint) {
     auto loaderindx = keypoint->loaderind;
     switch (keypoint->layertype()) {
-    case KeypointLayerAdd::Texture:
-        maLayers.emplace_back<LayerTexture>(pClock, dynamic_cast<TextureManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx));
+    case KeypointLayerAdd::Image:
+        maLayers.emplace_back<LayerImage>(pClock, dynamic_cast<ImageManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx));
         break;
     case KeypointLayerAdd::Animation:
         maLayers.emplace_back<LayerAnimation>(pClock, dynamic_cast<AnimationManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx));

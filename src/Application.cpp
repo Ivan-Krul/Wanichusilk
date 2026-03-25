@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "examples/ExampleFilmKeypoint2LayerSync.h"
 
 #ifdef DEBUG
 #include <stdio.h>
@@ -34,7 +33,6 @@ void Application::OnInit() {
     // resource loading here
     ImageManager::LoadParamConvertor imagload;
     imagload.path = "./res/character.png";
-    imagload.scalemode = SDL_SCALEMODE_NEAREST;
     mLoader.PushResourcePathInQueue(&imagload, &mImagMgr);
     //AnimationManager::LoadParamConvertor animload;
     //animload.path = "./res/cat-runner-2049-cat-runner.gif";
@@ -114,36 +112,36 @@ void Application::OnInit() {
     irep.rect.w = 128;
     mScene.addKeypoint(irep);
 
-    film::KeypointLayerInteractPartitionPos ipap;
-    ipap.layerindx = 0;
-    ipap.rect.y = 0;
-    ipap.rect.x = 16;
-    ipap.rect.w = 16;
-    ipap.rect.h = 16;
-    mScene.addKeypoint(ipap);
+    film::KeypointLayerInteractSnapPos isap;
+    isap.layerindx = 0;
+    isap.rect.y = 0;
+    isap.rect.x = 16;
+    isap.rect.w = 16;
+    isap.rect.h = 16;
+    mScene.addKeypoint(isap);
 
     film::KeypointLayerEnable enab;
     enab.layerindx = 0;
     mScene.addKeypoint(enab);
 
-    ipap.set_delay_time(std::chrono::seconds(1));
-    ipap.action = ipap.Exact;
-    mScene.addKeypoint(ipap);
+    isap.set_delay_time(std::chrono::seconds(1));
+    isap.action = isap.Exact;
+    mScene.addKeypoint(isap);
 
-    ipap.rect.x = 0;
-    mScene.addKeypoint(ipap);
+    isap.rect.x = 0;
+    mScene.addKeypoint(isap);
 
-    ipap.rect.x = 16;
-    mScene.addKeypoint(ipap);
+    isap.rect.x = 16;
+    mScene.addKeypoint(isap);
 
-    ipap.rect.x = 0;
-    mScene.addKeypoint(ipap);
+    isap.rect.x = 0;
+    mScene.addKeypoint(isap);
 
-    ipap.rect.x = 16;
-    mScene.addKeypoint(ipap);
+    isap.rect.x = 16;
+    mScene.addKeypoint(isap);
 
-    ipap.rect.x = 0;
-    mScene.addKeypoint(ipap);
+    isap.rect.x = 0;
+    mScene.addKeypoint(isap);
 
     film::Keypoint ts;
     ts.action = ts.InInputAfterAwait;

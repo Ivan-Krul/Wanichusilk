@@ -20,7 +20,7 @@ public:
     virtual ~LayerImage() = default;
 
 private:
-    inline void pushTexIndSetter(KeypointLayerInteractSwap* keypoint);
+    inline void pushImgIndSetter(KeypointLayerInteractSwap* keypoint);
 
     bool onPushSetter(KeypointLayer* keypoint) override;
     bool onPushTracker(const LockerIndex ease_indx) override;

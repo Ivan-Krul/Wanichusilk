@@ -20,9 +20,9 @@ namespace film {
 
             InteractPos,
             InteractRectPos,
-            InteractPartPos,
+            InteractSnapPos,
             InteractDefaultPos,
-            InteractDefaultPartPos,
+            InteractDefaultSnapPos,
             InteractAlpha,
             InteractSwap,
             InteractColor,
@@ -141,16 +141,16 @@ namespace film {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractRectPos }; }
     };
 
-    struct KeypointLayerInteractPartitionPos : public KeypointLayerInteractRect {
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractPartPos }; }
+    struct KeypointLayerInteractSnapPos : public KeypointLayerInteractRect {
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractSnapPos }; }
     };
 
     struct KeypointLayerInteractDefaultPos : public KeypointLayerInteractRect {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractDefaultPos }; }
     };
 
-    struct KeypointLayerInteractDefaultPartitionPos : public KeypointLayerInteractRect {
-        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractDefaultPartPos }; }
+    struct KeypointLayerInteractDefaultSnapPos : public KeypointLayerInteractRect {
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractDefaultSnapPos }; }
     };
 
     struct KeypointLayerInteractAlpha : public KeypointLayerEase {

@@ -33,7 +33,7 @@ struct IResourceManager {
 
     virtual LockerIndex RequestResourceCreate() = 0;
     virtual LockerIndex RequestResourceLoad(ResourceLoadParams load) = 0;
-	virtual LockerIndex RequestResourceClone(LockerIndex clone_index_from) = 0;
+	//virtual LockerIndex RequestResourceClone(LockerIndex clone_index_from) = 0;
 
     virtual inline void RequestResourceClean(LockerIndex index) = 0;
 

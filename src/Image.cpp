@@ -92,6 +92,10 @@ bool Image::preprocess(SDL_Renderer* renderer, SDL_TextureAccess access) {
 		}
 		mImage.tex = tex;
 	}
+	if(!SDL_SetTextureScaleMode(mImage.tex, (SDL_ScaleMode)mState.scale_mode)) {
+		logSDLErr(__FUNCTION__);
+		return true;
+	}
 	
 	mState.is_empty = false;
 	mState.is_preprocessed = true;

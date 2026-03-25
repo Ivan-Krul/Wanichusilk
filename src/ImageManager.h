@@ -23,7 +23,7 @@ public:
     ImageIndex RequestResourceLoad(ResourceLoadParams load) override {
         Image img;
 		bool ret = img.createLoad(load.path);
-		if (!ret) return -1;
+		if (ret) return -1;
 		return mImageLocker.pushInLocker(std::move(img));
     }
     
