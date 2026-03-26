@@ -7,7 +7,7 @@ using TextIndex = LockerIndex;
 
 class TextManager : public IResourceManager, public IResourceAccesser<Text>, public IRendererGiver, public IResourcePreprocesser {
 public:
-    struct LoadParamConvertor : public IResourceLoadParamConvertor {
+    struct LoadParamConvertor : public IResourceParamConvertor<ResourceLoadParams> {
         const char* text;
         LockerIndex font_indx;
         inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ text, static_cast<size_t>(font_indx) }; }

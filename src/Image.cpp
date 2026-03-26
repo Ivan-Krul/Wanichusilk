@@ -145,30 +145,30 @@ void Image::setBlendMode(SDL_BlendMode mode) {
 		if (!SDL_SetSurfaceBlendMode(mImage.surf, mode)) logSDLErr(__FUNCTION__);		
 }
 
-SDL_Surface* Image::getSurface(const char* from_func) {
+SDL_Surface* Image::getSurface(const char* from_func) const {
 	Logger log(DEFAULT_LOG_PATH);
 	log.logInfoIn(__FUNCTION__, "Possibly unsafe call: %s.", from_func);
 	if(mState.is_empty) {
-		log.logError("Image is empty.");
+		log.logError("^ Image is empty.");
 		return nullptr;
 	}
 	if(mState.is_preprocessed) {
-		log.logError("Image is in texture buffer.");
+		log.logError("^ Image is in texture buffer.");
 		return nullptr;
 	}
 	
 	return mImage.surf;
 }
 
-SDL_Texture* Image::getTexture(const char* from_func) {
+SDL_Texture* Image::getTexture(const char* from_func) const {
 	Logger log(DEFAULT_LOG_PATH);
 	log.logInfoIn(__FUNCTION__, "Possibly unsafe call: %s.", from_func);
 	if(mState.is_empty) {
-		log.logError("Image is empty.");
+		log.logError("^ Image is empty.");
 		return nullptr;
 	}
 	if(!mState.is_preprocessed) {
-		log.logError("Image is in surface buffer.");
+		log.logError("^ Image is in surface buffer.");
 		return nullptr;
 	}
 	

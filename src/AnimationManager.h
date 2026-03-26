@@ -5,15 +5,22 @@
 #include "IResourceManager.h"
 #include "BigAnimation.h"
 #include "SmallAnimation.h"
+#include "ImageManager.h"
 
 using AnimationIndex = LockerIndex;
 
-class AnimationManager : public IResourceManager, public IResourceAccesser<Animation>, public IRendererGiver, public IResourcePreprocesser {
+class AnimationManager : public IResourceManager, public IResourceAccesser<Animation>, public IRendererGiver, public IResourceConvertor, public IResourcePreprocesser {
 public:
-    struct LoadParamConvertor : public IResourceLoadParamConvertor {
+    struct LoadParamConvertor : public IResourceParamConvertor<ResourceLoadParams> {
         const char* path;
         inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ path, 0 }; }
     };
+	
+	struct ConvertParamsConvertor : public IResourceParamConvertor<ResourceConvertParams> {
+		size_t frame_count;
+		float delay_ms;
+		inline ResourceConvertParams to_param() const noexcept override { return ResourceConvertParams{frame_count, *reinterpret_cast<const size_t*>(&delay_ms)}; }
+	};
 
 public:
     inline void SetClock(Clock* const clock) { mpClock = clock; }
@@ -24,7 +31,7 @@ public:
     inline Animation* GetLockerResource(LockerIndex index) override { assert(index != -1);  return mAnimationLocker[index].get(); }
     LockerIndex RequestResourceLoad(ResourceLoadParams load) override {
         Animation anim;
-        if (anim.create(load.path, mpRenderer)) return -1;
+        if (anim.create(load.path)) return -1;
 
         anim.setClock(mpClock);
         char fail = true;
@@ -47,14 +54,33 @@ public:
         
         return indx;
     }
+	LockerIndex RequestResourceConvert(IResourceManager* mgr, LockerIndex resind, ResourceConvertParams convert) override {
+		assert(resind != -1);
+		ImageManager* imgmgr = nullptr;
+		if(!(imgmgr = dynamic_cast<ImageManager*>(mgr))) {
+			Logger log(DEFAULT_LOG_PATH);
+			log.logErrorIn(__FUNCTION__, "Convertion was failed because of incompatable manager was fed.");
+			return -1;
+		}
+		
+		Image* img = imgmgr->GetLockerResource(resind);
+		
+		LockerIndex indx = mAnimationLocker.pushInLocker(std::make_unique<SmallAnimation>());
+		if(dynamic_cast<SmallAnimation*>(mAnimationLocker[indx].get())->createConvert(convert.value, *reinterpret_cast<float*>(&convert.extra), *img)) {
+			mAnimationLocker.popFromLocker(indx);
+            return -1;
+		}
+		
+		return indx;
+	}
     bool RequestResourcePreprocess(LockerIndex index) override {
         assert(index != -1);
-        return mAnimationLocker[index]->preprocess();
+        return mAnimationLocker[index]->preprocess(mpRenderer);
     }
 
     inline void RequestResourceClean(LockerIndex index) { mAnimationLocker.popFromLocker(index); }
 
-    inline Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser | Attribute::Preprocesser; }
+    inline Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser | Attribute::Preprocesser | Attribute::Convertor; }
 
 private:
     SDL_Renderer* mpRenderer = nullptr;

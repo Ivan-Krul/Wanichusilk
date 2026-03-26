@@ -33,6 +33,8 @@ namespace film {
             InteractAnimationLoop,
             InteractAnimationUnloop,
             InteractAnimationSpeed,
+			
+			ImageToAnimation,
 
             InteractTextWrap,
             InteractTextNew,
@@ -222,6 +224,10 @@ namespace film {
 
     struct KeypointLayerInteractAnimationStop : public KeypointLayer {
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractAnimationStop }; }
+    };
+	
+    struct KeypointLayerImageToAnimation : public KeypointLayer {
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, ImageToAnimation }; }
     };
 
     struct KeypointLayerAddText : public KeypointLayerAdd {

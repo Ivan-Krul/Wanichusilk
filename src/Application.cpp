@@ -33,20 +33,20 @@ void Application::OnInit() {
     // resource loading here
     ImageManager::LoadParamConvertor imagload;
     imagload.path = "./res/character.png";
-    mLoader.PushResourcePathInQueue(&imagload, &mImagMgr);
+    mLoader.PushLoadInQueue(&imagload, &mImagMgr);
     //AnimationManager::LoadParamConvertor animload;
     //animload.path = "./res/cat-runner-2049-cat-runner.gif";
-    //mLoader.PushResourcePathInQueue(&animload, &mAnimMgr);
+    //mLoader.PushLoadInQueue(&animload, &mAnimMgr);
     //FontManager::LoadParamConvertor fontload;
     //fontload.path = "./res/unifont-17.0.03.otf";
     //fontload.size = 32.f;
-    //mLoader.PushResourcePathInQueue(&fontload, &mFontMgr);
+    //mLoader.PushLoadInQueue(&fontload, &mFontMgr);
     //TextManager::LoadParamConvertor textload;
     //textload.font_indx = 0;
     //textload.text = u8"Bunnies!!!";
-    //mLoader.PushResourcePathInQueue(&textload, &mTextMgr);
+    //mLoader.PushLoadInQueue(&textload, &mTextMgr);
     //animload.path = "./res/received_1095637438226501.gif";
-    //mLoader.PushResourcePathInQueue(&animload, &mAnimMgr);
+    //mLoader.PushLoadInQueue(&animload, &mAnimMgr);
  
     SCOPED_STOPWATCH("load");
  
@@ -68,8 +68,6 @@ void Application::OnInit() {
         SDL_UpdateWindowSurface(mMainWindow.getWindow());
         SDL_Delay(1);
     }
-    mDrawer.removeColorGroup(0);
-    SDL_DestroyWindowSurface(mMainWindow.getWindow());
 
     if (mLoader.IsFailed()) {
         Logger log(DEFAULT_LOG_PATH);
@@ -78,6 +76,23 @@ void Application::OnInit() {
         mIsCritical = true;
         return;
     }
+	
+	mLoader.Convert();
+	
+	rect.y = 32;
+	
+	while (mLoader.IsProgress()) { // async loading
+        SDL_GetWindowSize(mMainWindow.getWindow(), &rect.w, nullptr);
+        rect.w *= ((float)mLoader.GetProgress() / (float)mLoader.Size());
+        PullEvents();
+        SDL_ClearSurface(surf, 0.f, 0.f, 0.f, 1.f);
+        SDL_FillSurfaceRect(surf, &rect, SDL_MapSurfaceRGB(surf, 255, 255, 255));
+        SDL_UpdateWindowSurface(mMainWindow.getWindow());
+        SDL_Delay(1);
+    }
+	
+    mDrawer.removeColorGroup(0);
+    SDL_DestroyWindowSurface(mMainWindow.getWindow());
  
     if (mLoader.Preprocess()) {
         Logger log(DEFAULT_LOG_PATH);
@@ -86,9 +101,7 @@ void Application::OnInit() {
         mIsCritical = true;
         return;
     }
- 
-	//SDL_SetTextureScaleMode(mTexMgr.GetLockerResource(0)->getTexture(), SDL_SCALEMODE_NEAREST);
- 
+
     ScaleOption so;
     so.p_wind = mMainWindow.getWindow();
  
@@ -108,8 +121,8 @@ void Application::OnInit() {
     irep.layerindx = 0;
     irep.rect.x = 16;
     irep.rect.y = 16;
-    irep.rect.h = 128;
-    irep.rect.w = 128;
+    irep.rect.h = 64;
+    irep.rect.w = 64;
     mScene.addKeypoint(irep);
 
     film::KeypointLayerInteractSnapPos isap;

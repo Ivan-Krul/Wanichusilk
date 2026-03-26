@@ -9,7 +9,7 @@ using FontIndex = LockerIndex;
 
 class FontManager : public IResourceManager, public IResourceAccesser<Font> {
 public:
-    struct LoadParamConvertor : public IResourceLoadParamConvertor {
+    struct LoadParamConvertor : public IResourceParamConvertor<ResourceLoadParams> {
         const char* path;
         float size = 10.f;
         inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ path, *reinterpret_cast<const size_t*>(&size) }; }

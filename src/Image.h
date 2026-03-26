@@ -32,17 +32,20 @@ public:
 	inline void      setRectView(SDL_FRect view) { mRectView = view; }
     inline SDL_FRect getRectView() const { return mRectView; }
 	
+	inline bool isEmpty() const { return mState.is_empty; }
+	
 	// function name for tracking in case of undefined behaviours
-	SDL_Surface* getSurface(const char* from_func);
-	SDL_Texture* getTexture(const char* from_func);
+	SDL_Surface* getSurface(const char* from_func) const;
+	SDL_Texture* getTexture(const char* from_func) const;
 	
     void render() const; // render from texture buffer ONLY, let outer classes use surface how they intend
 
     void   clear();
     virtual ~Image();
-protected:
+public:
 	static const SDL_PixelFormat cPixelFormat = SDL_PIXELFORMAT_RGBA32;
-
+	
+protected:
 	union PictureMap {
         SDL_Surface* surf = nullptr;
         SDL_Texture* tex;

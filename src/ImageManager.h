@@ -8,7 +8,7 @@ using ImageIndex = LockerIndex;
 
 class ImageManager : public IResourceManager, public IResourceAccesser<Image>, public IRendererGiver, public IResourcePreprocesser {
 public:
-    struct LoadParamConvertor : public IResourceLoadParamConvertor {
+    struct LoadParamConvertor : public IResourceParamConvertor<ResourceLoadParams> {
         const char* path;
         
         inline ResourceLoadParams to_param() const noexcept override { return ResourceLoadParams{ path, 0 }; }

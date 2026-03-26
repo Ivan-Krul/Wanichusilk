@@ -7,9 +7,9 @@ public:
 
     inline BigAnimation() = default;
     BigAnimation(Animation&& inst, char& is_fail);
-    bool create(const char* path, SDL_Renderer* renderer) override;
+    bool createLoad(const char* path) override;
 
-    bool preprocess() override;
+    bool preprocess(SDL_Renderer* renderer) override;
 
     inline bool    isBig() const noexcept override { return true; }
 

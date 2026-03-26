@@ -7,7 +7,8 @@
 enum class ResourceManagerAttribute : short {
     Accesser = 1 << 0,
     RendererGiver = 1 << 1,
-    Preprocesser = 1 << 2
+	Convertor = 1 << 2,
+    Preprocesser = 1 << 3
 
 };
 
@@ -16,8 +17,14 @@ struct ResourceLoadParams {
     size_t extra = 0;
 };
 
-struct IResourceLoadParamConvertor {
-    virtual ResourceLoadParams to_param() const noexcept = 0;
+struct ResourceConvertParams {
+    size_t value = 0;
+    size_t extra = 0;
+};
+
+template<typename T>
+struct IResourceParamConvertor {
+    virtual T to_param() const noexcept = 0;
 };
 
 inline const ResourceManagerAttribute operator|(const ResourceManagerAttribute left, const ResourceManagerAttribute right) {
@@ -48,6 +55,10 @@ struct IRendererGiver {
 template<typename T>
 struct IResourceAccesser {
     virtual inline T* GetLockerResource(LockerIndex index) = 0;
+};
+
+struct IResourceConvertor {
+    virtual LockerIndex RequestResourceConvert(IResourceManager* mgr, LockerIndex resind, ResourceConvertParams convert) = 0;
 };
 
 struct IResourcePreprocesser {

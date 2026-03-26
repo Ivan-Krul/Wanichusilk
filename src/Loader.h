@@ -9,15 +9,17 @@
 
 class Loader {
 public:
-    void PushResourcePathInQueue(IResourceLoadParamConvertor* load, IResourceManager* manager);
+    void PushLoadInQueue(IResourceParamConvertor<ResourceLoadParams>* load, IResourceManager* manager);
+	void PushConvertInQueue(IResourceParamConvertor<ResourceConvertParams>* convert, IResourceManager* manager, IResourceManager* from_manager, LockerIndex from_index);
 
-    inline const char* GetResourcePath(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).load.path : ""; }
+    const char* GetResourcePath(size_t index) const;
     inline IResourceManager* GetManager(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).mgr_ptr : nullptr; }
     LockerIndex GetTranscription(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).index : -1; }
 
     IResourceManager* GetRequiredInterface(ResourceManagerAttribute attr) const noexcept;
 
     void Load();
+	void Convert();
     bool Preprocess();
     void Clean();
 
@@ -32,13 +34,27 @@ public:
 
 private:
     struct ResourceIndexer {
-        ResourceLoadParams load;
+		union {
+			ResourceLoadParams load = { 0 };
+			struct {
+				IResourceManager* from_manager;
+				LockerIndex from_index;
+				ResourceConvertParams params;
+			} convert;
+		} payload;
+		
+		enum {
+			Load,
+			Convert
+		} action = Load;
+		
         IResourceManager* mgr_ptr;
         LockerIndex index;
     };
 
 private:
     void loadMain();
+	void convertMain();
 
     std::vector<ResourceIndexer> maResMgr;
 

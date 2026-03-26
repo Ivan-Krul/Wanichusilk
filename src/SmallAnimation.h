@@ -1,5 +1,6 @@
 #pragma once
 #include "Animation.h"
+#include "Image.h"
 
 class SmallAnimation : public Animation {
 public:
@@ -10,9 +11,10 @@ public:
 
     inline SmallAnimation() = default;
     SmallAnimation(Animation&& inst, char& is_fail);
-    bool create(const char* path, SDL_Renderer* renderer) override;
+    bool createLoad(const char* path) override;
+	bool createConvert(size_t frames, float delay_ms, const Image& image);
 
-    bool preprocess() override;
+    bool preprocess(SDL_Renderer* renderer) override;
 
     inline bool    isBig() const noexcept override { return false; }
 

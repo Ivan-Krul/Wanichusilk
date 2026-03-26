@@ -7,17 +7,43 @@ SmallAnimation::SmallAnimation(Animation&& inst, char& is_fail) {
     is_fail = packAnimationInSingleSurface();
 }
 
-bool SmallAnimation::create(const char* path, SDL_Renderer* renderer) {
-    if(baseCreate(path, renderer)) return true;
+bool SmallAnimation::createLoad(const char* path) {
+    if(baseCreateLoad(path)) return true;
 
     if (packAnimationInSingleSurface()) return true;
 
     return false;
 }
 
-bool SmallAnimation::preprocess() {
+bool SmallAnimation::createConvert(size_t frames, float delay_ms, const Image& image) {
+	mState.has_head = false;
+	mState.is_preprocessed = false;
+	
+	if(delay_ms * (float)frames >= 65.536f) {
+		Logger log(DEFAULT_LOG_PATH);
+		log.logWarningIn(__FUNCTION__, "Total duration of the animation exceeded 65s.");
+		return true;
+	}
+	mDelaySum = delay_ms * frames;
+	
+	mDelays_ms.resize(frames);
+	for(size_t i = 0; i < frames; i++) {
+		mDelays_ms[i] = delay_ms;
+	}
+	
+	SDL_Surface* surf = image.getSurface(__FUNCTION__);
+	
+	mpTiles.surf = SDL_ConvertSurface(surf, cPixelFormat);
+	
+	muHandle.size.width = mpTiles.surf->w;
+	muHandle.size.height = mpTiles.surf->h;
+	
+	return false;
+}
+
+bool SmallAnimation::preprocess(SDL_Renderer* renderer) {
     SDL_Surface* surf = mpTiles.surf;
-    mpTiles.tex = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
+    mpTiles.tex = SDL_CreateTextureFromSurface(renderer, surf);
     if (!mpTiles.tex) {
         Logger log(DEFAULT_LOG_SDL_PATH);
         log.logWarningIn(__FUNCTION__, "Convertion to texture was failed.");
@@ -28,7 +54,7 @@ bool SmallAnimation::preprocess() {
 
     SDL_DestroySurface(surf);
 
-    if (mpTiles.tex && mAlpha != 255)
+    if (mAlpha != 255)
         SDL_SetTextureAlphaMod(mpTiles.tex, mAlpha);
 
     mState.is_preprocessed = true;
@@ -47,7 +73,7 @@ void SmallAnimation::render() {
     mSrcRect.x = (mFrameIndex % mTileWidth) * mSrcRect.w;
     mSrcRect.y = (mFrameIndex / mTileWidth) * mSrcRect.h;
 
-    SDL_RenderTexture(mpRendererOrigin, mpTiles.tex, &mSrcRect, &mRect);
+    SDL_RenderTexture(SDL_GetRendererFromTexture(mpTiles.tex), mpTiles.tex, &mSrcRect, &mRect);
 }
 
 void SmallAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const float time_mult) {
@@ -70,7 +96,7 @@ void SmallAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const
 
     SDL_SetTextureAlphaMod(mpTiles.tex, alpha);
 
-    SDL_RenderTexture(mpRendererOrigin, mpTiles.tex, &mSrcRect, rect);
+    SDL_RenderTexture(SDL_GetRendererFromTexture(mpTiles.tex), mpTiles.tex, &mSrcRect, rect);
 
     SDL_SetTextureAlphaMod(mpTiles.tex, mAlpha);
     mTimeMult = time_mult_was;

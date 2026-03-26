@@ -1,9 +1,8 @@
 #include "Animation.h"
 #include "Logger.h"
 
-bool Animation::baseCreate(const char* path, SDL_Renderer* renderer) {
+bool Animation::baseCreateLoad(const char* path) {
     if (mState.has_head && muHandle.anim) return true;
-    mpRendererOrigin = renderer;
     muHandle.anim = IMG_LoadAnimation(path);
     if (muHandle.anim == NULL) {
         Logger log(DEFAULT_LOG_SDL_PATH);
@@ -30,7 +29,6 @@ bool Animation::baseCreate(const char* path, SDL_Renderer* renderer) {
 
 bool Animation::create(Animation&& instance) noexcept {
     muHandle = instance.muHandle;
-    mpRendererOrigin = instance.mpRendererOrigin;
 
     mRect = instance.mRect;
     mDelays_ms = instance.mDelays_ms;
@@ -42,7 +40,6 @@ bool Animation::create(Animation&& instance) noexcept {
     mCurrentDelay = instance.mCurrentDelay;
     if(!pClock) pClock = instance.pClock;
 
-    instance.mpRendererOrigin = nullptr;
     instance.muHandle.anim = nullptr;
     return instance.muHandle.anim;
 }

@@ -12,9 +12,9 @@ class Animation : public ClockHolder {
 public:
     inline Animation() = default;
     inline Animation(Animation&& instance) noexcept { create(std::move(instance)); }
-    inline Animation(const char* path, SDL_Renderer* renderer) { create(path, renderer); }
+    inline Animation(const char* path) { createLoad(path); }
             bool create(Animation&& instance) noexcept;
-    virtual bool create(const char* path, SDL_Renderer* renderer) { return baseCreate(path, renderer); }
+    virtual bool createLoad(const char* path) { return baseCreateLoad(path); }
 
     inline IMG_Animation* getAnimationPtr()      const noexcept { return mState.has_head ? muHandle.anim : nullptr; }
     inline size_t          getFrameCount()        const noexcept { return mDelays_ms.size(); }
@@ -30,7 +30,7 @@ public:
     inline bool            isPreprocessed()       const noexcept { return mState.is_preprocessed; }
     inline bool            isFreezed()            const noexcept { return mState.is_freezed; }
 
-    virtual bool preprocess() { return true; }
+    virtual bool preprocess(SDL_Renderer* renderer) { return true; }
     void start(float time_mult = 1.f);
     virtual void render() {}
     virtual void renderRaw(const SDL_FRect* rect, const uint8_t alpha = 255, const float time_mult = 1.f) {}
@@ -58,7 +58,7 @@ protected:
     bool preRender();
 
     inline virtual void childClean() {}
-    bool baseCreate(const char* path, SDL_Renderer* renderer);
+    bool baseCreateLoad(const char* path);
 
 protected:
     static const SDL_PixelFormat cPixelFormat = SDL_PIXELFORMAT_RGBA32;
@@ -76,7 +76,6 @@ protected:
             int16_t height;
         } size;
     } muHandle;
-    SDL_Renderer* mpRendererOrigin = NULL;
 
     SDL_FRect mRect = { 0.f };
     std::vector<uint16_t> mDelays_ms;

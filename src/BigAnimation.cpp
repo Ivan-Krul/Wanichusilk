@@ -7,18 +7,18 @@ BigAnimation::BigAnimation(Animation&& inst, char& is_fail) {
     is_fail = convertSurfaces();
 }
 
-bool BigAnimation::create(const char* path, SDL_Renderer* renderer) {
-    if(baseCreate(path, renderer)) return true;
+bool BigAnimation::createLoad(const char* path) {
+    if(baseCreateLoad(path)) return true;
 
     if (convertSurfaces()) return true;
     return false;
 }
 
-bool BigAnimation::preprocess() {
+bool BigAnimation::preprocess(SDL_Renderer* renderer) {
     SDL_Surface* surf;
     for (auto f = 0; f < mapTextures.size(); f++) {
         surf = mapTextures[f].surf;
-        mapTextures[f].tex = SDL_CreateTextureFromSurface(mpRendererOrigin, surf);
+        mapTextures[f].tex = SDL_CreateTextureFromSurface(renderer, surf);
 
         if (mapTextures[f].tex) {
             if (mAlpha != 255)
@@ -45,7 +45,7 @@ void BigAnimation::render() {
         return;
     }
 
-    SDL_RenderTexture(mpRendererOrigin, mapTextures[mFrameIndex].tex, nullptr, &mRect);
+    SDL_RenderTexture(SDL_GetRendererFromTexture(mapTextures[mFrameIndex].tex), mapTextures[mFrameIndex].tex, nullptr, &mRect);
 }
 
 void BigAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const float time_mult) {
@@ -61,7 +61,7 @@ void BigAnimation::renderRaw(const SDL_FRect* rect, const uint8_t alpha, const f
 
     SDL_SetTextureAlphaMod(mapTextures[mFrameIndex].tex, alpha);
 
-    SDL_RenderTexture(mpRendererOrigin, mapTextures[mFrameIndex].tex, nullptr, rect);
+    SDL_RenderTexture(SDL_GetRendererFromTexture(mapTextures[mFrameIndex].tex), mapTextures[mFrameIndex].tex, nullptr, rect);
 
     SDL_SetTextureAlphaMod(mapTextures[mFrameIndex].tex, mAlpha);
     mTimeMult = time_mult_was;
