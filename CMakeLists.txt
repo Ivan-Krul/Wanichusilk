@@ -11,13 +11,19 @@ endif()
 
 # Set a cache directory
 #set(CMAKE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build")
-
-# Generate compile_commands.json
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Generate compile_commands.json
+set(CMAKE_BINARY_DIR "${sourceDir}/out/${presetName}-build")
+set(CMAKE_INSTALL_DIR "${sourceDir}/out/${presetName}-install")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
+
+if(EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+	set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+else()
+	message(FATAL_ERROR "VCPKG_ROOT enviroument variable contains an invalid path")
+endif()
 
 project ("Wanichusilk")
 

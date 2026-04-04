@@ -2,18 +2,10 @@
     "version": 3,
     "configurePresets": [
         {
-            "name": "base",
-            "hidden": true,
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
-            "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-            }
-        },
-        {
             "name": "windows-base",
             "hidden": true,
-            "inherits": "base",
+			"binaryDir": "${sourceDir}/out/${presetName}-build",
+            "installDir": "${sourceDir}/out/${presetName}-install",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl",
                 "CMAKE_CXX_COMPILER": "cl"
@@ -71,7 +63,8 @@
         {
             "name": "linux-base-make",
             "hidden": true,
-            "inherits": "base",
+			"binaryDir": "${sourceDir}/out/${presetName}-build",
+            "installDir": "${sourceDir}/out/${presetName}-install",
             "generator": "Unix Makefiles",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
