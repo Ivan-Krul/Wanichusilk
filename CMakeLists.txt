@@ -13,17 +13,12 @@ endif()
 #set(CMAKE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build")
 #set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Generate compile_commands.json
-set(CMAKE_BINARY_DIR "${sourceDir}/out/${presetName}-build")
-set(CMAKE_INSTALL_DIR "${sourceDir}/out/${presetName}-install")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/lib")
+set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
-
-if(EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-	set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-else()
-	message(FATAL_ERROR "VCPKG_ROOT enviroument variable contains an invalid path")
-endif()
 
 project ("Wanichusilk")
 
@@ -46,12 +41,14 @@ list(REMOVE_DUPLICATES INCLUDE_DIRS)
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIRS})
 
 # Include modules
-include(IncludeModules)
-
-
+if(DEFINED CMAKE_TOOLCHAIN_FILE)
+	include(IncludePackageModules)
+else()
+	include(IncludeVendorModules)
+endif()
 
 # Copy Resources
 add_custom_target(CopyResources
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/res ${CMAKE_CURRENT_BINARY_DIR}/res
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/res ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/res
 )
 add_dependencies(${PROJECT_NAME} CopyResources)

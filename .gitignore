@@ -4,3 +4,5 @@ out/
 vcpkg-configuration.json
 vcpkg_installed/
 res/
+bin/
+cache/
