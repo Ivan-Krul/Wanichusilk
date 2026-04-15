@@ -2,7 +2,7 @@
 #include "Logger.h"
 
 BigAnimation::BigAnimation(Animation&& inst, char& is_fail) {
-    if (is_fail = create(std::move(inst))) return;
+    if ((is_fail = create(std::move(inst)))) return;
 
     is_fail = convertSurfaces();
 }

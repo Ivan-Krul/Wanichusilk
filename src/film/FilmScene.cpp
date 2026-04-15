@@ -148,6 +148,8 @@ void film::Scene::onNext() {
         mBackupTimer.frame_delay = timer.frame_delay;
         mBackupTimer.delay = timer.delay;
         break;
+    case timer.Instant:
+        break;
     }
     if (mBackupTimer.delay != mBackupTimer.delay.zero()) mBackupTimer.need_time_delay = true;
 

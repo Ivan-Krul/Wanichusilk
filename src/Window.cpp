@@ -3,11 +3,6 @@
 #include <stdexcept>
 
 bool Window::create(const char* name, int width, int height, SDL_WindowFlags flags) noexcept {
-#pragma warning(suppress : 4554)
-	if (width >> sizeof(width) * 8 - 1) width = ((width << 1) >> 1);
-#pragma warning(suppress : 4554)
-	if (height >> sizeof(height) * 8 - 1) height = ((height << 1) >> 1);
-
 	auto name_len = strlen(name);
 	if (mWindowName == nullptr)
 		mWindowName = new char[name_len + 1];

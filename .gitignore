@@ -6,3 +6,4 @@ vcpkg_installed/
 res/
 bin/
 cache/
+lib/

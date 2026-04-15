@@ -104,6 +104,8 @@ void film::LayerImage::pushImgIndSetter(KeypointLayerInteractSwap* keypoint) {
         } else
             mSnap.set_default();
         break;
+    case KeypointLayerInteractSwap::KeepInAspect:
+        break;
     }
 }
 

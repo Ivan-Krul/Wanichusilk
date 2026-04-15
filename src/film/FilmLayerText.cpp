@@ -89,6 +89,8 @@ void film::LayerText::pushTextIndSetter(KeypointLayerInteractSwap* keypoint) {
         }
         else mRect.set_default();
         break;
+    case KeypointLayerInteractSwap::KeepInAspect:
+        break;
     }
 }
 

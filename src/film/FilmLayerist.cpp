@@ -36,8 +36,7 @@ bool film::Layerist::registerLayerKeypoint(KeypointLayer* keypoint) {
 
 TimerStep film::Layerist::getLongestWaiting() const {
     TimerStep longest;
-    auto iter = maLayers.cbegin();
-    for (iter; iter != maLayers.cend(); iter++) {
+    for (auto iter = maLayers.cbegin(); iter != maLayers.cend(); iter++) {
         longest = clockfunc::max(longest, iter->getLongestWaiting());
     }
     

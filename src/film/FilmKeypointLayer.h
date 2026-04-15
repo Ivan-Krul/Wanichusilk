@@ -33,8 +33,8 @@ namespace film {
             InteractAnimationLoop,
             InteractAnimationUnloop,
             InteractAnimationSpeed,
-			
-			ImageToAnimation,
+
+            ImageToAnimation,
 
             InteractTextWrap,
             InteractTextNew,
@@ -68,7 +68,7 @@ namespace film {
 
         LockerIndex loaderind = -1;
 
-        inline virtual LayerBuildType layertype() const { return { None }; }
+        inline virtual LayerBuildType layertype() const { return None; }
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, Add }; }
     };
 

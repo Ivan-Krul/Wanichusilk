@@ -101,6 +101,8 @@ void film::LayerAnimation::pushAnimIndSetter(KeypointLayer* keypoint) {
         }
         else mRect.set_default();
         break;
+    case KeypointLayerInteractSwap::KeepInAspect:
+        break;
     }
 }
 

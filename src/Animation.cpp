@@ -34,7 +34,7 @@ bool Animation::create(Animation&& instance) noexcept {
     mDelays_ms = instance.mDelays_ms;
     mDelaySum = instance.mDelaySum;
     mFrameIndex = instance.mFrameIndex;
-    mTimeMult = mTimeMult;
+    mTimeMult = instance.mTimeMult;
     mAlpha = instance.mAlpha;
     mState = instance.mState;
     mCurrentDelay = instance.mCurrentDelay;

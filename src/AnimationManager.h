@@ -78,9 +78,9 @@ public:
         return mAnimationLocker[index]->preprocess(mpRenderer);
     }
 
-    inline void RequestResourceClean(LockerIndex index) { mAnimationLocker.popFromLocker(index); }
+    void RequestResourceClean(LockerIndex index) override { mAnimationLocker.popFromLocker(index); }
 
-    inline Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser | Attribute::Preprocesser | Attribute::Convertor; }
+    Attribute GetAttribute() const noexcept override { return Attribute::RendererGiver | Attribute::Accesser | Attribute::Preprocesser | Attribute::Convertor; }
 
 private:
     SDL_Renderer* mpRenderer = nullptr;
