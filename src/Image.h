@@ -32,6 +32,9 @@ public:
 	inline void      setRectView(SDL_FRect view) { mRectView = view; }
     inline SDL_FRect getRectView() const { return mRectView; }
 	
+    inline int getImageWidth() const noexcept { return (!mState.is_empty) ? ((mState.is_preprocessed) ? mImage.tex->w : mImage.surf->w) : mImage.size.w; }
+    inline int getImageHeight() const noexcept { return (!mState.is_empty) ? ((mState.is_preprocessed) ? mImage.tex->h : mImage.surf->h) : mImage.size.h; }
+
 	inline bool isEmpty() const { return mState.is_empty; }
 	
 	// function name for tracking in case of undefined behaviours

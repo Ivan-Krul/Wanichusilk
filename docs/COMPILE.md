@@ -36,7 +36,7 @@ For vendoring it was used `git submodule` commands.
 > [!IMPORTANT]  
 > For Windows only, be sure that path doesn't include spaces.
 
-After a cloning main repo, you should run at source directory `git submodule update --init --recursive`.
+After a cloning main repo, you should run at source directory `git submodule update --init --recursive --depth 1`.
 
 ### after all that...
 

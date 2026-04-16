@@ -28,13 +28,14 @@ namespace film {
             InteractColor,
             InteractScaleMode,
 
+            InteractTilesetSwap,
+            InteractTilesetResize,
+
             InteractAnimationStart,
             InteractAnimationStop,
             InteractAnimationLoop,
             InteractAnimationUnloop,
             InteractAnimationSpeed,
-
-            ImageToAnimation,
 
             InteractTextWrap,
             InteractTextNew,
@@ -62,6 +63,7 @@ namespace film {
             Group,
             Sprite,
             Image,
+            Tileset,
             Animation,
             Text
         };
@@ -199,6 +201,25 @@ namespace film {
         SDL_ScaleMode scale = SDL_ScaleMode::SDL_SCALEMODE_NEAREST;
 
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractScaleMode }; }
+    };
+
+    struct KeypointLayerAddTileset : public KeypointLayerAdd {
+        uint16_t tileset_width;
+        uint16_t tileset_height;
+        inline virtual LayerBuildType layertype() const { return Tileset; }
+    };
+
+    struct KeypointLayerInteractTilesetSwap : public KeypointLayer {
+        uint16_t tileset_x;
+        uint16_t tileset_y;
+        uint8_t  swap;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTilesetSwap }; }
+    };
+
+    struct KeypointLayerInteractTilesetResize : public KeypointLayer {
+        uint16_t new_tile_count_width;
+        uint16_t new_tile_count_height;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTilesetResize }; }
     };
 
     struct KeypointLayerAddAnimation : public KeypointLayerAdd {
