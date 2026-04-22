@@ -19,15 +19,9 @@ film::LayerImage::LayerImage(Clock* clock, ImageManager* imgmgr, LockerIndex img
 void film::LayerImage::update() {
     if (maEases.isEmpty()) return;
     mSnap.ease_tracker.update();
-    mRect.ease_tracker.update();
     mColorAlpha.ease_tracker.update();
 
-    auto it = maEases.begin();
-    while (it != maEases.end()) {
-        if (it->ease->isEnded())
-            it = maEases.popFromLocker(it);
-        else it++;
-    }
+    removePassedEases();
 }
 
 void film::LayerImage::render() const {

@@ -24,16 +24,10 @@ film::LayerAnimation::LayerAnimation(Clock* clock, AnimationManager* animmgr, An
 
 void film::LayerAnimation::update() {
     if (maEases.isEmpty()) return;
-    mRect.ease_tracker.update();
     mAlpha.ease_tracker.update();
     mTimeMult.ease_tracker.update();
 
-    auto it = maEases.begin();
-    while (it != maEases.end()) {
-        if (it->ease->isEnded())
-            it = maEases.popFromLocker(it);
-        else it++;
-    }
+    removePassedEases();
 }
 
 void film::LayerAnimation::render() const {

@@ -34,6 +34,8 @@ protected:
 
     inline const SDL_FRect* computeRectRender(const TransitParam<SDL_FRect>& param, SDL_FRect* buffer) const noexcept;
 
+    inline void removePassedEases();
+    
     TransitParam<SDL_FRect> mRect;
 };
 
@@ -97,5 +99,16 @@ inline void film::LayerRect::pushOtherPosTracker(const LockerIndex ease_indx, Tr
 
     pushTransitTracker(tracker, mRect);
     param.elem_to = dynamic_cast<const K*>(tracker.keypoint)->rect;
+}
+
+inline void film::LayerRect::removePassedEases() {
+    mRect.ease_tracker.update();
+
+    auto it = maEases.begin();
+    while (it != maEases.end()) {
+        if (it->ease->isEnded())
+            it = maEases.popFromLocker(it);
+        else it++;
+    }
 }
 

@@ -17,9 +17,9 @@ public:
     void update() override;
     void render() const override;
     void clear() override;
-    inline TimerStep getLongestWaiting() const noexcept override;
+    inline TimerStep getLongestWaiting() const noexcept override { return TimerStep(); }
 
-    virtual ~LayerImage() = default;
+    virtual ~LayerTileset() = default;
 
 private:
     inline void pushImgIndSetter(KeypointLayerInteractSwap* keypoint);
@@ -27,19 +27,22 @@ private:
     bool onPushSetter(KeypointLayer* keypoint) override;
     bool onPushTracker(const LockerIndex ease_indx) override;
 
-    inline bool areAllTransitParamDefault() const noexcept { return mSnap.is_default() && mRect.is_default() && mColorAlpha.is_default(); }
+    inline bool areAllTransitParamDefault() const noexcept { return mRect.is_default() && mColorAlpha.is_default(); }
 
     ImageManager* pImgMgr;
     Image* pImage;
 
     TransitParam<SDL_Color> mColorAlpha;
     
+    // resolution of abstract map (4x4 texture map)
     uint16_t mTilesCountWidth = 0;
     uint16_t mTilesCountHeight = 0;
-
+ 
+    // resolution of each tile (128x128 pixels)
     uint16_t mTileWidth = 0;
     uint16_t mTileHeight = 0;
-    
+
+    // tile indexes in grid order [y[x[]][x[]]]
     std::vector<uint8_t> maTileIndexes;
 
     ImageIndex mImgInd;

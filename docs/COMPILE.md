@@ -10,9 +10,7 @@
 
 It's independanly from the distribution family or operating system, the process of compiling is similar using terminal.
 
-You first need to have **vcpkg**, **git**, C++ compiler of your choice (MSVC++, GCC, CLang or something else) and generator of your choice (ninja by default) pre-installed.
-In case you want default usage of cmake using: `mkdir build; cd build; cmake ..`, `CMakeLists.txt` wasn't designed to deal with cases like this,
-so run this command on your considiration
+You first need to have **git**, C++ compiler of your choice (MSVC++, GCC, CLang or something else) and generator of your choice (ninja by default) pre-installed.
 
 ### in Windows With VCPKG
 
@@ -40,13 +38,21 @@ After a cloning main repo, you should run at source directory `git submodule upd
 
 ### after all that...
 
-Run `cmake` with presets. To look which preset you want, type `cmake --list-presets`, and run `cmake --preset=<YOUR_CHOICE>`.
+Run `cmake` either with presets, or simply ...
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
+To look which preset you want, type `cmake --list-presets`, and run `cmake --preset=<YOUR_CHOICE>`.
 Same thing would be to building, using `cmake --build --list-presets` to look up which preset you may want, and run
 `cmake --build --preset=<YOUR_CHOICE>`.
 
 For other settings use inline caches when you type your cmake command (i.e. `cmake --preset=<YOUR_CHOICE> -G "Unix Makefiles" ...`)
 
-Compiled program should be at directory `/bin`.
+Compiled program should be at directory `/bin` within source directory.
 
 > [!TIP]
 > If you would know better or easier tooling than that, lmk.
