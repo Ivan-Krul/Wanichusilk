@@ -68,6 +68,9 @@ inline bool film::Layerist::registerLayerKeypointAdd(KeypointLayerAdd* keypoint)
     case KeypointLayerAdd::Image:
         maLayers.emplace_back<LayerImage>(pClock, dynamic_cast<ImageManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx));
         break;
+    case KeypointLayerAdd::Tileset:
+        maLayers.emplace_back<LayerTileset>(pClock, dynamic_cast<ImageManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx), dynamic_cast<KeypointLayerAddTileset*>(keypoint)->tileset_width, dynamic_cast<KeypointLayerAddTileset*>(keypoint)->tileset_height);
+        break;
     case KeypointLayerAdd::Animation:
         maLayers.emplace_back<LayerAnimation>(pClock, dynamic_cast<AnimationManager*>(pLoader->GetManager(loaderindx)), pLoader->GetTranscription(loaderindx));
         break;

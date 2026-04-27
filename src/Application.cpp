@@ -113,9 +113,11 @@ void Application::OnInit() {
     //mScene.addKeypoint(addg); // l: 0
     //mScene.addKeypoint(addg); // l: 1
 
-    film::KeypointLayerAddImage addi;
-    addi.loaderind = 0;
-    mScene.addKeypoint(addi); // l: 0
+    film::KeypointLayerAddTileset addt;
+    addt.loaderind = 0;
+    addt.tileset_width = 4;
+    addt.tileset_height = 4;
+    mScene.addKeypoint(addt); // l: 0
 
     film::KeypointLayerInteractRectPos irep;
     irep.layerindx = 0;
@@ -125,36 +127,35 @@ void Application::OnInit() {
     irep.rect.w = 64;
     mScene.addKeypoint(irep);
 
-    film::KeypointLayerInteractSnapPos isap;
-    isap.layerindx = 0;
-    isap.rect.y = 0;
-    isap.rect.x = 16;
-    isap.rect.w = 16;
-    isap.rect.h = 16;
-    mScene.addKeypoint(isap);
+    film::KeypointLayerInteractTilesetSwap itsp;
+    itsp.layerindx = 0;
+    itsp.tileset_x = 0;
+    itsp.tileset_y = 0;
+    itsp.swap = 1;
+    mScene.addKeypoint(itsp);
 
     film::KeypointLayerEnable enab;
     enab.layerindx = 0;
     mScene.addKeypoint(enab);
 
-    isap.set_delay_time(std::chrono::seconds(1));
-    isap.action = isap.Exact;
-    mScene.addKeypoint(isap);
+    itsp.set_delay_time(std::chrono::seconds(1));
+    itsp.action = itsp.Exact;
+    mScene.addKeypoint(itsp);
 
-    isap.rect.x = 0;
-    mScene.addKeypoint(isap);
+    itsp.swap = 0;
+    mScene.addKeypoint(itsp);
 
-    isap.rect.x = 16;
-    mScene.addKeypoint(isap);
+    itsp.swap = 1;
+    mScene.addKeypoint(itsp);
 
-    isap.rect.x = 0;
-    mScene.addKeypoint(isap);
+    itsp.swap = 0;
+    mScene.addKeypoint(itsp);
 
-    isap.rect.x = 16;
-    mScene.addKeypoint(isap);
+    itsp.swap = 1;
+    mScene.addKeypoint(itsp);
 
-    isap.rect.x = 0;
-    mScene.addKeypoint(isap);
+    itsp.swap = 0;
+    mScene.addKeypoint(itsp);
 
     film::Keypoint ts;
     ts.action = ts.InInputAfterAwait;

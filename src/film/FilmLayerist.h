@@ -6,6 +6,7 @@
 
 #include "FilmKeypointLayer.h"
 #include "FilmLayerImage.h"
+#include "FilmLayerTileset.h"
 #include "FilmLayerAnimation.h"
 #include "FilmLayerText.h"
 #include "FilmLayerGroup.h"

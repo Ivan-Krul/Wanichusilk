@@ -55,7 +55,11 @@ private:
     uint16_t mTileWidth = 0;
     uint16_t mTileHeight = 0;
 
-    // tile indexes in grid order [y[x[]][x[]]]
+    // resolution of viewing map (3x3 tiles)
+    uint16_t mTileCountViewWidth = 0;
+    uint16_t mTileCountViewHeight = 0;
+
+    // tile indexes in grid order of view [y[x[]][x[]]]
     std::vector<uint8_t> maTileIndexes;
 
     ImageIndex mImgInd;

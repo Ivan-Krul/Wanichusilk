@@ -15,9 +15,11 @@ film::LayerTileset::LayerTileset(Clock* clock, ImageManager* imgmgr, LockerIndex
         mTileWidth = pImage->getImageWidth() / mTilesCountWidth;
         mTileHeight = pImage->getImageHeight() / mTilesCountHeight;
 
-        maTileIndexes.resize(mTilesCountWidth * mTilesCountHeight);
+        mTileCountViewWidth = 1;
+        mTileCountViewHeight = 1;
 
-        for(size_t i = 0; i < maTileIndexes.size(); i++) maTileIndexes[i] = 0;
+        maTileIndexes.resize(1);
+        maTileIndexes[0] = 0;
     }
 
     mRect.elem_to = pImage ? pImage->getRectView() : SDL_FRect{ 0.f };
@@ -37,14 +39,17 @@ void film::LayerTileset::update() {
 }
 
 void film::LayerTileset::render() const {
-	if (mImgInd == -1) return;
-	
-    if (mRect.is_default()) pImage->turnOffView();
-    else {
+	if (mImgInd == -1) return;	
+
+    SDL_FRect subview = { 0.f };
+
+    if (!mRect.is_default()) {
         if (mRect.is_progress())
-            pImage->setRectView(lerp_rect(mRect.elem_from, mRect.elem_to, mRect.ease_tracker));
-        else pImage->setRectView(mRect.elem_to);
+            subview = lerp_rect(mRect.elem_from, mRect.elem_to, mRect.ease_tracker);
+        else subview = mRect.elem_to;
     }
+    subview.w /= mTileCountViewWidth;
+    subview.h /= mTileCountViewHeight;
     
     if (mColorAlpha.is_progress()) {
         SDL_Color ca;
@@ -55,12 +60,29 @@ void film::LayerTileset::render() const {
         pImage->setColorAlpha(ca);
     } else pImage->setColorAlpha(mColorAlpha.elem_to);
 
-    for(size_t i = 0; i < maTileIndexes.size(); i++) {
+    if(maTileIndexes.empty()){
+        pImage->setRectSnap({
+            0.f,
+            0.f,
+            (float)mTileWidth,
+            (float)mTileHeight});
+
+        pImage->setRectView(subview);
+        pImage->render();
+    }        
+    else for(size_t i = 0; i < maTileIndexes.size(); i++) {
         pImage->setRectSnap({
             (float)((int16_t)(maTileIndexes[i] % mTilesCountWidth) * mTileWidth),
             (float)((int16_t)(maTileIndexes[i] / mTilesCountWidth) * mTileHeight),
             (float)mTileWidth,
             (float)mTileHeight});
+
+        pImage->setRectView({
+                subview.x + ((int16_t)(i % mTileCountViewWidth) * subview.w),
+                subview.y + ((int16_t)(i / mTileCountViewWidth) * subview.h),
+                subview.w,
+                subview.h
+            });
 
         pImage->render();
     }
@@ -93,10 +115,13 @@ inline void film::LayerTileset::pushImgIndSetter(KeypointLayerInteractSwap* keyp
     if(pImage) {
         mTileWidth = pImage->getImageWidth() / mTilesCountWidth;
         mTileHeight = pImage->getImageHeight() / mTilesCountHeight;
+        if(maTileIndexes.empty()) {
+            mTileCountViewWidth = 1;
+            mTileCountViewHeight = 1;
 
-        maTileIndexes.resize(mTilesCountWidth * mTilesCountHeight);
-
-        for(size_t i = 0; i < maTileIndexes.size(); i++) maTileIndexes[i] = 0;
+            maTileIndexes.resize(1);
+            maTileIndexes[0] = 0;
+        }
     }
     else maTileIndexes.clear();
 
@@ -124,10 +149,6 @@ inline void film::LayerTileset::pushTSetResSetter(KeypointLayerInteractTilesetRe
     if(pImage) {
         mTileWidth = pImage->getImageWidth() / keypoint->new_tile_count_width;
         mTileHeight = pImage->getImageHeight() / keypoint->new_tile_count_height;
-
-        maTileIndexes.resize(keypoint->new_tile_count_width * keypoint->new_tile_count_height);
-
-        for(size_t i = 0; i < maTileIndexes.size(); i++) maTileIndexes[i] = 0;
     }
     mTilesCountWidth = keypoint->new_tile_count_width;
     mTilesCountHeight = keypoint->new_tile_count_height;
@@ -158,7 +179,15 @@ bool film::LayerTileset::onPushSetter(KeypointLayer* keypoint) {
     case KeypointLayer::InteractTilesetSwap:
     {
         const auto kp_tswap = dynamic_cast<KeypointLayerInteractTilesetSwap*>(keypoint);
-        maTileIndexes[kp_tswap->tileset_y * mTilesCountWidth + kp_tswap->tileset_x] = kp_tswap->swap;
+        maTileIndexes[kp_tswap->tileset_y * mTileCountViewWidth + kp_tswap->tileset_x] = kp_tswap->swap;
+    }   break;
+    case KeypointLayer::InteractTilesetViewResize:
+    {
+        const auto kp_tvrs = dynamic_cast<KeypointLayerInteractTilesetViewResize*>(keypoint);
+        mTileCountViewWidth = kp_tvrs->new_tile_count_width;
+        mTileCountViewHeight =  kp_tvrs->new_tile_count_height;
+        maTileIndexes.resize(mTileCountViewWidth * mTileCountViewHeight);
+        for(size_t i = 0; i < maTileIndexes.size(); i++) maTileIndexes[i] = 0;
     }   break;
     case KeypointLayer::InteractTilesetResize: pushTSetResSetter(dynamic_cast<KeypointLayerInteractTilesetResize*>(keypoint)); break;
     case KeypointLayer::InteractScaleMode: pImage->setScaleMode(dynamic_cast<KeypointLayerInteractScaleMode*>(keypoint)->scale); break;

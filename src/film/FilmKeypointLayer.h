@@ -29,6 +29,7 @@ namespace film {
             InteractScaleMode,
 
             InteractTilesetSwap,
+            InteractTilesetViewResize,
             InteractTilesetResize,
 
             InteractAnimationStart,
@@ -214,6 +215,12 @@ namespace film {
         uint16_t tileset_y;
         uint8_t  swap;
         inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTilesetSwap }; }
+    };
+
+    struct KeypointLayerInteractTilesetViewResize : public KeypointLayer {
+        uint16_t new_tile_count_width;
+        uint16_t new_tile_count_height;
+        inline KeypointTypeStruct type() const override { return { KeypointChangeType::Layer, InteractTilesetViewResize }; }
     };
 
     struct KeypointLayerInteractTilesetResize : public KeypointLayer {
