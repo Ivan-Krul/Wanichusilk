@@ -10,6 +10,18 @@ namespace film {
 }
 
 // we deal with preprocessed image
+// how tho?
+//
+// we got a dimensions of render window
+// and we render within the region tiles
+//
+// |---------|
+// |[0][5][1]|
+// |[2][2][1]|
+// |[3][3][2]|
+// |---------|
+//
+
 
 class film::LayerTileset : public LayerRect {
 public:
@@ -17,13 +29,14 @@ public:
     void update() override;
     void render() const override;
     void clear() override;
-    inline TimerStep getLongestWaiting() const noexcept override { return TimerStep(); }
+    inline TimerStep getLongestWaiting() const noexcept override;
 
     virtual ~LayerTileset() = default;
 
 private:
     inline void pushImgIndSetter(KeypointLayerInteractSwap* keypoint);
-
+    inline void pushTSetResSetter(KeypointLayerInteractTilesetResize* keypoint);
+    
     bool onPushSetter(KeypointLayer* keypoint) override;
     bool onPushTracker(const LockerIndex ease_indx) override;
 

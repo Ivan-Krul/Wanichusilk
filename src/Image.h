@@ -28,8 +28,9 @@ public:
 	inline void      setRectSnap(SDL_FRect snap) { mState.use_rectsnap = true; mRectSnap = snap; }
     inline SDL_FRect getRectSnap() const { return mRectSnap; }
 	
-	inline void      setRectViewOffset(float x, float y) { mRectView.x = x; mRectView.y = y; }
-	inline void      setRectView(SDL_FRect view) { mRectView = view; }
+	inline void      turnOffView() { mState.use_rectview = false; }
+	inline void      setRectViewOffset(float x, float y) { mState.use_rectsnap = true; mRectView.x = x; mRectView.y = y; }
+	inline void      setRectView(SDL_FRect view) { mState.use_rectsnap = true; mRectView = view; }
     inline SDL_FRect getRectView() const { return mRectView; }
 	
     inline int getImageWidth() const noexcept { return (!mState.is_empty) ? ((mState.is_preprocessed) ? mImage.tex->w : mImage.surf->w) : mImage.size.w; }
@@ -64,6 +65,7 @@ protected:
 		uint8_t is_empty : 1;
 		uint8_t is_preprocessed : 1;
 		uint8_t use_rectsnap : 1;
+        uint8_t use_rectview : 1;
 		uint8_t scale_mode : 2;
-	} mState = { SDL_Color{255, 255, 255, 255}, SDL_BLENDMODE_NONE, true, false, false, SDL_SCALEMODE_NEAREST };
+	} mState = { SDL_Color{255, 255, 255, 255}, SDL_BLENDMODE_NONE, true, false, false, false, SDL_SCALEMODE_NEAREST };
 };

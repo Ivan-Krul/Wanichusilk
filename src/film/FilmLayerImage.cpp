@@ -27,16 +27,19 @@ void film::LayerImage::update() {
 void film::LayerImage::render() const {
 	if (mImgInd == -1) return;
 	
-    SDL_FRect view = { 0.f };
-    SDL_FRect snap = { 0.f };
+    if (mRect.is_default()) pImage->turnOffView();
+    else {
+        if (mRect.is_progress())
+            pImage->setRectView(lerp_rect(mRect.elem_from, mRect.elem_to, mRect.ease_tracker));
+        else pImage->setRectView(mRect.elem_to);
+    }
 
-    const auto res_view = computeRectRender(mRect, &view);
-    const auto res_snap = computeRectRender(mSnap, &snap);
-	
-	if(res_view) pImage->setRectView(*res_view);
-
-	if(res_snap) pImage->setRectSnap(*res_snap);
-	else         pImage->turnOffSnap();
+    if (mSnap.is_default()) pImage->turnOffSnap();
+    else {
+        if (mSnap.is_progress())
+            pImage->setRectSnap(lerp_rect(mSnap.elem_from, mSnap.elem_to, mSnap.ease_tracker));
+        else pImage->setRectSnap(mSnap.elem_to);
+    }
 
     if (mColorAlpha.is_progress()) {
 		SDL_Color ca;
