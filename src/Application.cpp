@@ -123,15 +123,29 @@ void Application::OnInit() {
     irep.layerindx = 0;
     irep.rect.x = 16;
     irep.rect.y = 16;
-    irep.rect.h = 64;
-    irep.rect.w = 64;
+    irep.rect.h = 64 * 2;
+    irep.rect.w = 64 * 2;
     mScene.addKeypoint(irep);
+
+    film::KeypointLayerInteractTilesetViewResize itsv;
+    itsv.layerindx = 0;
+    itsv.new_tile_count_width = 2;
+    itsv.new_tile_count_height = 2;
+    mScene.addKeypoint(itsv);
 
     film::KeypointLayerInteractTilesetSwap itsp;
     itsp.layerindx = 0;
     itsp.tileset_x = 0;
     itsp.tileset_y = 0;
     itsp.swap = 1;
+    mScene.addKeypoint(itsp);
+
+    itsp.tileset_x = 1;
+    itsp.swap = 3;
+    mScene.addKeypoint(itsp);
+
+    itsp.tileset_y = 1;
+    itsp.swap = 4;
     mScene.addKeypoint(itsp);
 
     film::KeypointLayerEnable enab;
@@ -143,19 +157,49 @@ void Application::OnInit() {
     mScene.addKeypoint(itsp);
 
     itsp.swap = 0;
+    itsp.action = itsp.Instant;
     mScene.addKeypoint(itsp);
+    itsp.tileset_y = 0;
+    itsp.swap = 2;
+    itsp.action = itsp.Exact;
+    mScene.addKeypoint(itsp);
+    itsp.tileset_y = 1;
 
     itsp.swap = 1;
+    itsp.action = itsp.Instant;
     mScene.addKeypoint(itsp);
+    itsp.tileset_y = 0;
+    itsp.swap = 3;
+    itsp.action = itsp.Exact;
+    mScene.addKeypoint(itsp);
+    itsp.tileset_y = 1;
 
     itsp.swap = 0;
+    itsp.action = itsp.Instant;
     mScene.addKeypoint(itsp);
+    itsp.tileset_y = 0;
+    itsp.swap = 2;
+    itsp.action = itsp.Exact;
+    mScene.addKeypoint(itsp);
+    itsp.tileset_y = 1;
 
     itsp.swap = 1;
+    itsp.action = itsp.Instant;
     mScene.addKeypoint(itsp);
+    itsp.tileset_y = 0;
+    itsp.swap = 3;
+    itsp.action = itsp.Exact;
+    mScene.addKeypoint(itsp);
+    itsp.tileset_y = 1;
 
     itsp.swap = 0;
+    itsp.action = itsp.Instant;
     mScene.addKeypoint(itsp);
+    itsp.tileset_y = 0;
+    itsp.swap = 2;
+    itsp.action = itsp.Exact;
+    mScene.addKeypoint(itsp);
+    itsp.tileset_y = 1;
 
     film::Keypoint ts;
     ts.action = ts.InInputAfterAwait;
