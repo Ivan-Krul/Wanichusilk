@@ -18,6 +18,8 @@ public:
 
     IResourceManager* GetRequiredInterface(ResourceManagerAttribute attr) const noexcept;
 
+    void PopFromQueue(size_t res_index);
+
     void Load();
 	void Convert();
     bool Preprocess();
@@ -49,7 +51,7 @@ private:
 		} action = Load;
 		
         IResourceManager* mgr_ptr;
-        LockerIndex index;
+        LockerIndex index = -1;
     };
 
 private:

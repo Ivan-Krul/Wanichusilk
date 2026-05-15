@@ -9,6 +9,9 @@ void Loader::PushLoadInQueue(IResourceParamConvertor<ResourceLoadParams>* load, 
     ri.payload.load = load->to_param();
 	ri.action = ri.Load;
 
+	Logger log(DEFAULT_LOG_PATH);
+    log.logInfoIn(__FUNCTION__, "Pushed load: {%zu ,path: %s}.", maResMgr.size(), ri.payload.load.path);
+
     maResMgr.push_back(ri);
 }
 
@@ -21,6 +24,9 @@ void Loader::PushConvertInQueue(IResourceParamConvertor<ResourceConvertParams>* 
 	ri.payload.convert.from_manager = from_manager;
 	ri.payload.convert.from_index = from_index;
 	ri.action = ri.Convert;
+
+	Logger log(DEFAULT_LOG_PATH);
+    log.logInfoIn(__FUNCTION__, "Pushed convert: {%zu, from_index: %zu}.", maResMgr.size(), ri.payload.convert.from_index);
 
     maResMgr.push_back(ri);
 }
@@ -37,6 +43,24 @@ IResourceManager* Loader::GetRequiredInterface(ResourceManagerAttribute attr) co
         if (static_cast<short>(idx.mgr_ptr->GetAttribute() & attr)) return idx.mgr_ptr;
     }
     return nullptr;
+}
+
+void Loader::PopFromQueue(size_t res_index) {
+	Logger log(DEFAULT_LOG_PATH);
+    if(maResMgr.size() > res_index) {
+        log.logErrorIn(__FUNCTION__, "Requested resource index for popping is out of range.");
+        return;
+    }
+
+    if(maResMgr[res_index].index == -1) {
+        log.logErrorIn(__FUNCTION__, "Can't be popped when pending (not removing what just added).");
+        return;
+    }
+
+    log.logInfoIn(__FUNCTION__, "Popped: {%zu}.", res_index);
+
+    res.mgr_ptr->RequestResourceClean(maResMgr[res_index].index);
+    maResMgr.erase(maResMgr.begin() + res_index);
 }
 
 void Loader::Load() {
@@ -80,7 +104,7 @@ void Loader::loadMain() {
     LockerIndex li_res;
     for (mProgress = 0; mProgress < maResMgr.size(); mProgress++) {
         auto& res = maResMgr[mProgress];
-		if(res.action != res.Load) continue;
+		if(res.action != res.Load || res.index != -1) continue;
         li_res = res.mgr_ptr->RequestResourceLoad(res.payload.load);
 
         if (li_res == -1) {
@@ -100,7 +124,7 @@ void Loader::convertMain() {
     LockerIndex li_res;
     for (mProgress = 0; mProgress < maResMgr.size(); mProgress++) {
         auto& res = maResMgr[mProgress];
-		if(res.action != res.Convert) continue;
+		if(res.action != res.Convert || res.index != -1) continue;
 		IResourceConvertor* res_mgr_conv_ptr = nullptr;
 		if(!(res_mgr_conv_ptr = dynamic_cast<IResourceConvertor*>(res.mgr_ptr))) {
 			Logger log(DEFAULT_LOG_PATH);

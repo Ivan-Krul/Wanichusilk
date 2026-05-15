@@ -31,10 +31,13 @@ The reason of installation is the dependancies on build tooling for `vcpkg`.
 
 For vendoring it was used `git submodule` commands. 
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > For Windows only, be sure that path doesn't include spaces.
 
 After a cloning main repo, you should run at source directory `git submodule update --init --recursive --depth 1`.
+
+> [!IMPORTANT]
+> For Linux based only, before going making a next step, you should install [SDL3 dependancies](https://wiki.libsdl.org/SDL3/README-linux#build-dependencies) to then build SDL3.
 
 ### after all that...
 
