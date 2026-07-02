@@ -81,7 +81,9 @@
 #endif
 
 //#define USE_THIRD_PARTY_MATH
+// v- enables to add a certain time length to clock, 
 //#define NO_CLOCK_TRACKING
+// v- enables for clock to measure frames per second (fps) in each end measure call
 #define CLOCK_MEASURE_FPS
 #define PLACE_ANIMATION_AS_IMAGE
 #define ENABLE_DEBUG_LOG
