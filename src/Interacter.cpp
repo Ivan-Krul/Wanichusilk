@@ -1,12 +1,13 @@
 #include "Interacter.h"
 
-Interacter::Interacter(Vault using_vault) {
+bool create(Vault using_vault) {
     mVault = using_vault;
 
     Keyroot kr;
     kr.seq_res_mode = kr.NewScene_NewLoader;
     maKeyRoots.insert(std::make_pair<size_t, Keyroot>{0, kr});
-
+    
+    return false;
 }
 
 void Interacter::addBranch(size_t event_id) {
@@ -24,4 +25,12 @@ void Interacter::removeBranch(size_t event_id) {
     auto iter = maKeyRoots.find(event_id);
     if(iter == maKeyRoots.end())
         maKeyRoots.erase(iter->first);
+}
+
+void Interacter::forceEvent(size_t event_id) {
+    
+}
+
+void Interacter::start() {
+    
 }

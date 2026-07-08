@@ -20,6 +20,7 @@ public:
 
     template<typename T>
     void addKeypoint(T&& keypoint);
+    void addKeypoint(std::shared_ptr<Keypoint> keypoint) { maKeypoints.emplace_back(keypoint); }
     template<typename T>
     T getKeypoint(size_t index) const;
 
