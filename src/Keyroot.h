@@ -59,14 +59,14 @@ public:
         None,
         BackFeed,
         Lasting
-    } flag = None;
+    };
 
-    using SharedKeypoint  = std::shared_ptr<Keypoint>;
+    using SharedKeypoint  = std::shared_ptr<film::Keypoint>;
     using ResQueueLoad    = Vault::ResourceQueue<ResourceLoadParams>;
     using ResQueueConvert = Vault::ResourceQueue<ResourceConvertParams>;
 
 public:
-    inline void create(Vault* using_vault) noexcept { pVault = vault; }
+    inline void create(Vault* using_vault) noexcept { pVault = using_vault; }
 
     inline void setTimeEnable(TimerStep enable)   noexcept { mTimeEnable = enable; }
     inline void setTimeDisable(TimerStep disable) noexcept { mTimeDisable = disable; }
@@ -95,7 +95,11 @@ public:
     inline void pushLoaderLoadEntries(const std::vector<ResQueueLoad>& loads)               noexcept { maNewResLoads = loads; mIsNewLoader = false; }
     inline void pushLoaderConvertEntries(const std::vector<ResQueueConvert>& converts)      noexcept { maNewResConverts = converts; mIsNewLoader = false; }
 
-    void start();
+    inline TimerStep getTimeEnable()    const noexcept { return mTimeEnable; }
+    inline TimerStep getTimeDisable()   const noexcept { return mTimeDisable; }
+    inline Flag      getOperationFlag() const noexcept { return mFlag; }
+
+    void start(film::Scene* scene, Loader* loader);
     void update();
     void render();
     void finish();
@@ -113,6 +117,8 @@ private:
     std::vector<ResQueueConvert> maNewResConverts;
 
     Vault* pVault = nullptr;
+    film::Scene pScene = nullptr;
+    Loader* pLoader = nullptr;
 
     Flag mFlag = None;
 
@@ -123,8 +129,8 @@ private:
 template<typename T>
 inline void Keyroot::pushKeypoint(T&& keypoint) {
     using KeypointType = std::decay_t<T>;
-    static_assert(std::is_base_of<Keypoint, KeypointType>::value, "you should add a derived struct Keypoint");
+    static_assert(std::is_base_of<film::Keypoint, KeypointType>::value, "you should add a derived struct Keypoint");
 
     auto ptr = std::make_shared<KeypointType>(std::forward<T>(keypoint));
-    maNewKeypoints.emplace_back(std::static_pointer_cast<Keypoint>(ptr));
+    maNewKeypoints.emplace_back(std::static_pointer_cast<film::Keypoint>(ptr));
 }

@@ -59,7 +59,7 @@ void Loader::PopFromQueue(size_t res_index) {
 
     log.logInfoIn(__FUNCTION__, "Popped: {%zu}.", res_index);
 
-    res.mgr_ptr->RequestResourceClean(maResMgr[res_index].index);
+    maResMgr[res_index].mgr_ptr->RequestResourceClean(maResMgr[res_index].index);
     maResMgr.erase(maResMgr.begin() + res_index);
 }
 
