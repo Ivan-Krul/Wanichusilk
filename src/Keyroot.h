@@ -11,48 +11,10 @@
 #include "FontManager.h"
 #include "TextManager.h"
 
-/*
-
- ~~ Interacter ~~
-
-resource import 
-  [vault]{
-           [managers][]
-                          }
-
-  [keytree] +> {Keypoints} / {Scenes}
-            |
-            -> {Loader} / {Loader modifications
-                             index removal
-                             {mgr_ind, res_prm}  
-                                                }
-                                                 
-  [keybranch] -> {idle} {keytree}
-              |
-              -> {event} {keytree}
-
-*/
-
-struct Vault {
-    ImageManager     *p_imgmgr;
-    AnimationManager *p_anmmgr;
-    FontManager      *p_fntmgr;
-    TextManager      *p_txtmgr;
-    
-    enum ManagerType {
-        Image,
-        Animation,
-        Font,
-        Text
-    };
-
-    template<typename RP>
-    struct ResourceQueue {
-        RP params;
-        ManagerType type;
-    };
-};
-
+// handles everything what would happen inside the branching logic
+// can add keypoints and add or remove resources
+// then it would play back scene using render calls from above
+// it has to provoke
 class Keyroot {
 public:
     enum Flag : char {
@@ -116,9 +78,9 @@ private:
     std::vector<ResQueueLoad>    maNewResLoads;
     std::vector<ResQueueConvert> maNewResConverts;
 
-    Vault* pVault = nullptr;
+    Vault*      pVault = nullptr;
     film::Scene pScene = nullptr;
-    Loader* pLoader = nullptr;
+    Loader*     pLoader = nullptr;
 
     Flag mFlag = None;
 

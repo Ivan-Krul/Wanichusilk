@@ -8,6 +8,10 @@
 #include "Keyroot.h"
 
 // a.k.a. Router
+// it hears events and based on map - gives the branch it deserves
+// while waiting, it can render stuff, and after event would still do render, but for that specific branch
+// it hands a current clock, scene and loader for consistent calls of render from above
+// it manages branches in terms of provoking them via events, and handing down the branch handling somewhere else
 class Interacter : public ClockHolder {
 public:
     bool create(Vault using_vault);
