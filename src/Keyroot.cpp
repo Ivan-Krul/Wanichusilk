@@ -1,17 +1,15 @@
 #include "Keyroot.h"
 
-void Keyroot::start(film::Scene* scene, Loader* loader) {
-    assert(pScene != nullptr);
-    assert(pLoader != nullptr);
-    pScene = scene;
-    pLoader = loader;
-
-    if(mIsNewScene) pScene->clear();
-    if(mIsNewLoader) {
-        pLoader->Clean();
-        for(size_t i = 0; i < maNewResLoads.size(); i++) {
-            pLoader.PushLoadInQueue();
-        }
+void Keyroot::provoke(film::Scene& scene, Loader& loader) {
+    switch(mStemS) {
+    case NewScene_NewLoader:
+        
+        break;
+    case NewScene_SameLoader:
+        break;
+    case SameScene_NewLoader:
+        break;
+    case SameScene_SameLoader:
+        break;
     }
-
 }

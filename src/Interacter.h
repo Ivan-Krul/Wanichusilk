@@ -30,11 +30,11 @@ public:
     void render();
     
 private:
-    Vault mVault;
     std::map<size_t, Keyroot> maKeyRoots;
+    film::Scene mScene;
+    Loader mpLoader;
+    Vault mVault;
 
     Clock* mpClock = nullptr;
-    film::Scene* mpScene = nullptr;
-    Loader* mpLoader = nullptr;
 
 };

@@ -6,10 +6,7 @@
 #include "Loader.h"
 #include "film/FilmScene.h"
 
-#include "ImageManager.h"
-#include "AnimationManager.h"
-#include "FontManager.h"
-#include "TextManager.h"
+#include "ResourceManagerVault.h"
 
 // handles everything what would happen inside the branching logic
 // can add keypoints and add or remove resources
@@ -23,49 +20,42 @@ public:
         Lasting
     };
 
+    enum StemStatus : char {
+        NewScene_NewLoader,
+        NewScene_SameLoader,
+        SameScene_NewLoader,
+        SameScene_SameLoader
+    };
+
     using SharedKeypoint  = std::shared_ptr<film::Keypoint>;
     using ResQueueLoad    = Vault::ResourceQueue<ResourceLoadParams>;
     using ResQueueConvert = Vault::ResourceQueue<ResourceConvertParams>;
 
 public:
-    inline void create(Vault* using_vault) noexcept { pVault = using_vault; }
-
     inline void setTimeEnable(TimerStep enable)   noexcept { mTimeEnable = enable; }
     inline void setTimeDisable(TimerStep disable) noexcept { mTimeDisable = disable; }
 
     inline void setOperationFlag(Flag flag) noexcept { mFlag = flag; }
-
-
-    inline void setFlagNewScene(bool new_scene = true) noexcept { mIsNewScene = new_scene; }
+    inline void setStemStatus(StemStatus stem) noexcept { mStemS = stem; }
 
     template<typename T>
     inline void pushKeypoint(T&& keypoint);
+    inline void setKeypoints(const std::vector<SharedKeypoint>& keypoints) noexcept { maNewKeypoints = keypoints; }
 
-    inline void setKeypoints(const std::vector<SharedKeypoint>& keypoints)  noexcept { maNewKeypoints = keypoints; mIsNewScene = true; }    
-    inline void pushKeypoints(const std::vector<SharedKeypoint>& keypoints) noexcept { maNewKeypoints = keypoints; mIsNewScene = false; }
-    
-    
-    inline void setFlagNewLoader(bool new_loader = true) noexcept { mIsNewLoader = new_loader; }
+    inline void resetLoader() noexcept { maOldLoaderIndexes.clear(); }
+    inline void removeLoaderIndex(size_t index) noexcept { maOldLoaderIndexes.push_back(index); }
+    inline void addLoaderLoadEntry(const ResQueueLoad& load) noexcept { maNewResLoads.emplace_back(load); }
+    inline void addLoaderConvertEntry(const ResQueueConvert& convert) noexcept { maNewResConverts.emplace_back(convert); }
 
-    inline void pullLoaderIndex(size_t index)                          noexcept { maOldLoaderIndexes.push_back(index); }
-    inline void pushLoaderLoadEntry(const ResQueueLoad& load)          noexcept { maNewResLoads.emplace_back(load); }
-    inline void pushLoaderConvertEntry(const ResQueueConvert& convert) noexcept { maNewResConverts.emplace_back(convert); }
-
-    inline void setPulledLoaderIndexes(const std::vector<size_t>& indexes)                  noexcept { maOldLoaderIndexes = indexes; mIsNewLoader = false; }
-    inline void setPushedLoaderLoadEntries(const std::vector<ResQueueLoad>& loads)          noexcept { maNewResLoads = loads; mIsNewLoader = true; }
-    inline void setPushedLoaderConvertEntries(const std::vector<ResQueueConvert>& converts) noexcept { maNewResConverts = converts; mIsNewLoader = true; }
-    inline void pushLoaderLoadEntries(const std::vector<ResQueueLoad>& loads)               noexcept { maNewResLoads = loads; mIsNewLoader = false; }
-    inline void pushLoaderConvertEntries(const std::vector<ResQueueConvert>& converts)      noexcept { maNewResConverts = converts; mIsNewLoader = false; }
+    inline void setRemovedLoaderIndexes(const std::vector<size_t>& indexes)                 noexcept { maOldLoaderIndexes = indexes; }
+    inline void setPushedLoaderLoadEntries(const std::vector<ResQueueLoad>& loads)          noexcept { maNewResLoads = loads; }
+    inline void setPushedLoaderConvertEntries(const std::vector<ResQueueConvert>& converts) noexcept { maNewResConverts = converts; }
 
     inline TimerStep getTimeEnable()    const noexcept { return mTimeEnable; }
     inline TimerStep getTimeDisable()   const noexcept { return mTimeDisable; }
     inline Flag      getOperationFlag() const noexcept { return mFlag; }
 
-    void start(film::Scene* scene, Loader* loader);
-    void update();
-    void render();
-    void finish();
-    
+    void provoke(film::Scene& scene, Loader& loader);
 
 private:
     TimerStep mTimeEnable;
@@ -78,14 +68,9 @@ private:
     std::vector<ResQueueLoad>    maNewResLoads;
     std::vector<ResQueueConvert> maNewResConverts;
 
-    Vault*      pVault = nullptr;
-    film::Scene pScene = nullptr;
-    Loader*     pLoader = nullptr;
-
     Flag mFlag = None;
 
-    bool mIsNewScene  = false;
-    bool mIsNewLoader = false;
+    StemStatus mStemS = NewScene_NewLoader;
 };
 
 template<typename T>
