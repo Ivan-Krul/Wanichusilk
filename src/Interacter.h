@@ -14,6 +14,8 @@
 // it manages branches in terms of provoking them via events, and handing down the branch handling somewhere else
 class Interacter : public ClockHolder {
 public:
+    using Vault = ResourceManagerVault;
+public:
     bool create(Vault using_vault);
     void setClock(Clock* clock) { mpClock = clock; }
     

@@ -28,6 +28,7 @@ public:
     };
 
     using SharedKeypoint  = std::shared_ptr<film::Keypoint>;
+    using Vault = ResourceManagerVault;
     using ResQueueLoad    = Vault::ResourceQueue<ResourceLoadParams>;
     using ResQueueConvert = Vault::ResourceQueue<ResourceConvertParams>;
 
@@ -55,7 +56,7 @@ public:
     inline TimerStep getTimeDisable()   const noexcept { return mTimeDisable; }
     inline Flag      getOperationFlag() const noexcept { return mFlag; }
 
-    void provoke(film::Scene& scene, Loader& loader);
+    void provoke(film::Scene& scene, Loader& loader, Vault& vault);
 
 private:
     TimerStep mTimeEnable;
