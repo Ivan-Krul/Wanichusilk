@@ -9,8 +9,10 @@
 
 class Loader {
 public:
-    void PushLoadInQueue(IResourceParamConvertor<ResourceLoadParams>* load, IResourceManager* manager);
-	void PushConvertInQueue(IResourceParamConvertor<ResourceConvertParams>* convert, IResourceManager* manager, IResourceManager* from_manager, LockerIndex from_index);
+    void PushPureLoadInQueue(ResourceLoadParams load, IResourceManager* manager);
+    void PushPureConvertInQueue(ResourceConvertParams convert, IResourceManager* manager, IResourceManager* from_manager, LockerIndex from_index);
+    inline void PushLoadInQueue(IResourceParamConvertor<ResourceLoadParams>* load, IResourceManager* manager) { PushPureLoadInQueue(load->to_param(), manager); }
+    inline void PushConvertInQueue(IResourceParamConvertor<ResourceConvertParams>* convert, IResourceManager* manager, IResourceManager* from_manager, LockerIndex from_index) { PushPureConvertInQueue(convert->to_param(), manager, from_manager, from_index); }
 
     const char* GetResourcePath(size_t index) const;
     inline IResourceManager* GetManager(size_t index) const { return maResMgr.size() > index ? maResMgr.at(index).mgr_ptr : nullptr; }

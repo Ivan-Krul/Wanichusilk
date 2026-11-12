@@ -11,9 +11,9 @@ void Keyroot::provoke(film::Scene& scene, Loader& loader, Vault& vault) {
         loader.Clean();
 
         for(int l = 0; l < maNewResLoads.size(); l++)
-            loader.PushLoadInQueue(&maNewResLoads[l].params, maNewResLoads[l].manager_ptr);
+            loader.PushPureLoadInQueue(maNewResLoads[l].params, maNewResLoads[l].manager_ptr);
         for(int c = 0; c < maNewResConverts.size(); c++)
-            loader.PushConvertInQueue(&maNewResConverts[c].params, maNewResConverts[c].manager_ptr);
+            loader.PushPureConvertInQueue(maNewResConverts[c].params, maNewResConverts[c].manager_ptr, maNewResConverts[c].from_manager_ptr, maNewResConverts[c].from_index);
         break;
     case NewScene_SameLoader:
         break;

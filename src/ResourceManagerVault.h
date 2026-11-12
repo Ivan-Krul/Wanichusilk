@@ -20,8 +20,10 @@ struct ResourceManagerVault {
 
     template<typename RP>
     struct ResourceQueue {
-        void* manager_ptr = nullptr;
+        IResourceManager* manager_ptr = nullptr;
         RP params;
+        IResourceManager* from_manager_ptr = nullptr;
+        LockerIndex from_index = -1;
         ManagerType type;
     };
 

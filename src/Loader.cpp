@@ -1,31 +1,32 @@
 #include "Loader.h"
 #include "Logger.h"
 
-void Loader::PushLoadInQueue(IResourceParamConvertor<ResourceLoadParams>* load, IResourceManager* manager) {
+void Loader::PushPureLoadInQueue(ResourceLoadParams load, IResourceManager* manager) {
     mLoadErrNum = -2;
 
     ResourceIndexer ri;
     ri.mgr_ptr = manager;
-    ri.payload.load = load->to_param();
-	ri.action = ri.Load;
+    ri.payload.load = load;
+    ri.action = ri.Load;
 
-	Logger log(DEFAULT_LOG_PATH);
-    log.logInfoIn(__FUNCTION__, "Pushed load: {%zu ,path: %s}.", maResMgr.size(), ri.payload.load.path);
+    Logger log(DEFAULT_LOG_PATH);
+    log.logInfoIn(__FUNCTION__, "Pushed Pure Load: {%zu ,path %s}.", maResMgr.size(), ri.payload.load.path);
 
     maResMgr.push_back(ri);
 }
 
-void Loader::PushConvertInQueue(IResourceParamConvertor<ResourceConvertParams>* convert, IResourceManager* manager, IResourceManager* from_manager, LockerIndex from_index) {
-	mLoadErrNum = -2;
-	
-	ResourceIndexer ri;
-    ri.mgr_ptr = manager;
-    ri.payload.convert.params = convert->to_param();
-	ri.payload.convert.from_manager = from_manager;
-	ri.payload.convert.from_index = from_index;
-	ri.action = ri.Convert;
 
-	Logger log(DEFAULT_LOG_PATH);
+void Loader::PushPureConvertInQueue(ResourceConvertParams convert, IResourceManager* manager, IResourceManager* from_manager, LockerIndex from_index) {
+    mLoadErrNum = -2;
+
+    ResourceIndexer ri;
+    ri.mgr_ptr = manager;
+    ri.payload.convert.params = convert;
+    ri.payload.convert.from_manager = from_manager;
+    ri.payload.convert.from_index = from_index;
+    ri.action = ri.Convert;
+
+    Logger log(DEFAULT_LOG_PATH);
     log.logInfoIn(__FUNCTION__, "Pushed convert: {%zu, from_index: %zu}.", maResMgr.size(), ri.payload.convert.from_index);
 
     maResMgr.push_back(ri);

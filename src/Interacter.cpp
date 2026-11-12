@@ -4,15 +4,13 @@ bool Interacter::create(Vault using_vault) {
     mVault = using_vault;
 
     Keyroot kr;
-    kr.create(&mVault);
     maKeyRoots.insert({0, kr});
-    
+
     return false;
 }
 
 void Interacter::addBranch(size_t event_id) {
     Keyroot kr;
-    kr.create(&mVault);
     maKeyRoots.insert({event_id, kr});
 }
 
