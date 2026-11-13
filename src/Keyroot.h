@@ -62,7 +62,7 @@ private:
     TimerStep mTimeEnable;
     TimerStep mTimeDisable;
     // requires runtimer for performing conditional entries
-    
+
     std::vector<SharedKeypoint> maNewKeypoints;
 
     std::vector<size_t>          maOldLoaderIndexes;

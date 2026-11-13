@@ -18,7 +18,7 @@ public:
 public:
     bool create(Vault using_vault);
     void setClock(Clock* clock) { mpClock = clock; }
-    
+
     void addBranch(size_t event_id = -1);
     Keyroot* extractBranch(size_t event_id);
     void removeBranch(size_t event_id);
@@ -30,7 +30,7 @@ public:
     void finish();
 
     void render();
-    
+
 private:
     std::map<size_t, Keyroot> maKeyRoots;
     film::Scene mScene;
